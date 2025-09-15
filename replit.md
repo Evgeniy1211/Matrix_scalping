@@ -62,3 +62,27 @@ The build system uses Vite for fast development and production builds, with Type
 - **TypeScript** - Static type checking for improved code quality and developer experience
 - **ESBuild** - Fast JavaScript bundler for server-side code compilation
 - **Drizzle Kit** - Database migration and introspection toolkit
+
+## Documentation
+
+Comprehensive documentation has been created for easy content management and customization:
+
+### Available Documentation Files
+- **`docs/evolution-matrix-guide.md`** - Complete guide for managing the evolution matrix data, adding new modules, revisions, and technologies
+- **`docs/technology-tree-guide.md`** - Detailed documentation for the D3.js technology tree, including visualization customization and data structure
+- **`docs/project-overview.md`** - Overall project architecture, file relationships, and quick start guide
+
+### Key Documentation Features
+- **Data Structure Explanations** - Clear examples of how to modify JSON data structures
+- **Visual Customization Guides** - How to change colors, layouts, and interactive behaviors  
+- **File Relationship Maps** - Understanding which files affect which parts of the application
+- **Step-by-step Examples** - Practical examples of adding new content to both matrix and tree
+- **Troubleshooting Sections** - Common issues and solutions for development
+
+### Content Management Workflow
+1. **Matrix Changes** - Edit `client/src/data/evolution-data.ts` (evolutionData object)
+2. **Tree Changes** - Edit `client/src/data/evolution-data.ts` (treeData object)  
+3. **Styling Changes** - Modify `client/src/index.css` CSS variables
+4. **All changes** apply automatically with hot reload during development
+
+The documentation is designed to enable non-technical users to easily add and modify trading technology data without requiring deep React or D3.js knowledge.
