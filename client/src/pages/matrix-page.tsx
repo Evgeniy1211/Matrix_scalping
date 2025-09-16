@@ -1,5 +1,6 @@
 
 import { EvolutionMatrix } from "@/components/evolution-matrix";
+import { TechnologyDetails } from "@/components/technology-details";
 
 export default function MatrixPage() {
   return (
@@ -20,7 +21,23 @@ export default function MatrixPage() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <EvolutionMatrix />
+        {/* Evolution Matrix */}
+        <div className="mb-12">
+          <EvolutionMatrix />
+        </div>
+
+        {/* Technology Details */}
+        <div className="border-t border-border pt-12">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              База знаний технологий
+            </h2>
+            <p className="text-muted-foreground">
+              Подробные описания технологий, используемых в матрице эволюции
+            </p>
+          </div>
+          <TechnologyDetails />
+        </div>
       </main>
 
       {/* Footer */}
