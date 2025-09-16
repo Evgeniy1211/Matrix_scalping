@@ -125,8 +125,21 @@ export function integrateExampleTechnologies(): { modules: ModuleData[] } {
     'visualization': 'Визуализация и мониторинг'
   };
 
+  // Функция для определения ревизии по периоду кейса
+  const getRevisionFromPeriod = (period: string): keyof ModuleData['revisions'] => {
+    const startYear = parseInt(period.split('-')[0]);
+    
+    if (startYear <= 2015) return 'rev1';        // 2000-2015
+    if (startYear <= 2020) return 'rev2';        // 2015-2020
+    if (startYear <= 2022) return 'rev3';        // 2020-2022
+    if (startYear <= 2023) return 'rev4';        // 2022-2023
+    return 'rev5';                               // 2023-2025
+  };
+
   // Собираем технологии из всех кейсов
   tradingMachineCases.forEach(case_ => {
+    const targetRevision = getRevisionFromPeriod(case_.period);
+    
     Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
       const matrixModuleName = moduleMapping[moduleKey];
       if (!matrixModuleName) return;
@@ -135,17 +148,22 @@ export function integrateExampleTechnologies(): { modules: ModuleData[] } {
       const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
       if (!matrixModule) return;
 
-      // Добавляем технологии в последнюю ревизию (rev5 - current period)
-      const existingTech = matrixModule.revisions.rev5.tech;
+      // Получаем существующие технологии в целевой ревизии
+      const existingTech = matrixModule.revisions[targetRevision].tech;
       const newTechs = technologies.filter(tech => 
         !existingTech.toLowerCase().includes(tech.toLowerCase())
       );
       
       if (newTechs.length > 0) {
-        matrixModule.revisions.rev5.tech = existingTech + 
-          (existingTech ? ', ' : '') + 
-          newTechs.join(', ');
-        matrixModule.revisions.rev5.desc += ` (включая: ${newTechs.join(', ')})`;
+        // Добавляем технологии в соответствующую ревизию
+        const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
+        matrixModule.revisions[targetRevision].tech = existingTech + separator + newTechs.join(', ');
+        
+        // Обновляем описание с указанием источника
+        const caseInfo = ` (из кейса "${case_.name}")`;
+        if (!matrixModule.revisions[targetRevision].desc.includes(caseInfo)) {
+          matrixModule.revisions[targetRevision].desc += caseInfo;
+        }
       }
     });
   });
