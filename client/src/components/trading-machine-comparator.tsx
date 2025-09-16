@@ -123,24 +123,68 @@ export function TradingMachineComparator() {
           <TabsContent value="technologies">
             <Card>
               <CardHeader>
-                <CardTitle>Технологический стек</CardTitle>
+                <CardTitle>Матрица технологий кейса</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Технологии, используемые в кейсе "{selectedCase.name}", представленные в формате матрицы
+                </p>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {selectedCase.technologies.map((tech, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h4 className="font-medium">{tech.name}</h4>
-                        {tech.version && (
-                          <Badge variant="outline">{tech.version}</Badge>
-                        )}
-                        <Badge className={getCategoryColor(tech.category)}>
-                          {tech.category}
-                        </Badge>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="sticky left-0 bg-muted text-muted-foreground p-3 text-left font-semibold min-w-[200px]">
+                          Модуль
+                        </th>
+                        <th className="p-3 text-center font-semibold text-muted-foreground min-w-[200px]">
+                          Технологии в кейсе
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Object.entries(selectedCase.modules).map(([moduleName, technologies]) => (
+                        <tr key={moduleName} className="border-b border-border">
+                          <td className="sticky left-0 bg-muted text-foreground p-3 font-medium border-r border-border">
+                            {moduleName.replace(/([A-Z])/g, ' $1').trim().replace(/^./, str => str.toUpperCase())}
+                          </td>
+                          <td className="p-3 text-center border-r border-border">
+                            <div className="flex flex-wrap gap-1 justify-center">
+                              {technologies.length > 0 ? (
+                                technologies.map((tech, index) => (
+                                  <Badge key={index} variant="secondary" className="text-xs">
+                                    {tech}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-muted-foreground text-sm italic">Не используется</span>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                
+                {/* Отдельная секция для детального технологического стека */}
+                <div className="mt-6 pt-6 border-t border-border">
+                  <h4 className="font-semibold mb-4">Детальный технологический стек</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {selectedCase.technologies.map((tech, index) => (
+                      <div key={index} className="border rounded-lg p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h5 className="font-medium text-sm">{tech.name}</h5>
+                          {tech.version && (
+                            <Badge variant="outline" className="text-xs">{tech.version}</Badge>
+                          )}
+                          <Badge className={getCategoryColor(tech.category) + " text-xs"}>
+                            {tech.category}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{tech.purpose}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{tech.purpose}</p>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
