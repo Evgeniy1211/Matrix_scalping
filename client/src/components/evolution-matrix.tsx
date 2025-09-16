@@ -64,19 +64,40 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
         break;
     }
 
+    // ВАЖНО: Проверяем, что данные корректные
+    if (!currentData || !currentData.modules || !Array.isArray(currentData.modules)) {
+      console.error('Ошибка: currentData.modules не является массивом!', currentData);
+      return [];
+    }
+
+    // Логика фильтрации "Скрыть неизменившиеся модули"
     if (filter === 'hideUnchanged') {
-      return currentData.modules.filter(module => {
+      const filteredModules = currentData.modules.filter(module => {
         const revisions = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
+        
+        // Проверяем есть ли изменения между ревизиями
         for (let i = 1; i < revisions.length; i++) {
           const current = module.revisions[revisions[i]];
           const previous = module.revisions[revisions[i - 1]];
+          
+          // Если технология изменилась или появилась
           if (current.tech !== previous.tech && current.tech.trim() !== '') {
             return true;
           }
         }
-        return false;
+        
+        // Также показываем модули, где есть хотя бы одна технология
+        return Object.values(module.revisions).some(rev => rev.tech.trim() !== '');
       });
+      
+      console.log('Фильтр "hideUnchanged" применен. Показано модулей:', filteredModules.length);
+      console.log('Отфильтрованные модули:', filteredModules.map(m => m.name));
+      
+      return filteredModules;
     }
+    
+    // Возвращаем все модули без фильтрации
+    console.log('Возвращаем все модули без фильтрации:', currentData.modules.length);
     return currentData.modules;
   };
 
