@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { evolutionData, integrateExampleTechnologies, integrateTechnologyDatabase } from "@/data/evolution-data";
+import { evolutionData, integrateExampleTechnologies, integrateTechnologyDatabase, createDynamicTechnologyMatrix } from "@/data/evolution-data";
 import { getMatrixTechnologyCoverage } from "@/data/trading-machines";
 import type { RevisionData } from "@/data/evolution-data";
 
@@ -17,6 +17,7 @@ export function EvolutionMatrix() {
   });
   const [useIntegratedData, setUseIntegratedData] = useState(false);
   const [useTechnologyDatabase, setUseTechnologyDatabase] = useState(false);
+  const [useDynamicMatrix, setUseDynamicMatrix] = useState(false);
 
   const showTooltip = (event: React.MouseEvent, content: string) => {
     setTooltip({
@@ -40,7 +41,9 @@ export function EvolutionMatrix() {
     // Выбираем источник данных
     let currentData = evolutionData;
     
-    if (useTechnologyDatabase) {
+    if (useDynamicMatrix) {
+      currentData = createDynamicTechnologyMatrix();
+    } else if (useTechnologyDatabase) {
       currentData = integrateTechnologyDatabase();
     } else if (useIntegratedData) {
       currentData = integrateExampleTechnologies();
@@ -130,11 +133,29 @@ export function EvolutionMatrix() {
                 checked={useTechnologyDatabase}
                 onChange={(e) => {
                   setUseTechnologyDatabase(e.target.checked);
-                  if (e.target.checked) setUseIntegratedData(false);
+                  if (e.target.checked) {
+                    setUseIntegratedData(false);
+                    setUseDynamicMatrix(false);
+                  }
                 }}
                 className="rounded border-gray-300"
               />
               Показать из базы технологий
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={useDynamicMatrix}
+                onChange={(e) => {
+                  setUseDynamicMatrix(e.target.checked);
+                  if (e.target.checked) {
+                    setUseIntegratedData(false);
+                    setUseTechnologyDatabase(false);
+                  }
+                }}
+                className="rounded border-gray-300"
+              />
+              Динамическая матрица (каждая технология = строка)
             </label>
           </div>
         </CardHeader>

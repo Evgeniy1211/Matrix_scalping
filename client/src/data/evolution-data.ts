@@ -111,7 +111,133 @@ import { tradingMachineCases } from './trading-machines';
 import { technologyDatabase, getTechnologiesByModule, getRevisionForTechnology, type TechnologyDescription } from './technologies';
 
 // Функция для интеграции технологий из кейсов в основную матрицу
-// Функция для интеграции технологий из централизованной базы
+// Функция для создания динамической матрицы где каждая технология = отдельная строка
+export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
+  const dynamicModules: ModuleData[] = [];
+  
+  const moduleMapping: Record<string, string> = {
+    'data': 'Сбор данных',
+    'processing': 'Обработка данных', 
+    'ml': 'Генерация сигналов',
+    'risk': 'Риск-менеджмент',
+    'execution': 'Исполнение сделок',
+    'adaptation': 'Адаптация к рынку',
+    'visualization': 'Визуализация и мониторинг'
+  };
+
+  // Собираем все технологии из базы и кейсов
+  const allTechnologies = new Map<string, {
+    name: string;
+    category: string;
+    startRevision: keyof ModuleData['revisions'];
+    description: string;
+    evolution: string[];
+    parentTechnology?: string;
+  }>();
+
+  // Добавляем технологии из централизованной базы
+  technologyDatabase.forEach(tech => {
+    const startRevision = getRevisionForTechnology(tech.id);
+    allTechnologies.set(tech.name, {
+      name: tech.name,
+      category: tech.category,
+      startRevision,
+      description: tech.description,
+      evolution: tech.evolution?.successors || [],
+      parentTechnology: tech.evolution?.predecessors?.[0]
+    });
+  });
+
+  // Добавляем технологии из кейсов
+  tradingMachineCases.forEach(case_ => {
+    const caseRevision = getRevisionFromPeriod(case_.period);
+    Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
+      const category = moduleKey;
+      technologies.forEach(techName => {
+        if (!allTechnologies.has(techName)) {
+          allTechnologies.set(techName, {
+            name: techName,
+            category,
+            startRevision: caseRevision,
+            description: `Технология из кейса "${case_.name}"`,
+            evolution: []
+          });
+        }
+      });
+    });
+  });
+
+  // Создаем модули для каждой технологии
+  allTechnologies.forEach(tech => {
+    const matrixModuleName = moduleMapping[tech.category] || tech.category;
+    const techModuleName = tech.parentTechnology 
+      ? `  └─ ${tech.name}` // Делаем отступ для технологий-потомков
+      : tech.name;
+
+    const revisions = {
+      rev1: { tech: '', period: 'empty' as const, desc: '' },
+      rev2: { tech: '', period: 'empty' as const, desc: '' },
+      rev3: { tech: '', period: 'empty' as const, desc: '' },
+      rev4: { tech: '', period: 'empty' as const, desc: '' },
+      rev5: { tech: '', period: 'empty' as const, desc: '' }
+    };
+
+    // Заполняем ревизию, когда технология появилась
+    revisions[tech.startRevision] = {
+      tech: tech.name,
+      period: 'current',
+      desc: tech.description
+    };
+
+    // Заполняем последующие ревизии, если технология развивалась
+    const revisionOrder: (keyof ModuleData['revisions'])[] = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'];
+    const startIndex = revisionOrder.indexOf(tech.startRevision);
+    
+    for (let i = startIndex + 1; i < revisionOrder.length; i++) {
+      const currentRev = revisionOrder[i];
+      
+      // Если у технологии есть эволюция, показываем её
+      if (tech.evolution.length > 0) {
+        revisions[currentRev] = {
+          tech: `${tech.name} → ${tech.evolution.join(', ')}`,
+          period: 'current',
+          desc: `Эволюция в: ${tech.evolution.join(', ')}`
+        };
+        break; // Показываем эволюцию только в одной следующей ревизии
+      } else {
+        // Иначе технология продолжает использоваться
+        revisions[currentRev] = {
+          tech: tech.name,
+          period: 'current',
+          desc: `Продолжение использования технологии ${tech.name}`
+        };
+      }
+    }
+
+    dynamicModules.push({
+      name: `${matrixModuleName}: ${techModuleName}`,
+      revisions
+    });
+  });
+
+  // Сортируем модули по категориям и именам
+  dynamicModules.sort((a, b) => {
+    const categoryA = a.name.split(':')[0];
+    const categoryB = b.name.split(':')[0];
+    if (categoryA !== categoryB) return categoryA.localeCompare(categoryB);
+    
+    // Родительские технологии идут первыми
+    const isChildA = a.name.includes('└─');
+    const isChildB = b.name.includes('└─');
+    if (isChildA !== isChildB) return isChildA ? 1 : -1;
+    
+    return a.name.localeCompare(b.name);
+  });
+
+  return { modules: dynamicModules };
+}
+
+// Функция для интеграции технологий из централизованной базы (старая версия)
 export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
   
@@ -151,6 +277,17 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   });
 
   return integratedData;
+}
+
+// Добавляем функцию для определения ревизии по периоду
+function getRevisionFromPeriod(period: string): keyof ModuleData['revisions'] {
+  const startYear = parseInt(period.split('-')[0]);
+  
+  if (startYear <= 2015) return 'rev1';        // 2000-2015
+  if (startYear <= 2020) return 'rev2';        // 2015-2020
+  if (startYear <= 2022) return 'rev3';        // 2020-2022
+  if (startYear <= 2023) return 'rev4';        // 2022-2023
+  return 'rev5';                               // 2023-2025
 }
 
 export function integrateExampleTechnologies(): { modules: ModuleData[] } {
