@@ -2,6 +2,7 @@
 import { EvolutionMatrix } from "@/components/evolution-matrix";
 import { TechnologyTree } from "@/components/technology-tree";
 import { RevisionExplanations } from "@/components/revision-explanations";
+import { TradingMachineComparator } from "@/components/trading-machine-comparator";
 
 export default function EvolutionMatrixPage() {
   return (
@@ -33,6 +34,19 @@ export default function EvolutionMatrixPage() {
 
         {/* Evolution Explanations */}
         <RevisionExplanations />
+
+        {/* Trading Machine Cases Comparator */}
+        <section className="mt-16 pt-8 border-t border-border">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-foreground mb-2">
+              Сравнение кейсов торговых машин
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Реальные примеры торговых систем с детальным анализом технологий
+            </p>
+          </div>
+          <TradingMachineComparator />
+        </section>
       </main>
 
       {/* Footer */}
