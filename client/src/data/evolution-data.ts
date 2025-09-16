@@ -106,6 +106,53 @@ export const evolutionData: { modules: ModuleData[] } = {
   ]
 };
 
+// Импорт для интеграции с кейсами
+import { tradingMachineCases } from './trading-machines';
+
+// Функция для интеграции технологий из кейсов в основную матрицу
+export function integrateExampleTechnologies(): { modules: ModuleData[] } {
+  const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
+  
+  // Маппинг модулей кейсов на модули матрицы
+  const moduleMapping: Record<string, string> = {
+    'dataCollection': 'Сбор данных',
+    'dataProcessing': 'Обработка данных', 
+    'featureEngineering': 'Feature Engineering',
+    'signalGeneration': 'Генерация сигналов',
+    'riskManagement': 'Риск-менеджмент',
+    'execution': 'Исполнение сделок',
+    'marketAdaptation': 'Адаптация к рынку',
+    'visualization': 'Визуализация и мониторинг'
+  };
+
+  // Собираем технологии из всех кейсов
+  tradingMachineCases.forEach(case_ => {
+    Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
+      const matrixModuleName = moduleMapping[moduleKey];
+      if (!matrixModuleName) return;
+
+      // Находим соответствующий модуль в матрице
+      const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+      if (!matrixModule) return;
+
+      // Добавляем технологии в последнюю ревизию (rev5 - current period)
+      const existingTech = matrixModule.revisions.rev5.tech;
+      const newTechs = technologies.filter(tech => 
+        !existingTech.toLowerCase().includes(tech.toLowerCase())
+      );
+      
+      if (newTechs.length > 0) {
+        matrixModule.revisions.rev5.tech = existingTech + 
+          (existingTech ? ', ' : '') + 
+          newTechs.join(', ');
+        matrixModule.revisions.rev5.desc += ` (включая: ${newTechs.join(', ')})`;
+      }
+    });
+  });
+
+  return integratedData;
+}
+
 export const treeData: TechnologyNode = {
   name: "ML",
   description: "Машинное обучение - основа современных торговых систем",

@@ -194,3 +194,32 @@ export function findCasesByTechnology(technology: string): TradingMachineCase[] 
     )
   );
 }
+
+// Функция для проверки связи между матрицей и кейсами
+export function getMatrixTechnologyCoverage(): Record<string, string[]> {
+  const coverage: Record<string, string[]> = {};
+  
+  const moduleMapping: Record<string, string> = {
+    'dataCollection': 'Сбор данных',
+    'dataProcessing': 'Обработка данных', 
+    'featureEngineering': 'Feature Engineering',
+    'signalGeneration': 'Генерация сигналов',
+    'riskManagement': 'Риск-менеджмент',
+    'execution': 'Исполнение сделок',
+    'marketAdaptation': 'Адаптация к рынку',
+    'visualization': 'Визуализация и мониторинг'
+  };
+
+  Object.entries(moduleMapping).forEach(([caseModule, matrixModule]) => {
+    const technologies = new Set<string>();
+    
+    tradingMachineCases.forEach(case_ => {
+      const caseTechnologies = case_.modules[caseModule as keyof typeof case_.modules];
+      caseTechnologies.forEach(tech => technologies.add(tech));
+    });
+    
+    coverage[matrixModule] = Array.from(technologies);
+  });
+  
+  return coverage;
+}

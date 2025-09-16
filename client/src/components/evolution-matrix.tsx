@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { evolutionData, type RevisionData } from "@/data/evolution-data";
+import { evolutionData, integrateExampleTechnologies } from "@/data/evolution-data";
+import { getMatrixTechnologyCoverage } from "@/data/trading-machines";
+import type { RevisionData } from "@/data/evolution-data";
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
 
@@ -13,6 +15,7 @@ export function EvolutionMatrix() {
     y: 0,
     visible: false
   });
+  const [useIntegratedData, setUseIntegratedData] = useState(false);
 
   const showTooltip = (event: React.MouseEvent, content: string) => {
     setTooltip({
@@ -33,8 +36,11 @@ export function EvolutionMatrix() {
   };
 
   const getVisibleModules = () => {
+    // Выбираем источник данных
+    const currentData = useIntegratedData ? integrateExampleTechnologies() : evolutionData;
+
     if (filter === 'hideUnchanged') {
-      return evolutionData.modules.filter(module => {
+      return currentData.modules.filter(module => {
         const revisions = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
         for (let i = 1; i < revisions.length; i++) {
           const current = module.revisions[revisions[i]];
@@ -46,7 +52,7 @@ export function EvolutionMatrix() {
         return false;
       });
     }
-    return evolutionData.modules;
+    return currentData.modules;
   };
 
   const getCellClass = (data: RevisionData) => {
@@ -66,13 +72,16 @@ export function EvolutionMatrix() {
   const visibleRevisions = getVisibleRevisions();
   const visibleModules = getVisibleModules();
 
+  // Получаем покрытие технологий из кейсов
+  const technologyCoverage = getMatrixTechnologyCoverage();
+
   return (
     <div className="lg:col-span-7">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">Матрица эволюции</CardTitle>
           <div className="flex flex-wrap gap-3">
-            <Button 
+            <Button
               onClick={() => setFilter('rev5')}
               variant={filter === 'rev5' ? 'default' : 'secondary'}
               size="sm"
@@ -80,7 +89,7 @@ export function EvolutionMatrix() {
             >
               Показать только Rev.5
             </Button>
-            <Button 
+            <Button
               onClick={() => setFilter('all')}
               variant={filter === 'all' ? 'default' : 'secondary'}
               size="sm"
@@ -88,7 +97,7 @@ export function EvolutionMatrix() {
             >
               Показать все ревизии
             </Button>
-            <Button 
+            <Button
               onClick={() => setFilter('hideUnchanged')}
               variant={filter === 'hideUnchanged' ? 'default' : 'secondary'}
               size="sm"
@@ -96,6 +105,15 @@ export function EvolutionMatrix() {
             >
               Скрыть модули без изменений
             </Button>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={useIntegratedData}
+                onChange={(e) => setUseIntegratedData(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              Показать технологии из кейсов
+            </label>
           </div>
         </CardHeader>
         <CardContent>
@@ -121,7 +139,14 @@ export function EvolutionMatrix() {
                 {visibleModules.map((module, moduleIndex) => (
                   <tr key={moduleIndex} className="border-b border-border">
                     <td className="sticky left-0 bg-muted text-foreground p-3 font-medium border-r border-border">
-                      {module.name}
+                      <div className="flex items-center gap-2">
+                        {module.name}
+                        {technologyCoverage[module.name] && technologyCoverage[module.name].length > 0 && (
+                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" title={`Представлено в кейсах: ${technologyCoverage[module.name].length} технологий`}>
+                            {technologyCoverage[module.name].length}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     {visibleRevisions.map(rev => {
                       const data = module.revisions[rev as keyof typeof module.revisions];
@@ -147,7 +172,7 @@ export function EvolutionMatrix() {
 
       {/* Tooltip */}
       {tooltip.visible && (
-        <div 
+        <div
           className="fixed bg-foreground text-background p-2 rounded-md text-sm max-w-[200px] z-50 pointer-events-none transition-opacity duration-200"
           style={{ left: tooltip.x, top: tooltip.y }}
           data-testid="tooltip"
