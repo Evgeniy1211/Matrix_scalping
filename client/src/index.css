@@ -97,60 +97,60 @@
 }
 
 .dark {
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --button-outline: rgba(255,255,255, .20);
+  --badge-outline: rgba(255,255,255, .15);
 
-  --opaque-button-border-intensity: 9;  /* In terms of percentages */
+  --opaque-button-border-intensity: 15;  /* In terms of percentages */
 
   /* Backgrounds applied on top of other backgrounds when hovered/active */
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --elevate-1: rgba(255,255,255, .08);
+  --elevate-2: rgba(255,255,255, .15);
 
-  --background: hsl(222 84% 5%);
-  --foreground: hsl(210 40% 98%);
-  --border: hsl(217 32% 17%);
-  --card: hsl(222 84% 5%);
-  --card-foreground: hsl(210 40% 98%);
-  --card-border: hsl(217 32% 17%);
-  --sidebar: hsl(222 84% 5%);
-  --sidebar-foreground: hsl(210 40% 98%);
-  --sidebar-border: hsl(217 32% 17%);
-  --sidebar-primary: hsl(221 83% 53%);
+  --background: hsl(222 84% 8%);
+  --foreground: hsl(210 40% 95%);
+  --border: hsl(217 32% 25%);
+  --card: hsl(222 84% 10%);
+  --card-foreground: hsl(210 40% 95%);
+  --card-border: hsl(217 32% 30%);
+  --sidebar: hsl(222 84% 10%);
+  --sidebar-foreground: hsl(210 40% 95%);
+  --sidebar-border: hsl(217 32% 25%);
+  --sidebar-primary: hsl(221 83% 60%);
   --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: hsl(142 76% 36%);
+  --sidebar-accent: hsl(142 76% 45%);
   --sidebar-accent-foreground: hsl(210 40% 98%);
-  --sidebar-ring: hsl(221 83% 53%);
-  --popover: hsl(222 84% 5%);
-  --popover-foreground: hsl(210 40% 98%);
-  --popover-border: hsl(217 32% 17%);
-  --primary: hsl(221 83% 53%);
+  --sidebar-ring: hsl(221 83% 60%);
+  --popover: hsl(222 84% 12%);
+  --popover-foreground: hsl(210 40% 95%);
+  --popover-border: hsl(217 32% 30%);
+  --primary: hsl(221 83% 60%);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(38 92% 50%);
-  --secondary-foreground: hsl(222 84% 5%);
-  --muted: hsl(217 32% 17%);
-  --muted-foreground: hsl(215 20% 65%);
-  --accent: hsl(142 76% 36%);
+  --secondary: hsl(38 92% 55%);
+  --secondary-foreground: hsl(222 84% 8%);
+  --muted: hsl(217 32% 20%);
+  --muted-foreground: hsl(215 20% 75%);
+  --accent: hsl(142 76% 45%);
   --accent-foreground: hsl(210 40% 98%);
-  --destructive: hsl(0 84% 60%);
+  --destructive: hsl(0 84% 65%);
   --destructive-foreground: hsl(210 40% 98%);
 
   /* Used as the border around inputs. Dark mode: Should be a border that is light enough to have high contrast when rendered on a --card background. More contrast than standard --border */
-  --input: hsl(217 32% 17%);
-  --ring: hsl(221 83% 53%);
-  --chart-1: hsl(221 83% 53%);
-  --chart-2: hsl(142 76% 36%);
-  --chart-3: hsl(38 92% 50%);
-  --chart-4: hsl(280 100% 70%);
-  --chart-5: hsl(340 75% 55%);
+  --input: hsl(217 32% 30%);
+  --ring: hsl(221 83% 60%);
+  --chart-1: hsl(221 83% 60%);
+  --chart-2: hsl(142 76% 45%);
+  --chart-3: hsl(38 92% 55%);
+  --chart-4: hsl(280 100% 75%);
+  --chart-5: hsl(340 75% 60%);
 
-  --shadow-2xs: 0px 2px 0px 0px hsl(217 32% 17% / 0.1);
-  --shadow-xs: 0px 2px 0px 0px hsl(217 32% 17% / 0.1);
-  --shadow-sm: 0px 2px 0px 0px hsl(217 32% 17% / 0.1), 0px 1px 2px -1px hsl(217 32% 17% / 0.1);
-  --shadow: 0px 2px 0px 0px hsl(217 32% 17% / 0.1), 0px 1px 2px -1px hsl(217 32% 17% / 0.1);
-  --shadow-md: 0px 2px 0px 0px hsl(217 32% 17% / 0.1), 0px 2px 4px -1px hsl(217 32% 17% / 0.1);
-  --shadow-lg: 0px 2px 0px 0px hsl(217 32% 17% / 0.1), 0px 4px 6px -1px hsl(217 32% 17% / 0.1);
-  --shadow-xl: 0px 2px 0px 0px hsl(217 32% 17% / 0.1), 0px 8px 10px -1px hsl(217 32% 17% / 0.1);
-  --shadow-2xl: 0px 2px 0px 0px hsl(217 32% 17% / 0.1);
+  --shadow-2xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.3);
+  --shadow-xs: 0px 2px 0px 0px hsl(0 0% 0% / 0.3);
+  --shadow-sm: 0px 2px 0px 0px hsl(0 0% 0% / 0.3), 0px 1px 2px -1px hsl(0 0% 0% / 0.3);
+  --shadow: 0px 2px 0px 0px hsl(0 0% 0% / 0.3), 0px 1px 2px -1px hsl(0 0% 0% / 0.3);
+  --shadow-md: 0px 2px 0px 0px hsl(0 0% 0% / 0.3), 0px 2px 4px -1px hsl(0 0% 0% / 0.3);
+  --shadow-lg: 0px 2px 0px 0px hsl(0 0% 0% / 0.3), 0px 4px 6px -1px hsl(0 0% 0% / 0.3);
+  --shadow-xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.3), 0px 8px 10px -1px hsl(0 0% 0% / 0.3);
+  --shadow-2xl: 0px 2px 0px 0px hsl(0 0% 0% / 0.3);
 }
 
 @layer base {
@@ -359,5 +359,83 @@
     font-weight: 500;
     fill: hsl(var(--foreground));
     pointer-events: none;
+  }
+
+  /* Mobile dark mode improvements */
+  @media (max-width: 768px) {
+    .dark {
+      --background: hsl(222 84% 6%);
+      --card: hsl(222 84% 8%);
+      --foreground: hsl(210 40% 98%);
+      --muted-foreground: hsl(215 20% 80%);
+      --border: hsl(217 32% 35%);
+      --card-border: hsl(217 32% 35%);
+    }
+
+    /* Better contrast for mobile */
+    .dark .evolution-cell {
+      border: 2px solid hsl(var(--border));
+    }
+
+    .dark .dynamic-matrix-cell {
+      border: 2px solid hsl(var(--border));
+      background: hsl(var(--card));
+    }
+
+    /* Ensure text is visible on mobile dark mode */
+    .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+      color: hsl(var(--foreground));
+      font-weight: 600;
+    }
+
+    .dark p, .dark span, .dark div {
+      color: hsl(var(--foreground));
+    }
+
+    /* Make buttons more visible on mobile dark */
+    .dark button {
+      border-width: 2px;
+      font-weight: 500;
+    }
+
+    /* Technology cells better visibility */
+    .dark .empty-cell {
+      background: hsl(217 32% 15%);
+      color: hsl(215 20% 85%);
+      border: 2px solid hsl(217 32% 25%);
+    }
+    
+    .dark .early-tech {
+      background: hsl(142 76% 35%);
+      color: hsl(210 40% 98%);
+      border: 2px solid hsl(142 76% 45%);
+    }
+    
+    .dark .modern-tech {
+      background: hsl(221 83% 50%);
+      color: hsl(210 40% 98%);
+      border: 2px solid hsl(221 83% 60%);
+    }
+    
+    .dark .current-tech {
+      background: hsl(38 92% 45%);
+      color: hsl(222 84% 8%);
+      border: 2px solid hsl(38 92% 55%);
+      font-weight: 600;
+    }
+  }
+
+  /* Touch-friendly improvements */
+  @media (pointer: coarse) {
+    .evolution-cell, .dynamic-matrix-cell {
+      min-height: 48px;
+      min-width: 48px;
+      touch-action: manipulation;
+    }
+
+    button {
+      min-height: 44px;
+      touch-action: manipulation;
+    }
   }
 }
