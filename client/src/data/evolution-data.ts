@@ -239,6 +239,7 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
 
 // Функция для интеграции технологий из централизованной базы
 export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
+  // ОБЯЗАТЕЛЬНО сохраняем все 8 оригинальных модулей из evolutionData
   const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
   
   const moduleMapping: Record<string, string> = {
@@ -252,23 +253,24 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
     'infrastructure': 'Инфраструктура'
   };
 
-  // Добавляем недостающие модули если их нет (но оригинальные 8 модулей уже есть в evolutionData)
+  // Проверяем, что все 8 оригинальных модулей присутствуют
+  console.log('Исходные модули в evolutionData:', evolutionData.modules.map(m => m.name));
+  console.log('Модули после копирования:', integratedData.modules.map(m => m.name));
+
+  // Добавляем только модуль Инфраструктура, если его нет
   const existingModuleNames = integratedData.modules.map(m => m.name);
-  Object.values(moduleMapping).forEach(moduleName => {
-    if (!existingModuleNames.includes(moduleName) && moduleName === 'Инфраструктура') {
-      // Добавляем только модуль Инфраструктура, если его нет
-      integratedData.modules.push({
-        name: moduleName,
-        revisions: {
-          rev1: { tech: '', period: 'empty' as const, desc: '' },
-          rev2: { tech: '', period: 'empty' as const, desc: '' },
-          rev3: { tech: '', period: 'empty' as const, desc: '' },
-          rev4: { tech: '', period: 'empty' as const, desc: '' },
-          rev5: { tech: '', period: 'empty' as const, desc: '' }
-        }
-      });
-    }
-  });
+  if (!existingModuleNames.includes('Инфраструктура')) {
+    integratedData.modules.push({
+      name: 'Инфраструктура',
+      revisions: {
+        rev1: { tech: '', period: 'empty' as const, desc: '' },
+        rev2: { tech: '', period: 'empty' as const, desc: '' },
+        rev3: { tech: '', period: 'empty' as const, desc: '' },
+        rev4: { tech: '', period: 'empty' as const, desc: '' },
+        rev5: { tech: '', period: 'empty' as const, desc: '' }
+      }
+    });
+  }
 
   // Интегрируем технологии из базы
   technologyDatabase.forEach(tech => {

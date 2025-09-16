@@ -16,7 +16,7 @@ interface EvolutionMatrixProps {
 
 export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionMatrixProps) {
   const [filter, setFilter] = useState<FilterType>('all');
-  const [dataSource, setDataSource] = useState<DataSourceType>('integrated');
+  const [dataSource, setDataSource] = useState<DataSourceType>('original');
   const [tooltip, setTooltip] = useState<{ content: string; x: number; y: number; visible: boolean }>({
     content: '',
     x: 0,
@@ -49,13 +49,16 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     switch (dataSource) {
       case 'original':
         currentData = evolutionData;
+        console.log('Используем оригинальные данные:', currentData.modules.map(m => m.name));
         break;
       case 'dynamic':
         currentData = createDynamicTechnologyMatrix();
+        console.log('Используем динамические данные:', currentData.modules.length, 'модулей');
         break;
       case 'integrated':
       default:
         currentData = integrateTechnologyDatabase();
+        console.log('Используем интегрированные данные:', currentData.modules.map(m => m.name));
         break;
     }
 
