@@ -19,13 +19,27 @@ export function TechnologyDetails({
   const [selectedTech, setSelectedTech] = useState<TechnologyDescription | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Эффект для автоматического выбора технологии по имени
+  // Эффект для автоматического выбора технологии по имени или ID
   useState(() => {
     if (selectedTechnologyName) {
-      const tech = technologyDatabase.find(t => 
-        t.name.toLowerCase().includes(selectedTechnologyName.toLowerCase()) ||
-        selectedTechnologyName.toLowerCase().includes(t.name.toLowerCase())
-      );
+      // Сначала ищем по точному совпадению ID
+      let tech = technologyDatabase.find(t => t.id === selectedTechnologyName);
+      
+      // Если не найдено по ID, ищем по имени
+      if (!tech) {
+        tech = technologyDatabase.find(t => 
+          t.name.toLowerCase() === selectedTechnologyName.toLowerCase()
+        );
+      }
+      
+      // Если все еще не найдено, ищем по частичному совпадению
+      if (!tech) {
+        tech = technologyDatabase.find(t => 
+          t.name.toLowerCase().includes(selectedTechnologyName.toLowerCase()) ||
+          selectedTechnologyName.toLowerCase().includes(t.name.toLowerCase())
+        );
+      }
+      
       if (tech && tech.id !== selectedTech?.id) {
         setSelectedTech(tech);
         onTechnologySelect?.(tech);
@@ -128,6 +142,24 @@ export function TechnologyDetails({
     return colors[category as keyof typeof colors] || colors.infrastructure;
   };
 
+  const handleRelatedTechnologyClick = (techId: string) => {
+    // Ищем технологию по ID
+    let tech = technologyDatabase.find(t => t.id === techId);
+    
+    // Если не найдено по ID, ищем по имени
+    if (!tech) {
+      tech = technologyDatabase.find(t => t.name.toLowerCase() === techId.toLowerCase());
+    }
+    
+    if (tech) {
+      setSelectedTech(tech);
+      onTechnologySelect?.(tech);
+    } else {
+      // Если технология не найдена, показываем предупреждение
+      alert(`Технология "${techId}" не найдена в базе данных. Необходимо добавить информацию об этой технологии.`);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Список технологий */}
@@ -213,15 +245,66 @@ export function TechnologyDetails({
               {selectedTech.evolution && (
                 <div>
                   <h5 className="font-medium mb-2">Эволюция</h5>
-                  <div className="text-sm space-y-1">
-                    {selectedTech.evolution.predecessors && (
-                      <p>Предшественники: {selectedTech.evolution.predecessors.join(', ')}</p>
+                  <div className="text-sm space-y-2">
+                    {selectedTech.evolution.predecessors && selectedTech.evolution.predecessors.length > 0 && (
+                      <p>
+                        Предшественники: {' '}
+                        {selectedTech.evolution.predecessors.map((predId, index) => {
+                          const predTech = technologyDatabase.find(t => t.id === predId || t.name.toLowerCase() === predId.toLowerCase());
+                          return (
+                            <span key={predId}>
+                              {index > 0 && ', '}
+                              <span 
+                                className={predTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
+                                onClick={() => predTech ? handleRelatedTechnologyClick(predId) : null}
+                                title={predTech ? `Перейти к ${predTech.name}` : `Технология "${predId}" не найдена в базе данных`}
+                              >
+                                {predTech ? predTech.name : predId}
+                              </span>
+                            </span>
+                          );
+                        })}
+                      </p>
                     )}
-                    {selectedTech.evolution.successors && (
-                      <p>Последователи: {selectedTech.evolution.successors.join(', ')}</p>
+                    {selectedTech.evolution.successors && selectedTech.evolution.successors.length > 0 && (
+                      <p>
+                        Последователи: {' '}
+                        {selectedTech.evolution.successors.map((succId, index) => {
+                          const succTech = technologyDatabase.find(t => t.id === succId || t.name.toLowerCase() === succId.toLowerCase());
+                          return (
+                            <span key={succId}>
+                              {index > 0 && ', '}
+                              <span 
+                                className={succTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
+                                onClick={() => succTech ? handleRelatedTechnologyClick(succId) : null}
+                                title={succTech ? `Перейти к ${succTech.name}` : `Технология "${succId}" не найдена в базе данных`}
+                              >
+                                {succTech ? succTech.name : succId}
+                              </span>
+                            </span>
+                          );
+                        })}
+                      </p>
                     )}
-                    {selectedTech.evolution.variants && (
-                      <p>Варианты: {selectedTech.evolution.variants.join(', ')}</p>
+                    {selectedTech.evolution.variants && selectedTech.evolution.variants.length > 0 && (
+                      <p>
+                        Варианты: {' '}
+                        {selectedTech.evolution.variants.map((varId, index) => {
+                          const varTech = technologyDatabase.find(t => t.id === varId || t.name.toLowerCase() === varId.toLowerCase());
+                          return (
+                            <span key={varId}>
+                              {index > 0 && ', '}
+                              <span 
+                                className={varTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
+                                onClick={() => varTech ? handleRelatedTechnologyClick(varId) : null}
+                                title={varTech ? `Перейти к ${varTech.name}` : `Технология "${varId}" не найдена в базе данных`}
+                              >
+                                {varTech ? varTech.name : varId}
+                              </span>
+                            </span>
+                          );
+                        })}
+                      </p>
                     )}
                   </div>
                 </div>

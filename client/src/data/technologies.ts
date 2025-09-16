@@ -47,8 +47,8 @@ export const technologyDatabase: TechnologyDescription[] = [
     },
     evolution: {
       predecessors: ['decision-trees'],
-      successors: ['gradient-boosting', 'xgboost'],
-      variants: ['extra-trees', 'random-subspace']
+      successors: ['transformer'],
+      variants: ['extra-trees']
     },
     applicableModules: ['signalGeneration', 'featureEngineering'],
     advantages: [
@@ -82,9 +82,9 @@ export const technologyDatabase: TechnologyDescription[] = [
       decline: 2022
     },
     evolution: {
-      predecessors: ['rnn', 'vanilla-rnn'],
-      successors: ['transformer', 'attention-mechanisms'],
-      variants: ['gru', 'bi-lstm', 'attention-lstm']
+      predecessors: ['rnn'],
+      successors: ['transformer'],
+      variants: ['gru']
     },
     applicableModules: ['signalGeneration', 'marketAdaptation'],
     advantages: [
@@ -116,8 +116,8 @@ export const technologyDatabase: TechnologyDescription[] = [
       peak: 2021
     },
     evolution: {
-      predecessors: ['exchange-apis'],
-      variants: ['ccxt-pro', 'ccxt-rest']
+      predecessors: [],
+      variants: ['ccxt-pro']
     },
     applicableModules: ['dataCollection', 'execution'],
     advantages: [
@@ -150,9 +150,9 @@ export const technologyDatabase: TechnologyDescription[] = [
       peak: 2023
     },
     evolution: {
-      predecessors: ['attention-mechanisms', 'lstm'],
-      successors: ['gpt-models', 'bert-models'],
-      variants: ['vision-transformer', 'lob-transformer', 'time-series-transformer']
+      predecessors: ['lstm'],
+      successors: [],
+      variants: ['vision-transformer']
     },
     applicableModules: ['signalGeneration', 'marketAdaptation', 'featureEngineering'],
     advantages: [
@@ -186,8 +186,8 @@ export const technologyDatabase: TechnologyDescription[] = [
     },
     evolution: {
       predecessors: ['excel-charts'],
-      successors: ['plotly', 'seaborn'],
-      variants: ['seaborn', 'pandas-plotting']
+      successors: ['plotly'],
+      variants: []
     },
     applicableModules: ['Визуализация и мониторинг'],
     advantages: [
@@ -219,8 +219,9 @@ export const technologyDatabase: TechnologyDescription[] = [
       peak: 2020
     },
     evolution: {
-      predecessors: ['matplotlib', 'd3js'],
-      variants: ['plotly-dash', 'plotly-express']
+      predecessors: ['matplotlib'],
+      successors: ['real-time-dashboards'],
+      variants: []
     },
     applicableModules: ['Визуализация и мониторинг'],
     advantages: [
@@ -253,7 +254,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       decline: 2015
     },
     evolution: {
-      successors: ['matplotlib', 'r-ggplot', 'tableau']
+      successors: ['matplotlib']
     },
     applicableModules: ['Визуализация и мониторинг'],
     advantages: [
@@ -285,7 +286,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       peak: 2023
     },
     evolution: {
-      predecessors: ['plotly', 'd3js', 'grafana']
+      predecessors: ['plotly']
     },
     applicableModules: ['Визуализация и мониторинг'],
     advantages: [
@@ -304,6 +305,202 @@ export const technologyDatabase: TechnologyDescription[] = [
       'Алгоритмическая торговля'
     ],
     sources: ['Trading Systems Documentation']
+  },
+
+  // Добавляем недостающие технологии
+  {
+    id: 'decision-trees',
+    name: 'Decision Trees',
+    fullName: 'Decision Tree Algorithm',
+    description: 'Алгоритм машинного обучения, основанный на древовидной структуре решений',
+    category: 'ml',
+    periods: {
+      start: 1990,
+      peak: 2005,
+      decline: 2010
+    },
+    evolution: {
+      successors: ['random-forest']
+    },
+    applicableModules: ['Генерация сигналов'],
+    advantages: [
+      'Простота интерпретации',
+      'Не требует нормализации данных',
+      'Работает с категориальными и численными данными'
+    ],
+    disadvantages: [
+      'Склонность к переобучению',
+      'Неустойчивость к изменениям в данных',
+      'Проблемы с линейными зависимостями'
+    ],
+    useCases: [
+      'Классификация рыночных условий',
+      'Создание торговых правил',
+      'Анализ важности признаков'
+    ],
+    sources: ['Quinlan (1986)', 'Machine Learning Literature']
+  },
+
+  {
+    id: 'rnn',
+    name: 'RNN',
+    fullName: 'Recurrent Neural Networks',
+    description: 'Класс нейронных сетей для работы с последовательными данными',
+    category: 'ml',
+    periods: {
+      start: 1980,
+      peak: 2010,
+      decline: 2015
+    },
+    evolution: {
+      successors: ['lstm']
+    },
+    applicableModules: ['Генерация сигналов'],
+    advantages: [
+      'Работа с последовательностями',
+      'Память о предыдущих состояниях',
+      'Гибкость архитектуры'
+    ],
+    disadvantages: [
+      'Проблема исчезающего градиента',
+      'Медленное обучение',
+      'Сложность с длинными последовательностями'
+    ],
+    useCases: [
+      'Анализ временных рядов',
+      'Предсказание последовательностей',
+      'Обработка текста'
+    ],
+    sources: ['Rumelhart et al. (1986)']
+  },
+
+  {
+    id: 'gru',
+    name: 'GRU',
+    fullName: 'Gated Recurrent Unit',
+    description: 'Упрощенная версия LSTM с меньшим количеством параметров',
+    category: 'ml',
+    periods: {
+      start: 2014,
+      peak: 2019
+    },
+    evolution: {
+      predecessors: ['lstm']
+    },
+    applicableModules: ['Генерация сигналов'],
+    advantages: [
+      'Меньше параметров чем LSTM',
+      'Быстрее обучается',
+      'Хорошо работает на коротких последовательностях'
+    ],
+    disadvantages: [
+      'Менее выразительный чем LSTM',
+      'Требует больших данных',
+      'Сложность настройки'
+    ],
+    useCases: [
+      'Анализ коротких временных рядов',
+      'Быстрое прототипирование',
+      'Ресурсно-ограниченные среды'
+    ],
+    sources: ['Cho et al. (2014)']
+  },
+
+  {
+    id: 'vision-transformer',
+    name: 'Vision Transformer',
+    fullName: 'Vision Transformer (ViT)',
+    description: 'Адаптация архитектуры Transformer для обработки изображений',
+    category: 'ml',
+    periods: {
+      start: 2020,
+      peak: 2024
+    },
+    evolution: {
+      predecessors: ['transformer']
+    },
+    applicableModules: ['Обработка данных'],
+    advantages: [
+      'Превосходная производительность на больших данных',
+      'Масштабируемость',
+      'Применимость к различным задачам'
+    ],
+    disadvantages: [
+      'Требует огромные объемы данных',
+      'Высокие вычислительные затраты',
+      'Сложность интерпретации'
+    ],
+    useCases: [
+      'Анализ графиков и чартов',
+      'Распознавание паттернов на изображениях',
+      'Обработка визуальных данных о рынке'
+    ],
+    sources: ['Dosovitskiy et al. (2020)']
+  },
+
+  {
+    id: 'ccxt-pro',
+    name: 'CCXT Pro',
+    fullName: 'CCXT Professional',
+    description: 'Профессиональная версия CCXT с поддержкой WebSocket и расширенными возможностями',
+    category: 'data',
+    periods: {
+      start: 2019,
+      peak: 2023
+    },
+    evolution: {
+      predecessors: ['ccxt']
+    },
+    applicableModules: ['Сбор данных', 'Исполнение сделок'],
+    advantages: [
+      'WebSocket соединения',
+      'Низкая задержка',
+      'Расширенная функциональность',
+      'Профессиональная поддержка'
+    ],
+    disadvantages: [
+      'Платная лицензия',
+      'Более сложная настройка',
+      'Зависимость от поставщика'
+    ],
+    useCases: [
+      'Высокочастотная торговля',
+      'Real-time мониторинг',
+      'Профессиональные торговые системы'
+    ],
+    sources: ['CCXT Pro Documentation']
+  },
+
+  {
+    id: 'extra-trees',
+    name: 'Extra Trees',
+    fullName: 'Extremely Randomized Trees',
+    description: 'Вариант Random Forest с дополнительной рандомизацией при выборе разбиений',
+    category: 'ml',
+    periods: {
+      start: 2006,
+      peak: 2016
+    },
+    evolution: {
+      predecessors: ['random-forest']
+    },
+    applicableModules: ['Генерация сигналов'],
+    advantages: [
+      'Быстрее Random Forest',
+      'Меньше переобучения',
+      'Хорошая производительность'
+    ],
+    disadvantages: [
+      'Менее точный чем Random Forest',
+      'Сложность интерпретации',
+      'Требует настройки параметров'
+    ],
+    useCases: [
+      'Быстрая классификация',
+      'Большие датасеты',
+      'Ансамблевые методы'
+    ],
+    sources: ['Geurts et al. (2006)']
   }
 ];
 

@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -261,9 +261,9 @@ export function DynamicEvolutionMatrix({
             </thead>
             <tbody>
               {Object.entries(groupedRows).map(([module, rows]) => (
-                <>
+                <React.Fragment key={`module-${module}`}>
                   {/* Заголовок модуля */}
-                  <tr key={`module-${module}`} className="border-b-2 border-border">
+                  <tr className="border-b-2 border-border">
                     <td 
                       className={`sticky left-0 bg-primary text-primary-foreground p-3 font-bold cursor-pointer hover:bg-primary/80 transition-colors ${selectedModule === module ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
                       colSpan={6}
@@ -320,7 +320,7 @@ export function DynamicEvolutionMatrix({
                       })}
                     </tr>
                   ))}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
