@@ -364,64 +364,111 @@
   /* Mobile dark mode improvements */
   @media (max-width: 768px) {
     .dark {
-      --background: hsl(222 84% 6%);
-      --card: hsl(222 84% 8%);
-      --foreground: hsl(210 40% 98%);
-      --muted-foreground: hsl(215 20% 80%);
-      --border: hsl(217 32% 35%);
-      --card-border: hsl(217 32% 35%);
+      --background: hsl(220 85% 3%);
+      --card: hsl(220 85% 5%);
+      --foreground: hsl(0 0% 100%);
+      --muted-foreground: hsl(215 25% 90%);
+      --border: hsl(217 35% 50%);
+      --card-border: hsl(217 35% 50%);
+      --primary: hsl(221 83% 70%);
     }
 
-    /* Better contrast for mobile */
-    .dark .evolution-cell {
-      border: 2px solid hsl(var(--border));
+    /* Force high contrast text everywhere */
+    .dark * {
+      color: hsl(0 0% 98%) !important;
     }
 
+    .dark .text-muted-foreground,
+    .dark [class*="text-muted"] {
+      color: hsl(215 25% 85%) !important;
+    }
+
+    /* Better contrast for mobile cells */
+    .dark .evolution-cell,
     .dark .dynamic-matrix-cell {
-      border: 2px solid hsl(var(--border));
-      background: hsl(var(--card));
+      border: 3px solid hsl(217 35% 60%) !important;
+      background: hsl(220 85% 8%) !important;
+      color: hsl(0 0% 100%) !important;
     }
 
-    /* Ensure text is visible on mobile dark mode */
+    /* Table headers extra visibility */
+    .dark th {
+      background: hsl(220 85% 12%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 3px solid hsl(217 35% 60%) !important;
+      font-weight: 700 !important;
+    }
+
+    /* Table cells */
+    .dark td {
+      background: hsl(220 85% 6%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 2px solid hsl(217 35% 50%) !important;
+    }
+
+    /* Ensure all text is visible */
     .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-      color: hsl(var(--foreground));
-      font-weight: 600;
+      color: hsl(0 0% 100%) !important;
+      font-weight: 700 !important;
     }
 
-    .dark p, .dark span, .dark div {
-      color: hsl(var(--foreground));
+    .dark p, .dark span, .dark div, .dark a {
+      color: hsl(0 0% 95%) !important;
     }
 
-    /* Make buttons more visible on mobile dark */
+    /* Make buttons super visible */
     .dark button {
-      border-width: 2px;
-      font-weight: 500;
+      background: hsl(221 83% 25%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 3px solid hsl(221 83% 50%) !important;
+      font-weight: 600 !important;
     }
 
-    /* Technology cells better visibility */
+    .dark button:hover {
+      background: hsl(221 83% 35%) !important;
+    }
+
+    /* Technology cells with maximum contrast */
     .dark .empty-cell {
-      background: hsl(217 32% 15%);
-      color: hsl(215 20% 85%);
-      border: 2px solid hsl(217 32% 25%);
+      background: hsl(0 0% 15%) !important;
+      color: hsl(0 0% 95%) !important;
+      border: 3px solid hsl(0 0% 40%) !important;
+      font-weight: 600 !important;
     }
     
     .dark .early-tech {
-      background: hsl(142 76% 35%);
-      color: hsl(210 40% 98%);
-      border: 2px solid hsl(142 76% 45%);
+      background: hsl(142 76% 25%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 3px solid hsl(142 76% 50%) !important;
+      font-weight: 700 !important;
     }
     
     .dark .modern-tech {
-      background: hsl(221 83% 50%);
-      color: hsl(210 40% 98%);
-      border: 2px solid hsl(221 83% 60%);
+      background: hsl(221 83% 35%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 3px solid hsl(221 83% 65%) !important;
+      font-weight: 700 !important;
     }
     
     .dark .current-tech {
-      background: hsl(38 92% 45%);
-      color: hsl(222 84% 8%);
-      border: 2px solid hsl(38 92% 55%);
-      font-weight: 600;
+      background: hsl(38 92% 35%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 3px solid hsl(38 92% 60%) !important;
+      font-weight: 800 !important;
+    }
+
+    /* Cards extra contrast */
+    .dark .card {
+      background: hsl(220 85% 8%) !important;
+      border: 3px solid hsl(217 35% 50%) !important;
+    }
+
+    /* Badge contrast */
+    .dark .badge {
+      background: hsl(221 83% 30%) !important;
+      color: hsl(0 0% 100%) !important;
+      border: 2px solid hsl(221 83% 50%) !important;
+      font-weight: 600 !important;
     }
   }
 
@@ -436,6 +483,33 @@
     button {
       min-height: 44px;
       touch-action: manipulation;
+    }
+  }
+
+  /* Additional mobile dark mode fixes */
+  @media (max-width: 768px) {
+    .dark table {
+      background: hsl(220 85% 4%) !important;
+    }
+
+    .dark tbody tr:hover {
+      background: hsl(220 85% 10%) !important;
+    }
+
+    /* Sticky headers extra visibility */
+    .dark .sticky {
+      background: hsl(220 85% 10%) !important;
+      color: hsl(0 0% 100%) !important;
+      font-weight: 700 !important;
+      border: 3px solid hsl(217 35% 60%) !important;
+    }
+
+    /* Module headers super visibility */
+    .dark tr td[colspan] {
+      background: hsl(221 83% 20%) !important;
+      color: hsl(0 0% 100%) !important;
+      font-weight: 800 !important;
+      border: 4px solid hsl(221 83% 50%) !important;
     }
   }
 }
