@@ -20,8 +20,6 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     y: 0,
     visible: false
   });
-  const [useIntegratedData, setUseIntegratedData] = useState(false);
-  const [useTechnologyDatabase, setUseTechnologyDatabase] = useState(false);
   const [useDynamicMatrix, setUseDynamicMatrix] = useState(false);
 
   const showTooltip = (event: React.MouseEvent, content: string) => {
@@ -43,15 +41,14 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   };
 
   const getVisibleModules = () => {
-    // Выбираем источник данных
-    let currentData = evolutionData;
+    // Всегда используем данные из технологической базы, но отображаем по-разному
+    let currentData;
     
     if (useDynamicMatrix) {
       currentData = createDynamicTechnologyMatrix();
-    } else if (useTechnologyDatabase) {
+    } else {
+      // Используем интегрированные данные из технологической базы как основу
       currentData = integrateTechnologyDatabase();
-    } else if (useIntegratedData) {
-      currentData = integrateExampleTechnologies();
     }
 
     if (filter === 'hideUnchanged') {
@@ -120,33 +117,7 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
             >
               Скрыть модули без изменений
             </Button>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={useIntegratedData}
-                onChange={(e) => {
-                  setUseIntegratedData(e.target.checked);
-                  if (e.target.checked) setUseTechnologyDatabase(false);
-                }}
-                className="rounded border-gray-300"
-              />
-              Показать технологии из кейсов
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={useTechnologyDatabase}
-                onChange={(e) => {
-                  setUseTechnologyDatabase(e.target.checked);
-                  if (e.target.checked) {
-                    setUseIntegratedData(false);
-                    setUseDynamicMatrix(false);
-                  }
-                }}
-                className="rounded border-gray-300"
-              />
-              Показать из базы технологий
-            </label>
+            
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"

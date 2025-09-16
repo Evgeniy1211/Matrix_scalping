@@ -237,7 +237,7 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
   return { modules: dynamicModules };
 }
 
-// Функция для интеграции технологий из централизованной базы (старая версия)
+// Функция для интеграции технологий из централизованной базы
 export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
   
@@ -248,15 +248,31 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
     'risk': 'Риск-менеджмент',
     'execution': 'Исполнение сделок',
     'adaptation': 'Адаптация к рынку',
-    'visualization': 'Визуализация и мониторинг'
+    'visualization': 'Визуализация и мониторинг',
+    'infrastructure': 'Инфраструктура'
   };
+
+  // Добавляем недостающие модули если их нет
+  const existingModuleNames = integratedData.modules.map(m => m.name);
+  Object.values(moduleMapping).forEach(moduleName => {
+    if (!existingModuleNames.includes(moduleName)) {
+      integratedData.modules.push({
+        name: moduleName,
+        revisions: {
+          rev1: { tech: '', period: 'empty', desc: 'Модуль добавлен из базы технологий' },
+          rev2: { tech: '', period: 'empty', desc: '' },
+          rev3: { tech: '', period: 'empty', desc: '' },
+          rev4: { tech: '', period: 'empty', desc: '' },
+          rev5: { tech: '', period: 'empty', desc: '' }
+        }
+      });
+    }
+  });
 
   // Интегрируем технологии из базы
   technologyDatabase.forEach(tech => {
     const targetRevision = getRevisionForTechnology(tech.id);
-    const matrixModuleName = moduleMapping[tech.category];
-    
-    if (!matrixModuleName) return;
+    const matrixModuleName = moduleMapping[tech.category] || 'Инфраструктура';
     
     const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
     if (!matrixModule) return;
@@ -268,12 +284,49 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
       const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
       matrixModule.revisions[targetRevision].tech = existingTech + separator + tech.name;
       
-      // Обновляем описание с указанием источника из базы технологий
-      const techInfo = ` (описание: ${tech.description.substring(0, 50)}...)`;
+      // Обновляем описание
       if (!matrixModule.revisions[targetRevision].desc.includes(tech.name)) {
-        matrixModule.revisions[targetRevision].desc += techInfo;
+        matrixModule.revisions[targetRevision].desc = tech.description.substring(0, 100) + '...';
       }
     }
+  });
+
+  // Также интегрируем технологии из кейсов
+  tradingMachineCases.forEach(case_ => {
+    const targetRevision = getRevisionFromPeriod(case_.period);
+    
+    Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
+      const caseModuleMapping: Record<string, string> = {
+        'dataCollection': 'Сбор данных',
+        'dataProcessing': 'Обработка данных', 
+        'featureEngineering': 'Feature Engineering',
+        'signalGeneration': 'Генерация сигналов',
+        'riskManagement': 'Риск-менеджмент',
+        'execution': 'Исполнение сделок',
+        'marketAdaptation': 'Адаптация к рынку',
+        'visualization': 'Визуализация и мониторинг'
+      };
+      
+      const matrixModuleName = caseModuleMapping[moduleKey];
+      if (!matrixModuleName) return;
+
+      const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+      if (!matrixModule) return;
+
+      const existingTech = matrixModule.revisions[targetRevision].tech;
+      const newTechs = technologies.filter(tech => 
+        !existingTech.toLowerCase().includes(tech.toLowerCase())
+      );
+      
+      if (newTechs.length > 0) {
+        const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
+        matrixModule.revisions[targetRevision].tech = existingTech + separator + newTechs.join(', ');
+        
+        if (!matrixModule.revisions[targetRevision].desc.includes(case_.name)) {
+          matrixModule.revisions[targetRevision].desc += ` (из кейса "${case_.name}")`;
+        }
+      }
+    });
   });
 
   return integratedData;
