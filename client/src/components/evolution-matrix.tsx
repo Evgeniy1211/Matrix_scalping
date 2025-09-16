@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { getMatrixTechnologyCoverage } from "@/data/trading-machines";
 import type { RevisionData } from "@/data/evolution-data";
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
+type DataSourceType = 'original' | 'integrated' | 'dynamic';
 
 interface EvolutionMatrixProps {
   onModuleClick?: (moduleName: string) => void;
@@ -14,13 +16,13 @@ interface EvolutionMatrixProps {
 
 export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionMatrixProps) {
   const [filter, setFilter] = useState<FilterType>('all');
+  const [dataSource, setDataSource] = useState<DataSourceType>('integrated');
   const [tooltip, setTooltip] = useState<{ content: string; x: number; y: number; visible: boolean }>({
     content: '',
     x: 0,
     y: 0,
     visible: false
   });
-  const [useDynamicMatrix, setUseDynamicMatrix] = useState(false);
 
   const showTooltip = (event: React.MouseEvent, content: string) => {
     setTooltip({
@@ -41,14 +43,20 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   };
 
   const getVisibleModules = () => {
-    // Всегда используем данные из технологической базы, но отображаем по-разному
     let currentData;
     
-    if (useDynamicMatrix) {
-      currentData = createDynamicTechnologyMatrix();
-    } else {
-      // Используем интегрированные данные из технологической базы как основу
-      currentData = integrateTechnologyDatabase();
+    // Выбираем источник данных
+    switch (dataSource) {
+      case 'original':
+        currentData = evolutionData;
+        break;
+      case 'dynamic':
+        currentData = createDynamicTechnologyMatrix();
+        break;
+      case 'integrated':
+      default:
+        currentData = integrateTechnologyDatabase();
+        break;
     }
 
     if (filter === 'hideUnchanged') {
@@ -92,7 +100,9 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">Матрица эволюции</CardTitle>
-          <div className="flex flex-wrap gap-3">
+          
+          {/* Фильтры по ревизиям */}
+          <div className="flex flex-wrap gap-3 mb-3">
             <Button
               onClick={() => setFilter('rev5')}
               variant={filter === 'rev5' ? 'default' : 'secondary'}
@@ -117,22 +127,35 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
             >
               Скрыть модули без изменений
             </Button>
-            
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={useDynamicMatrix}
-                onChange={(e) => {
-                  setUseDynamicMatrix(e.target.checked);
-                  if (e.target.checked) {
-                    setUseIntegratedData(false);
-                    setUseTechnologyDatabase(false);
-                  }
-                }}
-                className="rounded border-gray-300"
-              />
-              Динамическая матрица (каждая технология = строка)
-            </label>
+          </div>
+
+          {/* Переключатели источников данных */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              onClick={() => setDataSource('original')}
+              variant={dataSource === 'original' ? 'default' : 'outline'}
+              size="sm"
+            >
+              Оригинальная матрица
+            </Button>
+            <Button
+              onClick={() => setDataSource('integrated')}
+              variant={dataSource === 'integrated' ? 'default' : 'outline'}
+              size="sm"
+            >
+              С технологиями из базы
+            </Button>
+            <Button
+              onClick={() => setDataSource('dynamic')}
+              variant={dataSource === 'dynamic' ? 'default' : 'outline'}
+              size="sm"
+            >
+              Динамическая (каждая технология = строка)
+            </Button>
+          </div>
+
+          <div className="text-sm text-muted-foreground">
+            Найдено модулей: {visibleModules.length}
           </div>
         </CardHeader>
         <CardContent>

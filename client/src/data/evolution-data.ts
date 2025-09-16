@@ -259,11 +259,11 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
       integratedData.modules.push({
         name: moduleName,
         revisions: {
-          rev1: { tech: '', period: 'empty', desc: 'Модуль добавлен из базы технологий' },
-          rev2: { tech: '', period: 'empty', desc: '' },
-          rev3: { tech: '', period: 'empty', desc: '' },
-          rev4: { tech: '', period: 'empty', desc: '' },
-          rev5: { tech: '', period: 'empty', desc: '' }
+          rev1: { tech: '', period: 'empty' as const, desc: '' },
+          rev2: { tech: '', period: 'empty' as const, desc: '' },
+          rev3: { tech: '', period: 'empty' as const, desc: '' },
+          rev4: { tech: '', period: 'empty' as const, desc: '' },
+          rev5: { tech: '', period: 'empty' as const, desc: '' }
         }
       });
     }
