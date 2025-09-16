@@ -1,8 +1,8 @@
-
 import { EvolutionMatrix } from "@/components/evolution-matrix";
 import { TechnologyTree } from "@/components/technology-tree";
 import { RevisionExplanations } from "@/components/revision-explanations";
 import { TradingMachineComparator } from "@/components/trading-machine-comparator";
+import { TechnologyDetails } from "@/components/technology-details";
 
 export default function EvolutionMatrixPage() {
   return (
@@ -32,7 +32,12 @@ export default function EvolutionMatrixPage() {
           <TechnologyTree />
         </div>
 
-        {/* Evolution Explanations */}
+        {/* Детали технологий */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold mb-6 text-foreground">База знаний технологий</h2>
+          <TechnologyDetails />
+        </div>
+
         <RevisionExplanations />
 
         {/* Trading Machine Cases Comparator */}

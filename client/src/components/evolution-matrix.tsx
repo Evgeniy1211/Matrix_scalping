@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { evolutionData, integrateExampleTechnologies } from "@/data/evolution-data";
+import { evolutionData, integrateExampleTechnologies, integrateTechnologyDatabase } from "@/data/evolution-data";
 import { getMatrixTechnologyCoverage } from "@/data/trading-machines";
 import type { RevisionData } from "@/data/evolution-data";
 
@@ -16,6 +16,7 @@ export function EvolutionMatrix() {
     visible: false
   });
   const [useIntegratedData, setUseIntegratedData] = useState(false);
+  const [useTechnologyDatabase, setUseTechnologyDatabase] = useState(false);
 
   const showTooltip = (event: React.MouseEvent, content: string) => {
     setTooltip({
@@ -37,7 +38,13 @@ export function EvolutionMatrix() {
 
   const getVisibleModules = () => {
     // Выбираем источник данных
-    const currentData = useIntegratedData ? integrateExampleTechnologies() : evolutionData;
+    let currentData = evolutionData;
+    
+    if (useTechnologyDatabase) {
+      currentData = integrateTechnologyDatabase();
+    } else if (useIntegratedData) {
+      currentData = integrateExampleTechnologies();
+    }
 
     if (filter === 'hideUnchanged') {
       return currentData.modules.filter(module => {
@@ -109,10 +116,25 @@ export function EvolutionMatrix() {
               <input
                 type="checkbox"
                 checked={useIntegratedData}
-                onChange={(e) => setUseIntegratedData(e.target.checked)}
+                onChange={(e) => {
+                  setUseIntegratedData(e.target.checked);
+                  if (e.target.checked) setUseTechnologyDatabase(false);
+                }}
                 className="rounded border-gray-300"
               />
               Показать технологии из кейсов
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={useTechnologyDatabase}
+                onChange={(e) => {
+                  setUseTechnologyDatabase(e.target.checked);
+                  if (e.target.checked) setUseIntegratedData(false);
+                }}
+                className="rounded border-gray-300"
+              />
+              Показать из базы технологий
             </label>
           </div>
         </CardHeader>

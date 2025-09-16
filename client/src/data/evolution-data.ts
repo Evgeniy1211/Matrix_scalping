@@ -106,10 +106,53 @@ export const evolutionData: { modules: ModuleData[] } = {
   ]
 };
 
-// Импорт для интеграции с кейсами
+// Импорт для интеграции с кейсами и технологиями
 import { tradingMachineCases } from './trading-machines';
+import { technologyDatabase, getTechnologiesByModule, getRevisionForTechnology, type TechnologyDescription } from './technologies';
 
 // Функция для интеграции технологий из кейсов в основную матрицу
+// Функция для интеграции технологий из централизованной базы
+export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
+  const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
+  
+  const moduleMapping: Record<string, string> = {
+    'data': 'Сбор данных',
+    'processing': 'Обработка данных', 
+    'ml': 'Генерация сигналов',
+    'risk': 'Риск-менеджмент',
+    'execution': 'Исполнение сделок',
+    'adaptation': 'Адаптация к рынку',
+    'visualization': 'Визуализация и мониторинг'
+  };
+
+  // Интегрируем технологии из базы
+  technologyDatabase.forEach(tech => {
+    const targetRevision = getRevisionForTechnology(tech.id);
+    const matrixModuleName = moduleMapping[tech.category];
+    
+    if (!matrixModuleName) return;
+    
+    const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+    if (!matrixModule) return;
+
+    const existingTech = matrixModule.revisions[targetRevision].tech;
+    
+    // Проверяем, что технология еще не добавлена
+    if (!existingTech.toLowerCase().includes(tech.name.toLowerCase())) {
+      const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
+      matrixModule.revisions[targetRevision].tech = existingTech + separator + tech.name;
+      
+      // Обновляем описание с указанием источника из базы технологий
+      const techInfo = ` (описание: ${tech.description.substring(0, 50)}...)`;
+      if (!matrixModule.revisions[targetRevision].desc.includes(tech.name)) {
+        matrixModule.revisions[targetRevision].desc += techInfo;
+      }
+    }
+  });
+
+  return integratedData;
+}
+
 export function integrateExampleTechnologies(): { modules: ModuleData[] } {
   const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
   
