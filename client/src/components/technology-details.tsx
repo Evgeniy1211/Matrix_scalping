@@ -46,16 +46,47 @@ export function TechnologyDetails({
       'Визуализация и мониторинг': ['visualization']
     };
     
-    // Ищем точное совпадение или частичное совпадение по началу строки
+    // Ищем точное совпадение
     const exactMatch = moduleMapping[moduleName];
     if (exactMatch) return exactMatch;
     
-    // Поиск по частичному совпадению (для случаев типа "Сбор данных: CCXT")
+    // Поиск по частичному совпадению для более сложных имен модулей
     const partialMatch = Object.keys(moduleMapping).find(key => 
-      moduleName.startsWith(key) || moduleName.includes(key)
+      moduleName.includes(key) || key.includes(moduleName)
     );
     
-    return partialMatch ? moduleMapping[partialMatch] : [];
+    if (partialMatch) return moduleMapping[partialMatch];
+    
+    // Дополнительные проверки для специфических случаев
+    if (moduleName.toLowerCase().includes('визуализация') || 
+        moduleName.toLowerCase().includes('мониторинг')) {
+      return ['visualization'];
+    }
+    if (moduleName.toLowerCase().includes('данные') || 
+        moduleName.toLowerCase().includes('сбор')) {
+      return ['data'];
+    }
+    if (moduleName.toLowerCase().includes('обработка')) {
+      return ['processing'];
+    }
+    if (moduleName.toLowerCase().includes('сигнал') || 
+        moduleName.toLowerCase().includes('машинное') ||
+        moduleName.toLowerCase().includes('обучение')) {
+      return ['ml'];
+    }
+    if (moduleName.toLowerCase().includes('риск')) {
+      return ['risk'];
+    }
+    if (moduleName.toLowerCase().includes('исполнение') || 
+        moduleName.toLowerCase().includes('сделк')) {
+      return ['execution'];
+    }
+    if (moduleName.toLowerCase().includes('адаптация') || 
+        moduleName.toLowerCase().includes('рынок')) {
+      return ['adaptation'];
+    }
+    
+    return [];
   };
 
   let filteredTechs = technologyDatabase;
@@ -63,10 +94,14 @@ export function TechnologyDetails({
   // Фильтрация по модулю
   if (moduleFilter) {
     const categories = getModuleCategory(moduleFilter);
+    console.log(`Фильтр модуля: "${moduleFilter}" → категории:`, categories);
+    console.log('Доступные технологии:', technologyDatabase.map(t => `${t.name} (${t.category})`));
+    
     if (categories.length > 0) {
       filteredTechs = filteredTechs.filter(tech => 
         categories.includes(tech.category)
       );
+      console.log('Отфильтрованные технологии:', filteredTechs.map(t => t.name));
     }
   }
 

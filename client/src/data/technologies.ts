@@ -171,6 +171,139 @@ export const technologyDatabase: TechnologyDescription[] = [
       'Предсказание временных рядов'
     ],
     sources: ['Vaswani et al. (2017)', 'LOB-Transformer (2022-2023)']
+  },
+
+  {
+    id: 'matplotlib',
+    name: 'Matplotlib',
+    fullName: 'Python plotting library',
+    description: 'Основная библиотека для создания статических графиков в Python',
+    category: 'visualization',
+    periods: {
+      start: 2003,
+      peak: 2015,
+      decline: 2020
+    },
+    evolution: {
+      predecessors: ['excel-charts'],
+      successors: ['plotly', 'seaborn'],
+      variants: ['seaborn', 'pandas-plotting']
+    },
+    applicableModules: ['Визуализация и мониторинг'],
+    advantages: [
+      'Полный контроль над графиками',
+      'Широкие возможности настройки',
+      'Интеграция с NumPy и Pandas'
+    ],
+    disadvantages: [
+      'Сложный синтаксис',
+      'Не интерактивные графики',
+      'Медленная отрисовка больших данных'
+    ],
+    useCases: [
+      'Статистические графики',
+      'Научные публикации',
+      'Анализ временных рядов'
+    ],
+    sources: ['Matplotlib Documentation']
+  },
+
+  {
+    id: 'plotly',
+    name: 'Plotly',
+    fullName: 'Interactive plotting library',
+    description: 'Библиотека для создания интерактивных веб-графиков',
+    category: 'visualization',
+    periods: {
+      start: 2012,
+      peak: 2020
+    },
+    evolution: {
+      predecessors: ['matplotlib', 'd3js'],
+      variants: ['plotly-dash', 'plotly-express']
+    },
+    applicableModules: ['Визуализация и мониторинг'],
+    advantages: [
+      'Интерактивность из коробки',
+      'Веб-готовые графики',
+      'Поддержка 3D визуализации'
+    ],
+    disadvantages: [
+      'Больший размер файлов',
+      'Зависимость от JavaScript',
+      'Ограничения в настройке стилей'
+    ],
+    useCases: [
+      'Интерактивные дашборды',
+      'Веб-приложения',
+      'Презентации данных'
+    ],
+    sources: ['Plotly Documentation']
+  },
+
+  {
+    id: 'excel-charts',
+    name: 'Excel Charts',
+    fullName: 'Microsoft Excel Charting',
+    description: 'Стандартные инструменты создания графиков в Microsoft Excel',
+    category: 'visualization',
+    periods: {
+      start: 1990,
+      peak: 2010,
+      decline: 2015
+    },
+    evolution: {
+      successors: ['matplotlib', 'r-ggplot', 'tableau']
+    },
+    applicableModules: ['Визуализация и мониторинг'],
+    advantages: [
+      'Простота использования',
+      'Доступность для всех',
+      'Интеграция с таблицами'
+    ],
+    disadvantages: [
+      'Ограниченные возможности',
+      'Не программируемые',
+      'Плохая масштабируемость'
+    ],
+    useCases: [
+      'Простые отчеты',
+      'Бизнес-презентации',
+      'Быстрый анализ данных'
+    ],
+    sources: ['Microsoft Excel Documentation']
+  },
+
+  {
+    id: 'real-time-dashboards',
+    name: 'Real-time Dashboards',
+    fullName: 'Real-time Data Dashboards',
+    description: 'Системы мониторинга данных в реальном времени',
+    category: 'visualization',
+    periods: {
+      start: 2018,
+      peak: 2023
+    },
+    evolution: {
+      predecessors: ['plotly', 'd3js', 'grafana']
+    },
+    applicableModules: ['Визуализация и мониторинг'],
+    advantages: [
+      'Мониторинг в реальном времени',
+      'Автоматическое обновление',
+      'Алерты и уведомления'
+    ],
+    disadvantages: [
+      'Высокое потребление ресурсов',
+      'Сложность настройки',
+      'Требует постоянного подключения'
+    ],
+    useCases: [
+      'Торговые терминалы',
+      'Мониторинг позиций',
+      'Алгоритмическая торговля'
+    ],
+    sources: ['Trading Systems Documentation']
   }
 ];
 
