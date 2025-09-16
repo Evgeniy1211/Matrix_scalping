@@ -106,6 +106,16 @@ export const evolutionData: { modules: ModuleData[] } = {
   ]
 };
 
+// Проверяем, что у нас точно 8 модулей
+if (evolutionData.modules.length !== 8) {
+  console.error('ОШИБКА: Ожидается 8 модулей, найдено:', evolutionData.modules.length);
+  console.error('Отсутствующие модули или дубликаты!');
+}
+
+// Отладочный вывод для проверки количества модулей
+console.log('evolutionData содержит модулей:', evolutionData.modules.length);
+console.log('Список модулей:', evolutionData.modules.map(m => m.name));
+
 // Импорт для интеграции с кейсами и технологиями
 import { tradingMachineCases } from './trading-machines';
 import { technologyDatabase, getTechnologiesByModule, getRevisionForTechnology, type TechnologyDescription } from './technologies';

@@ -49,16 +49,18 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     switch (dataSource) {
       case 'original':
         currentData = evolutionData;
-        console.log('Используем оригинальные данные:', currentData.modules.map(m => m.name));
+        console.log('ORIGINAL - Модулей найдено:', currentData.modules.length);
+        console.log('ORIGINAL - Названия:', currentData.modules.map(m => m.name));
         break;
       case 'dynamic':
         currentData = createDynamicTechnologyMatrix();
-        console.log('Используем динамические данные:', currentData.modules.length, 'модулей');
+        console.log('DYNAMIC - Модулей найдено:', currentData.modules.length);
         break;
       case 'integrated':
       default:
         currentData = integrateTechnologyDatabase();
-        console.log('Используем интегрированные данные:', currentData.modules.map(m => m.name));
+        console.log('INTEGRATED - Модулей найдено:', currentData.modules.length);
+        console.log('INTEGRATED - Названия:', currentData.modules.map(m => m.name));
         break;
     }
 
@@ -94,6 +96,10 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
 
   const visibleRevisions = getVisibleRevisions();
   const visibleModules = getVisibleModules();
+
+  // Отладочный вывод
+  console.log('EvolutionMatrix - Видимые модули:', visibleModules.length);
+  console.log('EvolutionMatrix - Названия модулей:', visibleModules.map(m => m.name));
 
   // Получаем покрытие технологий из кейсов
   const technologyCoverage = getMatrixTechnologyCoverage();
