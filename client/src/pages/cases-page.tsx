@@ -1,4 +1,5 @@
 
+import { Navigation } from "@/components/navigation";
 import { TradingMachineComparator } from "@/components/trading-machine-comparator";
 
 export default function CasesPage() {
@@ -17,6 +18,9 @@ export default function CasesPage() {
           </div>
         </div>
       </header>
+
+      {/* Navigation */}
+      <Navigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

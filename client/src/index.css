@@ -305,6 +305,36 @@
     color: hsl(var(--secondary-foreground));
   }
   
+  /* Dynamic matrix styles */
+  .dynamic-matrix-cell {
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  
+  .dynamic-matrix-cell:hover {
+    transform: scale(1.02);
+    z-index: 10;
+  }
+  
+  .evolution-arrow {
+    background: linear-gradient(90deg, transparent 0%, hsl(var(--primary)) 50%, transparent 100%);
+  }
+  
+  .technology-connection {
+    position: relative;
+  }
+  
+  .technology-connection::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    width: 10px;
+    height: 2px;
+    background: hsl(var(--primary));
+    transform: translateY(-50%);
+  }
+
   /* D3 Tree styles */
   .node {
     cursor: pointer;

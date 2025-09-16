@@ -1,6 +1,7 @@
 
 import { useState } from "react";
-import { EvolutionMatrix } from "@/components/evolution-matrix";
+import { Navigation } from "@/components/navigation";
+import { DynamicEvolutionMatrix } from "@/components/dynamic-evolution-matrix";
 import { TechnologyDetails } from "@/components/technology-details";
 import type { TechnologyDescription } from "@/data/technologies";
 
@@ -40,13 +41,17 @@ export default function MatrixPage() {
         </div>
       </header>
 
+      {/* Navigation */}
+      <Navigation />
+
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Evolution Matrix */}
+        {/* Dynamic Evolution Matrix */}
         <div className="mb-12">
-          <EvolutionMatrix 
+          <DynamicEvolutionMatrix 
             onModuleClick={handleModuleClick}
             onTechnologyClick={handleTechnologyClick}
+            selectedModule={selectedModule}
           />
         </div>
 
