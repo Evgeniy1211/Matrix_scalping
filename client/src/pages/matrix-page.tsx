@@ -1,8 +1,29 @@
 
+import { useState } from "react";
 import { EvolutionMatrix } from "@/components/evolution-matrix";
 import { TechnologyDetails } from "@/components/technology-details";
+import type { TechnologyDescription } from "@/data/technologies";
 
 export default function MatrixPage() {
+  const [selectedModule, setSelectedModule] = useState<string>("");
+  const [selectedTechnologyName, setSelectedTechnologyName] = useState<string>("");
+  const [selectedTech, setSelectedTech] = useState<TechnologyDescription | null>(null);
+
+  const handleModuleClick = (moduleName: string) => {
+    setSelectedModule(moduleName);
+    setSelectedTechnologyName(""); // Сбрасываем выбранную технологию при выборе модуля
+    setSelectedTech(null);
+  };
+
+  const handleTechnologyClick = (technologyName: string) => {
+    setSelectedTechnologyName(technologyName);
+    setSelectedModule(""); // Сбрасываем фильтр модуля при выборе конкретной технологии
+  };
+
+  const handleTechnologySelect = (tech: TechnologyDescription | null) => {
+    setSelectedTech(tech);
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header Section */}
@@ -23,7 +44,10 @@ export default function MatrixPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Evolution Matrix */}
         <div className="mb-12">
-          <EvolutionMatrix />
+          <EvolutionMatrix 
+            onModuleClick={handleModuleClick}
+            onTechnologyClick={handleTechnologyClick}
+          />
         </div>
 
         {/* Technology Details */}
@@ -34,9 +58,23 @@ export default function MatrixPage() {
             </h2>
             <p className="text-muted-foreground">
               Подробные описания технологий, используемых в матрице эволюции
+              {selectedModule && (
+                <span className="block mt-1 font-medium text-blue-600">
+                  Активный фильтр: {selectedModule}
+                </span>
+              )}
+              {selectedTechnologyName && (
+                <span className="block mt-1 font-medium text-green-600">
+                  Выбранная технология: {selectedTechnologyName}
+                </span>
+              )}
             </p>
           </div>
-          <TechnologyDetails />
+          <TechnologyDetails 
+            moduleFilter={selectedModule}
+            selectedTechnologyName={selectedTechnologyName}
+            onTechnologySelect={handleTechnologySelect}
+          />
         </div>
       </main>
 

@@ -7,7 +7,12 @@ import type { RevisionData } from "@/data/evolution-data";
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
 
-export function EvolutionMatrix() {
+interface EvolutionMatrixProps {
+  onModuleClick?: (moduleName: string) => void;
+  onTechnologyClick?: (technologyName: string) => void;
+}
+
+export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionMatrixProps) {
   const [filter, setFilter] = useState<FilterType>('all');
   const [tooltip, setTooltip] = useState<{ content: string; x: number; y: number; visible: boolean }>({
     content: '',
@@ -182,7 +187,11 @@ export function EvolutionMatrix() {
                 {visibleModules.map((module, moduleIndex) => (
                   <tr key={moduleIndex} className="border-b border-border">
                     <td className="sticky left-0 bg-muted text-foreground p-3 font-medium border-r border-border">
-                      <div className="flex items-center gap-2">
+                      <div 
+                        className="flex items-center gap-2 cursor-pointer hover:bg-muted/80 rounded p-1 transition-colors"
+                        onClick={() => onModuleClick?.(module.name)}
+                        title="Кликните для фильтрации технологий по этому модулю"
+                      >
                         {module.name}
                         {technologyCoverage[module.name] && technologyCoverage[module.name].length > 0 && (
                           <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" title={`Представлено в кейсах: ${technologyCoverage[module.name].length} технологий`}>
@@ -196,10 +205,18 @@ export function EvolutionMatrix() {
                       return (
                         <td
                           key={rev}
-                          className={getCellClass(data)}
+                          className={`${getCellClass(data)} ${data.tech ? 'cursor-pointer hover:bg-blue-50 transition-colors' : ''}`}
                           onMouseEnter={(e) => showTooltip(e, data.desc)}
                           onMouseLeave={hideTooltip}
+                          onClick={() => {
+                            if (data.tech && data.tech.trim() !== '') {
+                              // Если в ячейке несколько технологий, берем первую
+                              const firstTech = data.tech.split(',')[0].trim().split('→')[0].trim();
+                              onTechnologyClick?.(firstTech);
+                            }
+                          }}
                           data-testid={`cell-${moduleIndex}-${rev}`}
+                          title={data.tech ? `Кликните для просмотра деталей технологии: ${data.tech}` : ''}
                         >
                           {data.tech}
                         </td>

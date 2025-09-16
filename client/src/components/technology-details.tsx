@@ -5,13 +5,79 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { technologyDatabase, searchTechnologies, type TechnologyDescription } from "@/data/technologies";
 
-export function TechnologyDetails() {
+interface TechnologyDetailsProps {
+  moduleFilter?: string;
+  selectedTechnologyName?: string;
+  onTechnologySelect?: (tech: TechnologyDescription | null) => void;
+}
+
+export function TechnologyDetails({ 
+  moduleFilter, 
+  selectedTechnologyName, 
+  onTechnologySelect 
+}: TechnologyDetailsProps) {
   const [selectedTech, setSelectedTech] = useState<TechnologyDescription | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredTechs = searchQuery 
-    ? searchTechnologies(searchQuery)
-    : technologyDatabase;
+  // Эффект для автоматического выбора технологии по имени
+  useState(() => {
+    if (selectedTechnologyName) {
+      const tech = technologyDatabase.find(t => 
+        t.name.toLowerCase().includes(selectedTechnologyName.toLowerCase()) ||
+        selectedTechnologyName.toLowerCase().includes(t.name.toLowerCase())
+      );
+      if (tech && tech.id !== selectedTech?.id) {
+        setSelectedTech(tech);
+        onTechnologySelect?.(tech);
+      }
+    }
+  });
+
+  // Маппинг модулей матрицы на категории технологий
+  const getModuleCategory = (moduleName: string): string[] => {
+    const moduleMapping: Record<string, string[]> = {
+      'Сбор данных': ['data'],
+      'Обработка данных': ['processing'],
+      'Feature Engineering': ['processing', 'ml'],
+      'Генерация сигналов': ['ml'],
+      'Риск-менеджмент': ['risk'],
+      'Исполнение сделок': ['execution'],
+      'Адаптация к рынку': ['adaptation'],
+      'Визуализация и мониторинг': ['visualization']
+    };
+    
+    // Ищем точное совпадение или частичное совпадение по началу строки
+    const exactMatch = moduleMapping[moduleName];
+    if (exactMatch) return exactMatch;
+    
+    // Поиск по частичному совпадению (для случаев типа "Сбор данных: CCXT")
+    const partialMatch = Object.keys(moduleMapping).find(key => 
+      moduleName.startsWith(key) || moduleName.includes(key)
+    );
+    
+    return partialMatch ? moduleMapping[partialMatch] : [];
+  };
+
+  let filteredTechs = technologyDatabase;
+
+  // Фильтрация по модулю
+  if (moduleFilter) {
+    const categories = getModuleCategory(moduleFilter);
+    if (categories.length > 0) {
+      filteredTechs = filteredTechs.filter(tech => 
+        categories.includes(tech.category)
+      );
+    }
+  }
+
+  // Дополнительная фильтрация по поисковому запросу
+  if (searchQuery) {
+    filteredTechs = filteredTechs.filter(tech =>
+      tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tech.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tech.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -32,7 +98,14 @@ export function TechnologyDetails() {
       {/* Список технологий */}
       <Card>
         <CardHeader>
-          <CardTitle>База технологий</CardTitle>
+          <CardTitle>
+            База технологий
+            {moduleFilter && (
+              <span className="text-sm font-normal text-muted-foreground ml-2">
+                (фильтр: {moduleFilter})
+              </span>
+            )}
+          </CardTitle>
           <input
             type="text"
             placeholder="Поиск технологий..."
@@ -51,7 +124,10 @@ export function TechnologyDetails() {
                     ? 'border-blue-500 bg-blue-50' 
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
-                onClick={() => setSelectedTech(tech)}
+                onClick={() => {
+                  setSelectedTech(tech);
+                  onTechnologySelect?.(tech);
+                }}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium">{tech.name}</h4>
