@@ -215,3 +215,145 @@ export function searchTechnologies(query: string): TechnologyDescription[] {
     tech.description.toLowerCase().includes(lowerQuery)
   );
 }
+
+// Функция для загрузки данных о технологии из внешних источников
+export async function fetchTechnologyData(technologyName: string): Promise<Partial<TechnologyDescription> | null> {
+  try {
+    // Можно подключить различные API источники:
+    
+    // 1. Wikipedia API для базовой информации
+    const wikiResponse = await fetch(
+      `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(technologyName)}`
+    );
+    
+    if (wikiResponse.ok) {
+      const wikiData = await wikiResponse.json();
+      return {
+        name: technologyName,
+        description: wikiData.extract || `${technologyName} - технология из внешнего источника`,
+        sources: [`Wikipedia: ${wikiData.content_urls?.desktop?.page || ''}`]
+      };
+    }
+    
+    // 2. GitHub API для популярности и статистики
+    const githubResponse = await fetch(
+      `https://api.github.com/search/repositories?q=${encodeURIComponent(technologyName)}&sort=stars&order=desc&per_page=1`
+    );
+    
+    if (githubResponse.ok) {
+      const githubData = await githubResponse.json();
+      const repo = githubData.items?.[0];
+      
+      if (repo) {
+        return {
+          name: technologyName,
+          description: repo.description || `${technologyName} - популярная технология`,
+          periods: {
+            start: new Date(repo.created_at).getFullYear()
+          },
+          sources: [`GitHub: ${repo.html_url}`]
+        };
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Ошибка загрузки данных о технологии:', error);
+    return null;
+  }
+}
+
+// Функция для автоматического обогащения базы данных
+export async function enrichTechnologyDatabase(technologies: string[]): Promise<TechnologyDescription[]> {
+  const enrichedTechs: TechnologyDescription[] = [];
+  
+  for (const techName of technologies) {
+    // Проверяем, есть ли уже в базе
+    const existing = technologyDatabase.find(t => 
+      t.name.toLowerCase() === techName.toLowerCase()
+    );
+    
+    if (existing) {
+      enrichedTechs.push(existing);
+      continue;
+    }
+    
+    // Загружаем данные из внешних источников
+    const externalData = await fetchTechnologyData(techName);
+    
+    if (externalData) {
+      const newTech: TechnologyDescription = {
+        id: techName.toLowerCase().replace(/\s+/g, '-'),
+        name: techName,
+        description: externalData.description || `${techName} - технология`,
+        category: 'infrastructure', // По умолчанию, можно улучшить автоопределение
+        periods: externalData.periods || {
+          start: new Date().getFullYear()
+        },
+        applicableModules: [],
+        advantages: ['Загружено из внешнего источника'],
+        disadvantages: ['Требует дополнительного исследования'],
+        useCases: ['Определяется в процессе использования'],
+        sources: externalData.sources || []
+      };
+      
+      enrichedTechs.push(newTech);
+    }
+  }
+  
+  return enrichedTechs;
+}
+
+// Функция для парсинга текстового описания технологии
+export function parseTechnologyDescription(text: string): Partial<TechnologyDescription> {
+  const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+  const result: Partial<TechnologyDescription> = {
+    advantages: [],
+    disadvantages: [],
+    useCases: [],
+    applicableModules: []
+  };
+  
+  let currentSection = '';
+  
+  for (const line of lines) {
+    // Определяем секции
+    if (line.toLowerCase().includes('преимущества') || line.toLowerCase().includes('плюсы')) {
+      currentSection = 'advantages';
+      continue;
+    }
+    if (line.toLowerCase().includes('недостатки') || line.toLowerCase().includes('минусы')) {
+      currentSection = 'disadvantages'; 
+      continue;
+    }
+    if (line.toLowerCase().includes('применение') || line.toLowerCase().includes('использование')) {
+      currentSection = 'useCases';
+      continue;
+    }
+    if (line.toLowerCase().includes('период') || line.toLowerCase().includes('годы')) {
+      const years = line.match(/(\d{4})/g);
+      if (years && years.length > 0) {
+        result.periods = {
+          start: parseInt(years[0]),
+          end: years.length > 1 ? parseInt(years[years.length - 1]) : undefined
+        };
+      }
+      continue;
+    }
+    
+    // Добавляем контент в текущую секцию
+    if (currentSection && line.startsWith('-') || line.startsWith('•') || line.startsWith('*')) {
+      const content = line.substring(1).trim();
+      if (currentSection === 'advantages') result.advantages?.push(content);
+      if (currentSection === 'disadvantages') result.disadvantages?.push(content);
+      if (currentSection === 'useCases') result.useCases?.push(content);
+    }
+    
+    // Извлекаем основное описание (первые несколько строк без маркеров)
+    if (!result.description && !line.startsWith('-') && !line.includes(':') && line.length > 20) {
+      result.description = line;
+    }
+  }
+  
+  return result;
+}
