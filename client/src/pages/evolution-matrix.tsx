@@ -1,47 +1,34 @@
 import { EvolutionMatrix } from "@/components/evolution-matrix";
 import { TechnologyTree } from "@/components/technology-tree";
 import { RevisionExplanations } from "@/components/revision-explanations";
+import { TradingMachineComparator } from "@/components/trading-machine-comparator";
 
 export default function EvolutionMatrixPage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header Section */}
-      <header className="bg-card border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2" data-testid="title-main">
-              Эволюция торговых машин (скальпинг)
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto" data-testid="subtitle">
-              От ML 2000-х до гибридных AI-систем 2025 года
-            </p>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto p-6">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-center mb-2">
+            Эволюция торговых машин
+          </h1>
+          <p className="text-muted-foreground text-center">
+            Развитие технологий скальпинг-систем с 2000 по 2025 год
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+          <div className="lg:col-span-7">
+            <EvolutionMatrix />
           </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Layout Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Evolution Matrix */}
-          <EvolutionMatrix />
-
-          {/* Technology Tree */}
           <TechnologyTree />
         </div>
 
-        {/* Evolution Explanations */}
-        <RevisionExplanations />
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-muted mt-16 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-muted-foreground" data-testid="footer-text">
-            Матрица составлена на основе обзора технологий 2000–2025 гг.
-          </p>
+        <div className="mb-8">
+          <TradingMachineComparator />
         </div>
-      </footer>
+
+        <RevisionExplanations />
+      </div>
     </div>
   );
 }
