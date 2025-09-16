@@ -252,10 +252,11 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
     'infrastructure': 'Инфраструктура'
   };
 
-  // Добавляем недостающие модули если их нет
+  // Добавляем недостающие модули если их нет (но оригинальные 8 модулей уже есть в evolutionData)
   const existingModuleNames = integratedData.modules.map(m => m.name);
   Object.values(moduleMapping).forEach(moduleName => {
-    if (!existingModuleNames.includes(moduleName)) {
+    if (!existingModuleNames.includes(moduleName) && moduleName === 'Инфраструктура') {
+      // Добавляем только модуль Инфраструктура, если его нет
       integratedData.modules.push({
         name: moduleName,
         revisions: {
@@ -304,7 +305,12 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
         'riskManagement': 'Риск-менеджмент',
         'execution': 'Исполнение сделок',
         'marketAdaptation': 'Адаптация к рынку',
-        'visualization': 'Визуализация и мониторинг'
+        'visualization': 'Визуализация и мониторинг',
+        // Добавляем недостающие модули из кейсов
+        'data': 'Сбор данных',
+        'processing': 'Обработка данных',
+        'ml': 'Генерация сигналов',
+        'risk': 'Риск-менеджмент'
       };
       
       const matrixModuleName = caseModuleMapping[moduleKey];
