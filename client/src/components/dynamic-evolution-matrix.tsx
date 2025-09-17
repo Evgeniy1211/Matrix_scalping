@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,18 @@ export function DynamicEvolutionMatrix({
 }: DynamicEvolutionMatrixProps) {
   const [selectedRevision, setSelectedRevision] = useState("rev5");
   const { data: technologies, isLoading, isError } = useTechnologies();
+  const [selectedModule, setSelectedModule] = useState<string>("");
+
+  const onTechnologySelect = useCallback((tech: Technology) => {
+    // Handle technology selection
+  }, []);
+
+  // Always create rows, even if empty
+  const rows = useMemo(() => {
+    if (!technologies || technologies.length === 0) return [];
+    return buildTechnologyRows(technologies, selectedModule);
+  }, [technologies, selectedModule]);
+
 
   // Всегда вызываем хуки в одном порядке
   const technologyRows = useMemo(() => {
@@ -27,7 +39,7 @@ export function DynamicEvolutionMatrix({
 
   const modules = [
     "Сбор данных",
-    "Обработка данных", 
+    "Обработка данных",
     "Feature Engineering",
     "Генерация сигналов",
     "Риск-менеджмент",
@@ -117,7 +129,7 @@ export function DynamicEvolutionMatrix({
                       key={index}
                       className={`hover:bg-gray-50 ${isSelected ? 'bg-blue-50 border-blue-300' : ''}`}
                     >
-                      <td 
+                      <td
                         className={`border border-gray-300 p-3 font-medium cursor-pointer ${
                           isSelected ? 'text-blue-700' : ''
                         }`}
