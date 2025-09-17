@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useEvolutionData, useTechnologies, useTradingMachines } from "@/hooks/use-technologies";
+import { useEvolutionData, useTechnologies, useTradingMachines, getMatrixTechnologyCoverage } from "@/hooks/use-technologies";
 import type { EvolutionData } from "@shared/schema";
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
@@ -23,6 +23,53 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     visible: false
   });
 
+  // React Query hooks
+  const { data: evolutionData, isLoading: evolutionLoading, isError: evolutionError } = useEvolutionData();
+  const { data: technologies, isLoading: techLoading, isError: techError } = useTechnologies();
+  const { data: tradingMachines, isLoading: machinesLoading, isError: machinesError } = useTradingMachines();
+
+  // Loading state
+  if (evolutionLoading || techLoading || machinesLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">Матрица эволюции технологий</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">Загрузка данных матрицы...</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Error state
+  if (evolutionError || techError || machinesError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">Матрица эволюции технологий</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-red-500">Ошибка загрузки данных матрицы</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Data not available
+  if (!evolutionData) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold">Матрица эволюции технологий</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8 text-muted-foreground">Данные матрицы недоступны</div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const showTooltip = (event: React.MouseEvent, content: string) => {
     setTooltip({
       content,
@@ -42,32 +89,18 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   };
 
   const getVisibleModules = () => {
-    let currentData;
-    
-    // Выбираем источник данных
-    switch (dataSource) {
-      case 'original':
-        currentData = evolutionData;
-        break;
-      case 'dynamic':
-        currentData = createDynamicTechnologyMatrix();
-        break;
-      case 'integrated':
-        currentData = integrateTechnologyDatabase();
-        break;
-      default:
-        currentData = evolutionData;
-        break;
-    }
+    // Используем только данные от React Query - пока что все источники используют одни данные
+    // TODO: В будущем можно добавить разные источники данных через API
+    const currentData = evolutionData;
 
     console.log('getVisibleModules - выбран источник:', dataSource);
     console.log('getVisibleModules - количество модулей:', currentData.modules.length);
     console.log('getVisibleModules - названия:', currentData.modules.map(m => m.name));
 
-    // ВАЖНО: Проверяем, что данные корректные
+    // Проверяем, что данные корректные
     if (!currentData || !currentData.modules || !Array.isArray(currentData.modules)) {
       console.error('Ошибка: currentData.modules не является массивом!', currentData);
-      return evolutionData.modules; // fallback на оригинальные данные
+      return []; // возвращаем пустой массив если данных нет
     }
 
     // Логика фильтрации "Скрыть неизменившиеся модули"
@@ -101,7 +134,7 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     return currentData.modules;
   };
 
-  const getCellClass = (data: RevisionData) => {
+  const getCellClass = (data: { tech: string; period?: string }) => {
     const baseClasses = "evolution-cell p-3 text-center text-xs font-medium border-r border-border";
     if (data.tech === '') return `${baseClasses} empty-cell`;
     return `${baseClasses} ${data.period}-tech`;
@@ -132,7 +165,7 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   }
 
   // Получаем покрытие технологий из кейсов
-  const technologyCoverage = getMatrixTechnologyCoverage();
+  const technologyCoverage = tradingMachines ? getMatrixTechnologyCoverage(tradingMachines) : {};
 
   return (
     <div className="lg:col-span-7">

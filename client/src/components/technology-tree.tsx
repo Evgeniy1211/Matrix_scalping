@@ -6,8 +6,10 @@ import * as d3 from "d3";
 export function TechnologyTree() {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { data: treeData, isLoading, isError } = useTreeData();
 
   useEffect(() => {
+    if (!treeData) return;
     if (!svgRef.current || !containerRef.current) return;
 
     const container = containerRef.current;
@@ -112,7 +114,7 @@ export function TechnologyTree() {
     return () => {
       d3.select('.tree-tooltip').remove();
     };
-  }, []);
+  }, [treeData]);
 
   // Handle window resize
   useEffect(() => {
@@ -132,6 +134,38 @@ export function TechnologyTree() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="lg:col-span-5">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">Дерево эволюции технологий</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8">Загрузка данных дерева...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="lg:col-span-5">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold">Дерево эволюции технологий</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-red-500">Ошибка загрузки данных дерева</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="lg:col-span-5">
