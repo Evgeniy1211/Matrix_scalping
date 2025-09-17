@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   });
 
   // React Query hooks
-  const { data: evolutionData, isLoading: evolutionLoading, isError: evolutionError } = useEvolutionData();
+  const { data: evolutionData, isLoading: evolutionLoading, isError: evolutionError } = useEvolutionData(dataSource);
   const { data: technologies, isLoading: techLoading, isError: techError } = useTechnologies();
   const { data: tradingMachines, isLoading: machinesLoading, isError: machinesError } = useTradingMachines();
 
@@ -166,6 +165,16 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
 
   // Получаем покрытие технологий из кейсов
   const technologyCoverage = tradingMachines ? getMatrixTechnologyCoverage(tradingMachines) : {};
+  const coverageModuleNameMap: Record<string,string> = {
+    'dataCollection': 'Сбор данных',
+    'dataProcessing': 'Обработка данных',
+    'featureEngineering': 'Feature Engineering',
+    'signalGeneration': 'Генерация сигналов',
+    'riskManagement': 'Риск-менеджмент',
+    'execution': 'Исполнение сделок',
+    'marketAdaptation': 'Адаптация к рынку',
+    'visualization': 'Визуализация и мониторинг'
+  };
 
   return (
     <div className="lg:col-span-7">
