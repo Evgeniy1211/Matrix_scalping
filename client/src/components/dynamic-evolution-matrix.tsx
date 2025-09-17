@@ -17,7 +17,7 @@ export function DynamicEvolutionMatrix({
   onTechnologyClick,
   selectedModule
 }: DynamicEvolutionMatrixProps) {
-  const [selectedRevision, setSelectedRevision] = useState("rev5");
+  const [selectedRevision, setSelectedRevision] = useState("");
   const { data: technologies, isLoading, isError } = useTechnologies();
 
   // Всегда вызываем хуки в одном порядке
@@ -84,6 +84,14 @@ export function DynamicEvolutionMatrix({
             Динамическая матрица эволюции торговых технологий
           </CardTitle>
           <div className="flex flex-wrap gap-2 mt-4">
+            <Button
+              key="all"
+              variant={selectedRevision === "" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setSelectedRevision("")}
+            >
+              Все ревизии
+            </Button>
             {revisions.map((rev) => (
               <Button
                 key={rev.key}
@@ -104,9 +112,17 @@ export function DynamicEvolutionMatrix({
                   <th className="border border-gray-300 p-3 text-left min-w-[200px]">
                     Модуль торговой системы
                   </th>
-                  <th className="border border-gray-300 p-3 text-center min-w-[150px]">
-                    {revisions.find(r => r.key === selectedRevision)?.label}
-                  </th>
+                  {selectedRevision ? (
+                    <th className="border border-gray-300 p-3 text-center min-w-[150px]">
+                      {revisions.find(r => r.key === selectedRevision)?.label}
+                    </th>
+                  ) : (
+                    revisions.map((r) => (
+                      <th key={r.key} className="border border-gray-300 p-3 text-center min-w-[150px]">
+                        {r.label}
+                      </th>
+                    ))
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -125,22 +141,44 @@ export function DynamicEvolutionMatrix({
                       >
                         {module}
                       </td>
-                      <td className="border border-gray-300 p-3">
-                        <div className="flex flex-wrap gap-2">
-                          {technologyRows
-                            .filter(tech => tech.applicableModules.includes(module))
-                            .map((tech, techIndex) => (
-                              <Badge
-                                key={techIndex}
-                                variant="outline"
-                                className="cursor-pointer hover:bg-blue-100"
-                                onClick={() => onTechnologyClick?.(tech.name)}
-                              >
-                                {tech.name}
-                              </Badge>
-                            ))}
-                        </div>
-                      </td>
+
+                      {selectedRevision ? (
+                        <td className="border border-gray-300 p-3">
+                          <div className="flex flex-wrap gap-2">
+                            {technologyRows
+                              .filter(tech => tech.applicableModules.includes(module))
+                              .map((tech, techIndex) => (
+                                <Badge
+                                  key={techIndex}
+                                  variant="outline"
+                                  className="cursor-pointer hover:bg-blue-100"
+                                  onClick={() => onTechnologyClick?.(tech.name)}
+                                >
+                                  {tech.name}
+                                </Badge>
+                              ))}
+                          </div>
+                        </td>
+                      ) : (
+                        revisions.map((rev) => (
+                          <td key={rev.key} className="border border-gray-300 p-3 align-top">
+                            <div className="flex flex-wrap gap-2">
+                              {technologyRows
+                                .filter(tech => tech.applicableModules.includes(module) && tech.revisions[rev.key as keyof typeof tech.revisions])
+                                .map((tech, techIndex) => (
+                                  <Badge
+                                    key={techIndex}
+                                    variant="outline"
+                                    className="cursor-pointer hover:bg-blue-100"
+                                    onClick={() => onTechnologyClick?.(tech.name)}
+                                  >
+                                    {tech.name}
+                                  </Badge>
+                                ))}
+                            </div>
+                          </td>
+                        ))
+                      )}
                     </tr>
                   );
                 })}
