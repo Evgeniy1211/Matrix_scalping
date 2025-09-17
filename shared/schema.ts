@@ -6,7 +6,7 @@ import { z } from "zod";
 // ===================== Auth (placeholder) =====================
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().
+  username: text("username").notNull(),
   password: text("password").notNull(),
 });
 
@@ -51,7 +51,7 @@ export type EvolutionData = z.infer<typeof evolutionDataSchema>;
 // ===================== Tree (Technology Tree) =====================
 export const treeNodeSchema: z.ZodType<any> = z.lazy(() => z.object({
   name: z.string(),
-  children: z.array(treeNodeSchema).optional(),
+  children: z.array(z.lazy(() => treeNodeSchema)).optional(),
   value: z.number().optional(),
   type: z.string().optional(),
   description: z.string().optional()
