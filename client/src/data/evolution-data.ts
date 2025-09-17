@@ -352,10 +352,11 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   console.log('Финальное количество модулей:', integratedData.modules.length);
   console.log('Финальный список модулей:', integratedData.modules.map(m => m.name));
 
+  // ВСЕГДА возвращаем результат, даже если количество модулей не 8
+  // Это позволит увидеть фактическое состояние данных
   if (integratedData.modules.length !== 8) {
-    console.error('ОШИБКА: Ожидается 8 модулей, получено:', integratedData.modules.length);
-    console.error('Возвращаем оригинальные данные для безопасности');
-    return evolutionData;
+    console.warn('ПРЕДУПРЕЖДЕНИЕ: Ожидается 8 модулей, получено:', integratedData.modules.length);
+    console.warn('Но возвращаем данные для отладки');
   }
 
   return integratedData;

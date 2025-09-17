@@ -261,7 +261,7 @@ export function DynamicEvolutionMatrix({
             </thead>
             <tbody>
               {Object.entries(groupedRows).map(([module, rows]) => (
-                <React.Fragment key={`module-${module}`}>
+                <React.Fragment key={module}>
                   {/* Заголовок модуля */}
                   <tr className="border-b-2 border-border">
                     <td 

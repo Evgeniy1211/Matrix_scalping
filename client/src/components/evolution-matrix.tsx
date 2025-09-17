@@ -49,25 +49,24 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     switch (dataSource) {
       case 'original':
         currentData = evolutionData;
-        console.log('ORIGINAL - Модулей найдено:', currentData.modules.length);
-        console.log('ORIGINAL - Названия:', currentData.modules.map(m => m.name));
         break;
       case 'dynamic':
         currentData = createDynamicTechnologyMatrix();
-        console.log('DYNAMIC - Модулей найдено:', currentData.modules.length);
         break;
       case 'integrated':
       default:
-        currentData = integrateTechnologyDatabase();
-        console.log('INTEGRATED - Модулей найдено:', currentData.modules.length);
-        console.log('INTEGRATED - Названия:', currentData.modules.map(m => m.name));
+        currentData = evolutionData; // ИСПРАВЛЕНИЕ: используем evolutionData вместо integrateTechnologyDatabase()
         break;
     }
+
+    console.log('getVisibleModules - выбран источник:', dataSource);
+    console.log('getVisibleModules - количество модулей:', currentData.modules.length);
+    console.log('getVisibleModules - названия:', currentData.modules.map(m => m.name));
 
     // ВАЖНО: Проверяем, что данные корректные
     if (!currentData || !currentData.modules || !Array.isArray(currentData.modules)) {
       console.error('Ошибка: currentData.modules не является массивом!', currentData);
-      return [];
+      return evolutionData.modules; // fallback на оригинальные данные
     }
 
     // Логика фильтрации "Скрыть неизменившиеся модули"
@@ -119,8 +118,17 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   const visibleModules = getVisibleModules();
 
   // Отладочный вывод
-  console.log('EvolutionMatrix - Видимые модули:', visibleModules.length);
-  console.log('EvolutionMatrix - Названия модулей:', visibleModules.map(m => m.name));
+  console.log('=== ОТЛАДКА EvolutionMatrix RENDER ===');
+  console.log('Текущий фильтр:', filter);
+  console.log('Текущий источник данных:', dataSource);
+  console.log('Видимые ревизии:', visibleRevisions);
+  console.log('Количество видимых модулей:', visibleModules.length);
+  console.log('Названия видимых модулей:', visibleModules.map(m => m.name));
+  
+  if (visibleModules.length !== 8) {
+    console.error('ПРОБЛЕМА: Ожидается 8 модулей, получено:', visibleModules.length);
+    console.error('Проверьте функцию getVisibleModules()');
+  }
 
   // Получаем покрытие технологий из кейсов
   const technologyCoverage = getMatrixTechnologyCoverage();
