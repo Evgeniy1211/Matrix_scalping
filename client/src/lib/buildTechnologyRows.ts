@@ -51,9 +51,17 @@ const getTechnologyRevision = (tech: Technology, revisionPeriods: RevisionPeriod
   return 'rev5';
 };
 
+const defaultRevisionPeriods: RevisionPeriods = {
+  rev1: { label: "Rev 1 (2015)", period: "2000-2015", years: [2000, 2015] },
+  rev2: { label: "Rev 2 (2020)", period: "2016-2020", years: [2016, 2020] },
+  rev3: { label: "Rev 3 (2022)", period: "2021-2022", years: [2021, 2022] },
+  rev4: { label: "Rev 4 (2023)", period: "2023-2023", years: [2023, 2023] },
+  rev5: { label: "Rev 5 (2024)", period: "2024-2025", years: [2024, 2025] }
+};
+
 export function buildTechnologyRows(
   technologies: Technology[],
-  revisionPeriods: RevisionPeriods
+  revisionPeriods: RevisionPeriods = defaultRevisionPeriods
 ): TechnologyRow[] {
   const rows: TechnologyRow[] = [];
   const processedTechs = new Set<string>();

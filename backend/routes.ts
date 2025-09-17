@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import type { Technology } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API endpoints for evolution data
@@ -25,7 +26,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/technologies", async (req, res) => {
     try {
       const { technologyDatabase } = await import("./data/technologies");
-      res.json(technologyDatabase);
+      const technologies: Technology[] = technologyDatabase.map(tech => ({
+        id: tech.id,
+        name: tech.name,
+        fullName: tech.fullName,
+        description: tech.description,
+        category: tech.category,
+        periods: tech.periods,
+        evolution: tech.evolution,
+        applicableModules: tech.applicableModules,
+        advantages: tech.advantages,
+        disadvantages: tech.disadvantages,
+        useCases: tech.useCases,
+        sources: tech.sources
+      }));
+      res.json(technologies);
     } catch (error) {
       res.status(500).json({ error: "Failed to load technologies" });
     }

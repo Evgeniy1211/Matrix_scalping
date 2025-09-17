@@ -77,7 +77,7 @@ export function DynamicEvolutionMatrix({
   }
 
   return (
-    <div className="w-full space-y-6" data-replit-metadata="evolution-matrix">
+    <div className="w-full space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">
