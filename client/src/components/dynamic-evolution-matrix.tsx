@@ -19,23 +19,11 @@ export function DynamicEvolutionMatrix({
 }: DynamicEvolutionMatrixProps) {
   const [selectedRevision, setSelectedRevision] = useState("rev5");
   const { data: technologies, isLoading, isError } = useTechnologies();
-  const [selectedModule, setSelectedModule] = useState<string>("");
-
-  const onTechnologySelect = useCallback((tech: Technology) => {
-    // Handle technology selection
-  }, []);
-
-  // Always create rows, even if empty
-  const rows = useMemo(() => {
-    if (!technologies || technologies.length === 0) return [];
-    return buildTechnologyRows(technologies, selectedModule);
-  }, [technologies, selectedModule]);
-
 
   // Всегда вызываем хуки в одном порядке
   const technologyRows = useMemo(() => {
-    return technologies ? buildTechnologyRows(technologies) : [];
-  }, [technologies]);
+    return technologies ? buildTechnologyRows(technologies, selectedModule || "") : [];
+  }, [technologies, selectedModule]);
 
   const modules = [
     "Сбор данных",

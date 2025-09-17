@@ -170,3 +170,21 @@ export function buildTechnologyRows(
 
   return rows;
 }
+export interface TechnologyRow {
+  name: string;
+  applicableModules: string[];
+  category: string;
+}
+
+export function buildTechnologyRows(technologies: any[], moduleFilter?: string): TechnologyRow[] {
+  if (!technologies) return [];
+  
+  return technologies.map(tech => ({
+    name: tech.name,
+    applicableModules: tech.applicableModules || [],
+    category: tech.category || 'unknown'
+  })).filter(tech => {
+    if (!moduleFilter) return true;
+    return tech.applicableModules.includes(moduleFilter);
+  });
+}
