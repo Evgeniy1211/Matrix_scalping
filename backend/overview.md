@@ -1,21 +1,23 @@
-> **📍 Родительский документ**: [`README.md`](../README.md) → **Документация бэкенда**
+> **📍 Родительский документ**: [`README.md`](../README.md) → **Документация фронтенда**
 > **🔝 Вернуться к**: [`README.md`](../README.md) - главная документация проекта
 
-# Документация бэкенда
+# Документация фронтенда
 
-## 📋 Структура бэкенда
+## 📋 Структура фронтенда
 
-### 📚 База знаний (`knowledge-base/`)
-- **[methodology.md](knowledge-base/methodology.md)** - главный документ с правилами архитектуры данных
-- **[overview.md](knowledge-base/overview.md)** - обзор предметной области
-- **[technologies-overview.md](knowledge-base/technologies-overview.md)** - каталог технологий
-- **[trading-cases.md](knowledge-base/trading-cases.md)** - описание кейсов торговых машин
-- **[trading-modules.md](knowledge-base/trading-modules.md)** - архитектура модулей системы
+### 🎨 Компоненты (`client/src/components/`)
+- **[evolution-matrix.tsx](../client/src/components/evolution-matrix.tsx)** - основная матрица эволюции
+- **[dynamic-evolution-matrix.tsx](../client/src/components/dynamic-evolution-matrix.tsx)** - динамическая матрица
+- **[technology-tree.tsx](../client/src/components/technology-tree.tsx)** - D3.js дерево технологий
+- **[trading-machine-comparator.tsx](../client/src/components/trading-machine-comparator.tsx)** - кейсы торговых машин
+- **[navigation.tsx](../client/src/components/navigation.tsx)** - навигация приложения
 
-### 🖥️ Сервер (корневая папка)
-- **[index.ts](../index.ts)** - основной файл сервера Express.js
-- **[routes.ts](../routes.ts)** - API маршруты  
-- **[storage.ts](../storage.ts)** - работа с хранилищем данных
+### 📊 Данные (`client/src/data/`)
+- **[evolution-data.ts](../client/src/data/evolution-data.ts)** - основная матрица эволюции
+- **[technologies.ts](../client/src/data/technologies.ts)** - централизованная база технологий
+- **[trading-machines.ts](../client/src/data/trading-machines.ts)** - кейсы торговых машин
 
-### 🔄 Общие компоненты (`shared/`)
-- **[schema.ts](../shared/schema.ts)** - общие типы и схемы данных
+### 📖 Руководства
+- **[evolution-matrix-guide.md](evolution-matrix-guide.md)** - работа с матрицей эволюции
+- **[technology-tree-guide.md](technology-tree-guide.md)** - D3.js визуализация дерева
+- **[trading-machine-comparator-guide.md](trading-machine-comparator-guide.md)** - управление кейсами
