@@ -153,9 +153,9 @@ npm run build
 
 ### 🎨 Frontend документация
 - **📖 Обзор фронтенда**: [`docs/frontend/overview.md`](docs/frontend/overview.md) - архитектура и компоненты
-- **📊 Матрица эволюции**: [`docs/evolution-matrix-guide.md`](docs/evolution-matrix-guide.md) - как управлять матрицей
-- **🌳 Дерево технологий**: [`docs/technology-tree-guide.md`](docs/technology-tree-guide.md) - D3.js визуализация
-- **🎯 Кейсы торговых машин**: [`docs/trading-machine-comparator-guide.md`](docs/trading-machine-comparator-guide.md) - работа с кейсами
+- **📊 Матрица эволюции**: [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md) - как управлять матрицей
+- **🌳 Дерево технологий**: [`docs/frontend/technology-tree-guide.md`](docs/frontend/technology-tree-guide.md) - D3.js визуализация
+- **🎯 Кейсы торговых машин**: [`docs/frontend/trading-machine-comparator-guide.md`](docs/frontend/trading-machine-comparator-guide.md) - работа с кейсами
 
 ### 🖥️ Backend документация
 - **📖 Обзор бэкенда**: [`docs/backend/overview.md`](docs/backend/overview.md) - сервер, API и база данных
@@ -170,17 +170,17 @@ npm run build
 ### Новая технология
 1. Добавить в `client/src/data/technologies.ts`
 2. Обновить соответствующий документ в `knowledge-base/`
-3. **📖 Подробности**: см. [`docs/evolution-matrix-guide.md`](docs/evolution-matrix-guide.md)
+3. **📖 Подробности**: см. [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md)
 
 ### Новый кейс торговой машины
 1. Добавить в `client/src/data/trading-machines.ts`
 2. Создать описание в `knowledge-base/trading-cases.md`
-3. **📖 Подробности**: см. [`docs/trading-machine-comparator-guide.md`](docs/trading-machine-comparator-guide.md)
+3. **📖 Подробности**: см. [`docs/frontend/trading-machine-comparator-guide.md`](docs/frontend/trading-machine-comparator-guide.md)
 
 ### Новый модуль системы
 1. Добавить в `client/src/data/evolution-data.ts`
 2. Описать в `knowledge-base/trading-modules.md`
-3. **📖 Подробности**: см. [`docs/evolution-matrix-guide.md`](docs/evolution-matrix-guide.md)
+3. **📖 Подробности**: см. [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md)
 
 ## 🎯 Планы развития
 
