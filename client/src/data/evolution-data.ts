@@ -107,14 +107,17 @@ export const evolutionData: { modules: ModuleData[] } = {
 };
 
 // Проверяем, что у нас точно 8 модулей
+console.log('=== ПРОВЕРКА БАЗОВЫХ ДАННЫХ ===');
+console.log('evolutionData содержит модулей:', evolutionData.modules.length);
+console.log('Список модулей:', evolutionData.modules.map(m => m.name));
+
 if (evolutionData.modules.length !== 8) {
   console.error('ОШИБКА: Ожидается 8 модулей, найдено:', evolutionData.modules.length);
   console.error('Отсутствующие модули или дубликаты!');
+  console.error('Модули в базе:', evolutionData.modules.map(m => m.name));
+} else {
+  console.log('✅ В базе данных правильное количество модулей (8)');
 }
-
-// Отладочный вывод для проверки количества модулей
-console.log('evolutionData содержит модулей:', evolutionData.modules.length);
-console.log('Список модулей:', evolutionData.modules.map(m => m.name));
 
 // Импорт для интеграции с кейсами и технологиями
 import { tradingMachineCases } from './trading-machines';
@@ -252,6 +255,42 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   // ОБЯЗАТЕЛЬНО сохраняем все 8 оригинальных модулей из evolutionData
   const integratedData = JSON.parse(JSON.stringify(evolutionData)); // Глубокая копия
 
+  console.log('=== ИНТЕГРАЦИЯ ТЕХНОЛОГИЙ ===');
+  console.log('Исходные модули в evolutionData:', evolutionData.modules.length);
+  console.log('Названия:', evolutionData.modules.map(m => m.name));
+  console.log('Модули после копирования:', integratedData.modules.length);
+
+  // ГАРАНТИРУЕМ что у нас есть все 8 модулей
+  const requiredModules = [
+    'Сбор данных',
+    'Обработка данных',
+    'Feature Engineering', 
+    'Генерация сигналов',
+    'Риск-менеджмент',
+    'Исполнение сделок',
+    'Адаптация к рынку',
+    'Визуализация и мониторинг'
+  ];
+
+  const existingModuleNames = integratedData.modules.map(m => m.name);
+  
+  // Добавляем недостающие модули
+  requiredModules.forEach(moduleName => {
+    if (!existingModuleNames.includes(moduleName)) {
+      console.log(`Добавляем недостающий модуль: ${moduleName}`);
+      integratedData.modules.push({
+        name: moduleName,
+        revisions: {
+          rev1: { tech: '', period: 'empty' as const, desc: '' },
+          rev2: { tech: '', period: 'empty' as const, desc: '' },
+          rev3: { tech: '', period: 'empty' as const, desc: '' },
+          rev4: { tech: '', period: 'empty' as const, desc: '' },
+          rev5: { tech: '', period: 'empty' as const, desc: '' }
+        }
+      });
+    }
+  });
+
   const moduleMapping: Record<string, string> = {
     'data': 'Сбор данных',
     'processing': 'Обработка данных', 
@@ -262,25 +301,6 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
     'visualization': 'Визуализация и мониторинг',
     'infrastructure': 'Инфраструктура'
   };
-
-  // Проверяем, что все 8 оригинальных модулей присутствуют
-  console.log('Исходные модули в evolutionData:', evolutionData.modules.map(m => m.name));
-  console.log('Модули после копирования:', integratedData.modules.map(m => m.name));
-
-  // Добавляем только модуль Инфраструктура, если его нет
-  const existingModuleNames = integratedData.modules.map(m => m.name);
-  if (!existingModuleNames.includes('Инфраструктура')) {
-    integratedData.modules.push({
-      name: 'Инфраструктура',
-      revisions: {
-        rev1: { tech: '', period: 'empty' as const, desc: '' },
-        rev2: { tech: '', period: 'empty' as const, desc: '' },
-        rev3: { tech: '', period: 'empty' as const, desc: '' },
-        rev4: { tech: '', period: 'empty' as const, desc: '' },
-        rev5: { tech: '', period: 'empty' as const, desc: '' }
-      }
-    });
-  }
 
   // Интегрируем технологии из базы
   technologyDatabase.forEach(tech => {

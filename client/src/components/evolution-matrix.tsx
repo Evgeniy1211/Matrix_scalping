@@ -54,8 +54,10 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
         currentData = createDynamicTechnologyMatrix();
         break;
       case 'integrated':
+        currentData = integrateTechnologyDatabase();
+        break;
       default:
-        currentData = evolutionData; // ИСПРАВЛЕНИЕ: используем evolutionData вместо integrateTechnologyDatabase()
+        currentData = evolutionData;
         break;
     }
 
