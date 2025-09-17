@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,32 +22,34 @@ export function TechnologyDetails({
   const { data: technologies, isLoading, isError } = useTechnologies();
 
   // Эффект для автоматического выбора технологии по имени или ID
-  useState(() => {
-    if (selectedTechnologyName && technologies) {
-      // Сначала ищем по точному совпадению ID
-      let tech = technologies.find(t => t.id === selectedTechnologyName);
-      
-      // Если не найдено по ID, ищем по имени
-      if (!tech) {
-        tech = technologies.find(t => 
-          t.name.toLowerCase() === selectedTechnologyName.toLowerCase()
-        );
-      }
-      
-      // Если все еще не найдено, ищем по частичному совпадению
-      if (!tech) {
-        tech = technologies.find(t => 
-          t.name.toLowerCase().includes(selectedTechnologyName.toLowerCase()) ||
-          selectedTechnologyName.toLowerCase().includes(t.name.toLowerCase())
-        );
-      }
-      
-      if (tech && tech.id !== selectedTech?.id) {
-        setSelectedTech(tech);
-        onTechnologySelect?.(tech);
-      }
+  useEffect(() => {
+    if (!selectedTechnologyName || !technologies) return;
+    
+    const lower = selectedTechnologyName.toLowerCase();
+    
+    // Сначала ищем по точному совпадению ID
+    let tech = technologies.find(t => t.id === selectedTechnologyName);
+    
+    // Если не найдено по ID, ищем по имени
+    if (!tech) {
+      tech = technologies.find(t => 
+        t.name.toLowerCase() === lower
+      );
     }
-  });
+    
+    // Если все еще не найдено, ищем по частичному совпадению
+    if (!tech) {
+      tech = technologies.find(t => 
+        t.name.toLowerCase().includes(lower) ||
+        lower.includes(t.name.toLowerCase())
+      );
+    }
+    
+    if (tech && tech.id !== selectedTech?.id) {
+      setSelectedTech(tech);
+      onTechnologySelect?.(tech);
+    }
+  }, [selectedTechnologyName, technologies, selectedTech?.id, onTechnologySelect]);
 
   // Маппинг модулей матрицы на категории технологий
   const getModuleCategory = (moduleName: string): string[] => {
@@ -161,6 +163,54 @@ export function TechnologyDetails({
       alert(`Технология "${techId}" не найдена в базе данных. Необходимо добавить информацию об этой технологии.`);
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>База технологий</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8">Загрузка данных...</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Детали технологии</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">Выберите технологию для просмотра деталей</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>База технологий</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-red-500">Ошибка загрузки данных</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Детали технологии</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">Невозможно загрузить детали</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
