@@ -152,13 +152,13 @@ npm run build
 - **📋 Главные правила**: [`knowledge-base/methodology.md`](knowledge-base/methodology.md) - ВСЕ правила сбора и интеграции данных
 
 ### 🎨 Frontend документация
-- **📖 Обзор фронтенда**: [`docs/frontend/README.md`](docs/frontend/README.md) - архитектура и компоненты
+- **📖 Обзор фронтенда**: [`docs/frontend/overview.md`](docs/frontend/overview.md) - архитектура и компоненты
 - **📊 Матрица эволюции**: [`docs/evolution-matrix-guide.md`](docs/evolution-matrix-guide.md) - как управлять матрицей
 - **🌳 Дерево технологий**: [`docs/technology-tree-guide.md`](docs/technology-tree-guide.md) - D3.js визуализация
 - **🎯 Кейсы торговых машин**: [`docs/trading-machine-comparator-guide.md`](docs/trading-machine-comparator-guide.md) - работа с кейсами
 
 ### 🖥️ Backend документация
-- **📖 Обзор бэкенда**: [`docs/backend/README.md`](docs/backend/README.md) - сервер, API и база данных
+- **📖 Обзор бэкенда**: [`docs/backend/overview.md`](docs/backend/overview.md) - сервер, API и база данных
 - **🛣️ API документация**: планируется
 - **🗄️ База данных**: схемы и миграции
 
