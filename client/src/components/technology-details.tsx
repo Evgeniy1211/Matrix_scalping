@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { useTechnologies } from '@/hooks/use-technologies';
-import type { Technology } from "@shared/schema"; // Assuming this type definition is still relevant or needs to be compatible
+import type { Technology } from "@shared/schema";
 
 // Re-defining the interface based on the original component's usage and the new snippet's implied structure.
 // This might need adjustment if the actual schema is different.

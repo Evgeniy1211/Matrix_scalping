@@ -12,10 +12,9 @@ import NotFoundPage from "./pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={MatrixPage} />
-      <Route path="/matrix" component={MatrixPage} />
       <Route path="/tree" component={TreePage} />
       <Route path="/cases" component={CasesPage} />
+      <Route path="/" component={MatrixPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );

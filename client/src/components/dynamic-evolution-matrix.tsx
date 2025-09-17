@@ -20,9 +20,9 @@ export function DynamicEvolutionMatrix({
   const [selectedRevision, setSelectedRevision] = useState("rev5");
   const { data: technologies, isLoading, isError } = useTechnologies();
 
+  // Всегда вызываем хуки в одном порядке
   const technologyRows = useMemo(() => {
-    if (!technologies) return [];
-    return buildTechnologyRows(technologies);
+    return technologies ? buildTechnologyRows(technologies) : [];
   }, [technologies]);
 
   const modules = [

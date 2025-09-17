@@ -26,22 +26,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/technologies", async (req, res) => {
     try {
       const { technologyDatabase } = await import("./data/technologies");
-      const technologies: Technology[] = technologyDatabase.map(tech => ({
-        id: tech.id,
-        name: tech.name,
-        fullName: tech.fullName,
-        description: tech.description,
-        category: tech.category,
-        periods: tech.periods,
-        evolution: tech.evolution,
-        applicableModules: tech.applicableModules,
-        advantages: tech.advantages,
-        disadvantages: tech.disadvantages,
-        useCases: tech.useCases,
-        sources: tech.sources
-      }));
-      res.json(technologies);
+      res.json(technologyDatabase);
     } catch (error) {
+      console.error("Technologies API error:", error);
       res.status(500).json({ error: "Failed to load technologies" });
     }
   });
