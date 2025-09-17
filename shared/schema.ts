@@ -6,7 +6,7 @@ import { z } from "zod";
 // ===================== Auth (placeholder) =====================
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
+  username: text("username").notNull().
   password: text("password").notNull(),
 });
 
@@ -59,18 +59,51 @@ export const treeNodeSchema: z.ZodType<any> = z.lazy(() => z.object({
 export type TreeNode = z.infer<typeof treeNodeSchema>;
 
 // ===================== Trading Machine Schemas =====================
+export const technologyStackSchema = z.object({
+  name: z.string(),
+  version: z.string().optional(),
+  purpose: z.string(),
+  category: z.enum(['data', 'processing', 'ml', 'visualization', 'infrastructure'])
+});
+export type TechnologyStack = z.infer<typeof technologyStackSchema>;
+
 export const tradingMachineSchema = z.object({
   id: z.string(),
   name: z.string(),
   period: z.string(),
+  author: z.string().optional(),
   description: z.string(),
-  technologies: z.array(z.string()),
-  modules: z.record(z.any()),
-  performance: z.record(z.any()),
-  codeExample: z.string(),
-  advantages: z.array(z.string()),
-  disadvantages: z.array(z.string()),
-  implementationDetails: z.string(),
+  strategy: z.string(),
+  timeframe: z.string(),
+  marketType: z.string(),
+
+  // Технологический стек — массив объектов (синхронизирован с backend/data/trading-machines.ts)
+  technologies: z.array(technologyStackSchema),
+
+  // Явное описание модулей, соответствующих строкам матрицы
+  modules: z.object({
+    dataCollection: z.array(z.string()),
+    dataProcessing: z.array(z.string()),
+    featureEngineering: z.array(z.string()),
+    signalGeneration: z.array(z.string()),
+    riskManagement: z.array(z.string()),
+    execution: z.array(z.string()),
+    marketAdaptation: z.array(z.string()),
+    visualization: z.array(z.string())
+  }),
+
+  performance: z.object({
+    accuracy: z.number().optional(),
+    precision: z.number().optional(),
+    recall: z.number().optional(),
+    f1Score: z.number().optional(),
+    sharpeRatio: z.number().optional(),
+    maxDrawdown: z.number().optional()
+  }).optional(),
+
+  codeExample: z.string().optional(),
+  advantages: z.array(z.string()).optional(),
+  disadvantages: z.array(z.string()).optional()
 });
 export type TradingMachine = z.infer<typeof tradingMachineSchema>;
 export const tradingMachineArraySchema = z.array(tradingMachineSchema);
