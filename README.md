@@ -152,35 +152,35 @@ npm run build
 - **📋 Главные правила**: [`knowledge-base/methodology.md`](knowledge-base/methodology.md) - ВСЕ правила сбора и интеграции данных
 
 ### 🎨 Frontend документация
-- **📖 Обзор фронтенда**: [`docs/frontend/overview.md`](docs/frontend/overview.md) - архитектура и компоненты
-- **📊 Матрица эволюции**: [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md) - как управлять матрицей
-- **🌳 Дерево технологий**: [`docs/frontend/technology-tree-guide.md`](docs/frontend/technology-tree-guide.md) - D3.js визуализация
-- **🎯 Кейсы торговых машин**: [`docs/frontend/trading-machine-comparator-guide.md`](docs/frontend/trading-machine-comparator-guide.md) - работа с кейсами
+- **📖 Обзор фронтенда**: [`frontend/overview.md`](frontend/overview.md) - архитектура и компоненты
+- **📊 Матрица эволюции**: [`frontend/evolution-matrix-guide.md`](frontend/evolution-matrix-guide.md) - как управлять матрицей
+- **🌳 Дерево технологий**: [`frontend/technology-tree-guide.md`](frontend/technology-tree-guide.md) - D3.js визуализация
+- **🎯 Кейсы торговых машин**: [`frontend/trading-machine-comparator-guide.md`](frontend/trading-machine-comparator-guide.md) - работа с кейсами
 
 ### 🖥️ Backend документация
-- **📖 Обзор бэкенда**: [`docs/backend/overview.md`](docs/backend/overview.md) - сервер, API и база данных
+- **📖 Обзор бэкенда**: [`backend/overview.md`](backend/overview.md) - сервер, API и база данных
 - **🛣️ API документация**: планируется
 - **🗄️ База данных**: схемы и миграции
 
 ### 🏗️ Общий обзор
-- **📋 Архитектура проекта**: [`docs/project-overview.md`](docs/project-overview.md) - структура и компоненты
+- **📋 Архитектура проекта**: [`project-overview.md`](project-overview.md) - структура и компоненты
 
 ## 📝 Как добавлять новые данные
 
 ### Новая технология
 1. Добавить в `client/src/data/technologies.ts`
 2. Обновить соответствующий документ в `knowledge-base/`
-3. **📖 Подробности**: см. [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md)
+3. **📖 Подробности**: см. [`frontend/evolution-matrix-guide.md`](frontend/evolution-matrix-guide.md)
 
 ### Новый кейс торговой машины
 1. Добавить в `client/src/data/trading-machines.ts`
 2. Создать описание в `knowledge-base/trading-cases.md`
-3. **📖 Подробности**: см. [`docs/frontend/trading-machine-comparator-guide.md`](docs/frontend/trading-machine-comparator-guide.md)
+3. **📖 Подробности**: см. [`frontend/trading-machine-comparator-guide.md`](frontend/trading-machine-comparator-guide.md)
 
 ### Новый модуль системы
 1. Добавить в `client/src/data/evolution-data.ts`
 2. Описать в `knowledge-base/trading-modules.md`
-3. **📖 Подробности**: см. [`docs/frontend/evolution-matrix-guide.md`](docs/frontend/evolution-matrix-guide.md)
+3. **📖 Подробности**: см. [`frontend/evolution-matrix-guide.md`](frontend/evolution-matrix-guide.md)
 
 ## 🎯 Планы развития
 
