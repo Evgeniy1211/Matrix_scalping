@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { parseTechnologyDescription, enrichTechnologyDatabase, type TechnologyDescription } from "@/data/technologies";
+import { useTechnologies } from "@/hooks/use-technologies";
+import type { Technology } from "@shared/schema";
 
 export function TechnologyImporter() {
   const [importText, setImportText] = useState("");
   const [technologyName, setTechnologyName] = useState("");
-  const [parsedData, setParsedData] = useState<Partial<TechnologyDescription> | null>(null);
+  const [parsedData, setParsedData] = useState<Partial<Technology> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleParseText = () => {
@@ -40,7 +41,7 @@ export function TechnologyImporter() {
   const handleAddToDatabase = () => {
     if (!parsedData || !technologyName) return;
     
-    const newTech: TechnologyDescription = {
+    const newTech: Technology = {
       id: technologyName.toLowerCase().replace(/\s+/g, '-'),
       name: technologyName,
       description: parsedData.description || "",

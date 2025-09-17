@@ -2,9 +2,8 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { evolutionData, integrateExampleTechnologies, integrateTechnologyDatabase, createDynamicTechnologyMatrix } from "@/data/evolution-data";
-import { getMatrixTechnologyCoverage } from "@/data/trading-machines";
-import type { RevisionData } from "@/data/evolution-data";
+import { useEvolutionData, useTechnologies, useTradingMachines } from "@/hooks/use-technologies";
+import type { EvolutionData } from "@shared/schema";
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
 type DataSourceType = 'original' | 'integrated' | 'dynamic';

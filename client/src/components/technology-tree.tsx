@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { treeData } from "@/data/evolution-data";
+import { useTreeData } from "@/hooks/use-technologies";
 import * as d3 from "d3";
 
 export function TechnologyTree() {

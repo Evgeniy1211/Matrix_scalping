@@ -3,12 +3,12 @@ import { useState } from "react";
 import { Navigation } from "@/components/navigation";
 import { DynamicEvolutionMatrix } from "@/components/dynamic-evolution-matrix";
 import { TechnologyDetails } from "@/components/technology-details";
-import type { TechnologyDescription } from "@/data/technologies";
+import type { Technology } from "@shared/schema";
 
 export default function MatrixPage() {
   const [selectedModule, setSelectedModule] = useState<string>("");
   const [selectedTechnologyName, setSelectedTechnologyName] = useState<string>("");
-  const [selectedTech, setSelectedTech] = useState<TechnologyDescription | null>(null);
+  const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
 
   const handleModuleClick = (moduleName: string) => {
     setSelectedModule(moduleName);
@@ -21,7 +21,7 @@ export default function MatrixPage() {
     setSelectedModule(""); // Сбрасываем фильтр модуля при выборе конкретной технологии
   };
 
-  const handleTechnologySelect = (tech: TechnologyDescription | null) => {
+  const handleTechnologySelect = (tech: Technology | null) => {
     setSelectedTech(tech);
   };
 

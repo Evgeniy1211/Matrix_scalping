@@ -3,12 +3,13 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { technologyDatabase, searchTechnologies, type TechnologyDescription } from "@/data/technologies";
+import { useTechnologies, searchTechnologies } from "@/hooks/use-technologies";
+import type { Technology } from "@shared/schema";
 
 interface TechnologyDetailsProps {
   moduleFilter?: string;
   selectedTechnologyName?: string;
-  onTechnologySelect?: (tech: TechnologyDescription | null) => void;
+  onTechnologySelect?: (tech: Technology | null) => void;
 }
 
 export function TechnologyDetails({ 
@@ -16,25 +17,26 @@ export function TechnologyDetails({
   selectedTechnologyName, 
   onTechnologySelect 
 }: TechnologyDetailsProps) {
-  const [selectedTech, setSelectedTech] = useState<TechnologyDescription | null>(null);
+  const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: technologies, isLoading, isError } = useTechnologies();
 
   // Эффект для автоматического выбора технологии по имени или ID
   useState(() => {
-    if (selectedTechnologyName) {
+    if (selectedTechnologyName && technologies) {
       // Сначала ищем по точному совпадению ID
-      let tech = technologyDatabase.find(t => t.id === selectedTechnologyName);
+      let tech = technologies.find(t => t.id === selectedTechnologyName);
       
       // Если не найдено по ID, ищем по имени
       if (!tech) {
-        tech = technologyDatabase.find(t => 
+        tech = technologies.find(t => 
           t.name.toLowerCase() === selectedTechnologyName.toLowerCase()
         );
       }
       
       // Если все еще не найдено, ищем по частичному совпадению
       if (!tech) {
-        tech = technologyDatabase.find(t => 
+        tech = technologies.find(t => 
           t.name.toLowerCase().includes(selectedTechnologyName.toLowerCase()) ||
           selectedTechnologyName.toLowerCase().includes(t.name.toLowerCase())
         );
@@ -103,13 +105,13 @@ export function TechnologyDetails({
     return [];
   };
 
-  let filteredTechs = technologyDatabase;
+  let filteredTechs = technologies || [];
 
   // Фильтрация по модулю
   if (moduleFilter) {
     const categories = getModuleCategory(moduleFilter);
     console.log(`Фильтр модуля: "${moduleFilter}" → категории:`, categories);
-    console.log('Доступные технологии:', technologyDatabase.map(t => `${t.name} (${t.category})`));
+    console.log('Доступные технологии:', (technologies || []).map(t => `${t.name} (${t.category})`));
     
     if (categories.length > 0) {
       filteredTechs = filteredTechs.filter(tech => 
@@ -144,11 +146,11 @@ export function TechnologyDetails({
 
   const handleRelatedTechnologyClick = (techId: string) => {
     // Ищем технологию по ID
-    let tech = technologyDatabase.find(t => t.id === techId);
+    let tech = (technologies || []).find(t => t.id === techId);
     
     // Если не найдено по ID, ищем по имени
     if (!tech) {
-      tech = technologyDatabase.find(t => t.name.toLowerCase() === techId.toLowerCase());
+      tech = (technologies || []).find(t => t.name.toLowerCase() === techId.toLowerCase());
     }
     
     if (tech) {
@@ -250,7 +252,7 @@ export function TechnologyDetails({
                       <p>
                         Предшественники: {' '}
                         {selectedTech.evolution.predecessors.map((predId, index) => {
-                          const predTech = technologyDatabase.find(t => t.id === predId || t.name.toLowerCase() === predId.toLowerCase());
+                          const predTech = (technologies || []).find(t => t.id === predId || t.name.toLowerCase() === predId.toLowerCase());
                           return (
                             <span key={predId}>
                               {index > 0 && ', '}
@@ -270,7 +272,7 @@ export function TechnologyDetails({
                       <p>
                         Последователи: {' '}
                         {selectedTech.evolution.successors.map((succId, index) => {
-                          const succTech = technologyDatabase.find(t => t.id === succId || t.name.toLowerCase() === succId.toLowerCase());
+                          const succTech = (technologies || []).find(t => t.id === succId || t.name.toLowerCase() === succId.toLowerCase());
                           return (
                             <span key={succId}>
                               {index > 0 && ', '}
@@ -290,7 +292,7 @@ export function TechnologyDetails({
                       <p>
                         Варианты: {' '}
                         {selectedTech.evolution.variants.map((varId, index) => {
-                          const varTech = technologyDatabase.find(t => t.id === varId || t.name.toLowerCase() === varId.toLowerCase());
+                          const varTech = (technologies || []).find(t => t.id === varId || t.name.toLowerCase() === varId.toLowerCase());
                           return (
                             <span key={varId}>
                               {index > 0 && ', '}

@@ -3,8 +3,9 @@ import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { technologyDatabase } from "@/data/technologies";
-import type { TechnologyDescription } from "@/data/technologies";
+import { useTechnologies } from "@/hooks/use-technologies";
+import { buildTechnologyRows, type TechnologyRow } from "@/lib/buildTechnologyRows";
+import type { Technology } from "@shared/schema";
 
 interface DynamicEvolutionMatrixProps {
   onModuleClick?: (moduleName: string) => void;
@@ -12,21 +13,6 @@ interface DynamicEvolutionMatrixProps {
   selectedModule?: string;
 }
 
-interface TechnologyRow {
-  id: string;
-  name: string;
-  category: string;
-  module: string;
-  revisions: {
-    rev1: string;
-    rev2: string;
-    rev3: string;
-    rev4: string;
-    rev5: string;
-  };
-  predecessors: string[];
-  successors: string[];
-}
 
 export function DynamicEvolutionMatrix({ 
   onModuleClick, 
@@ -34,142 +20,22 @@ export function DynamicEvolutionMatrix({
   selectedModule 
 }: DynamicEvolutionMatrixProps) {
   const [filter, setFilter] = useState<'all' | 'category'>('all');
+  const { data: technologies, isLoading, isError } = useTechnologies();
 
   const revisionPeriods = {
-    rev1: { label: "Rev.1", period: "(2000–2015)", years: [2000, 2015] },
-    rev2: { label: "Rev.2", period: "(2015–2020)", years: [2015, 2020] },
-    rev3: { label: "Rev.3", period: "(2020–2022)", years: [2020, 2022] },
-    rev4: { label: "Rev.4", period: "(2022–2023)", years: [2022, 2023] },
-    rev5: { label: "Rev.5", period: "(2023–2025)", years: [2023, 2025] }
+    rev1: { label: "Rev.1", period: "(2000–2015)", years: [2000, 2015] as [number, number] },
+    rev2: { label: "Rev.2", period: "(2015–2020)", years: [2015, 2020] as [number, number] },
+    rev3: { label: "Rev.3", period: "(2020–2022)", years: [2020, 2022] as [number, number] },
+    rev4: { label: "Rev.4", period: "(2022–2023)", years: [2022, 2023] as [number, number] },
+    rev5: { label: "Rev.5", period: "(2023–2025)", years: [2023, 2025] as [number, number] }
   };
 
-  // Маппинг категорий на модули
-  const getCategoryModule = (category: string): string => {
-    const mapping: Record<string, string> = {
-      'data': 'Сбор данных',
-      'processing': 'Обработка данных',
-      'ml': 'Генерация сигналов',
-      'visualization': 'Визуализация и мониторинг',
-      'risk': 'Риск-менеджмент',
-      'execution': 'Исполнение сделок',
-      'adaptation': 'Адаптация к рынку',
-      'infrastructure': 'Инфраструктура'
-    };
-    return mapping[category] || 'Другое';
-  };
-
-  // Определяем в какой ревизии появилась технология
-  const getTechnologyRevision = (tech: TechnologyDescription): keyof typeof revisionPeriods => {
-    const startYear = tech.periods.start;
-    const peakYear = tech.periods.peak || startYear;
-    
-    if (peakYear <= 2015) return 'rev1';
-    if (peakYear <= 2020) return 'rev2';
-    if (peakYear <= 2022) return 'rev3';
-    if (peakYear <= 2023) return 'rev4';
-    return 'rev5';
-  };
-
+  // All hooks ALWAYS called - no conditional early returns
   // Создаем строки для матрицы
   const technologyRows = useMemo((): TechnologyRow[] => {
-    const rows: TechnologyRow[] = [];
-    const processedTechs = new Set<string>();
-
-    // Группируем технологии по модулям
-    const techsByModule: Record<string, TechnologyDescription[]> = {};
-    technologyDatabase.forEach(tech => {
-      const module = getCategoryModule(tech.category);
-      if (!techsByModule[module]) {
-        techsByModule[module] = [];
-      }
-      techsByModule[module].push(tech);
-    });
-
-    // Обрабатываем каждый модуль
-    Object.entries(techsByModule).forEach(([module, techs]) => {
-      // Сортируем технологии по времени появления
-      const sortedTechs = techs.sort((a, b) => a.periods.start - b.periods.start);
-
-      sortedTechs.forEach(tech => {
-        if (processedTechs.has(tech.id)) return;
-        
-        const row: TechnologyRow = {
-          id: tech.id,
-          name: tech.name,
-          category: tech.category,
-          module,
-          revisions: {
-            rev1: '',
-            rev2: '',
-            rev3: '',
-            rev4: '',
-            rev5: ''
-          },
-          predecessors: tech.evolution?.predecessors || [],
-          successors: tech.evolution?.successors || []
-        };
-
-        // Определяем где показать технологию
-        const startRevision = getTechnologyRevision(tech);
-        const endYear = tech.periods.end || new Date().getFullYear();
-
-        // Заполняем ревизии
-        Object.entries(revisionPeriods).forEach(([revKey, revData]) => {
-          const [revStart, revEnd] = revData.years;
-          const key = revKey as keyof typeof row.revisions;
-
-          // Проверяем пересечение периодов
-          if (tech.periods.start <= revEnd && endYear >= revStart) {
-            if (revKey === startRevision) {
-              row.revisions[key] = tech.name;
-            } else if (revStart > tech.periods.start) {
-              // Показываем продолжение или эволюцию
-              if (tech.evolution?.successors && tech.evolution.successors.length > 0) {
-                row.revisions[key] = `${tech.name} → ${tech.evolution.successors.join(', ')}`;
-              } else {
-                row.revisions[key] = tech.name;
-              }
-            }
-          }
-        });
-
-        rows.push(row);
-        processedTechs.add(tech.id);
-
-        // Добавляем строки для эволюционировавших технологий
-        if (tech.evolution?.successors) {
-          tech.evolution.successors.forEach(successorId => {
-            const successor = technologyDatabase.find(t => t.id === successorId || t.name === successorId);
-            if (successor && !processedTechs.has(successor.id)) {
-              const successorRow: TechnologyRow = {
-                id: successor.id,
-                name: successor.name,
-                category: successor.category,
-                module,
-                revisions: {
-                  rev1: '',
-                  rev2: '',
-                  rev3: '',
-                  rev4: '',
-                  rev5: ''
-                },
-                predecessors: successor.evolution?.predecessors || [tech.id],
-                successors: successor.evolution?.successors || []
-              };
-
-              const successorRevision = getTechnologyRevision(successor);
-              successorRow.revisions[successorRevision] = successor.name;
-
-              rows.push(successorRow);
-              processedTechs.add(successor.id);
-            }
-          });
-        }
-      });
-    });
-
-    return rows;
-  }, []);
+    if (!technologies) return [];
+    return buildTechnologyRows(technologies, revisionPeriods);
+  }, [technologies]);
 
   // Фильтруем строки
   const filteredRows = useMemo(() => {
@@ -243,23 +109,28 @@ export function DynamicEvolutionMatrix({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-auto max-h-[800px]">
-          <table className="w-full border-collapse">
-            <thead className="sticky top-0 bg-background z-10">
-              <tr>
-                <th className="sticky left-0 bg-muted text-muted-foreground p-3 text-left font-semibold min-w-[200px] border border-border">
-                  Модуль / Технология
-                </th>
-                {Object.entries(revisionPeriods).map(([rev, data]) => (
-                  <th key={rev} className="p-3 text-center font-semibold text-muted-foreground min-w-[150px] border border-border">
-                    {data.label}
-                    <br />
-                    <span className="text-xs">{data.period}</span>
+        {isLoading ? (
+          <div className="text-center py-8">Загрузка данных...</div>
+        ) : isError ? (
+          <div className="text-center py-8 text-red-500">Ошибка загрузки данных</div>
+        ) : (
+          <div className="overflow-auto max-h-[800px]">
+            <table className="w-full border-collapse">
+              <thead className="sticky top-0 bg-background z-10">
+                <tr>
+                  <th className="sticky left-0 bg-muted text-muted-foreground p-3 text-left font-semibold min-w-[200px] border border-border">
+                    Модуль / Технология
                   </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
+                  {Object.entries(revisionPeriods).map(([rev, data]) => (
+                    <th key={rev} className="p-3 text-center font-semibold text-muted-foreground min-w-[150px] border border-border">
+                      {data.label}
+                      <br />
+                      <span className="text-xs">{data.period}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
               {Object.entries(groupedRows).map(([module, rows]) => (
                 <React.Fragment key={module}>
                   {/* Заголовок модуля */}
@@ -325,6 +196,7 @@ export function DynamicEvolutionMatrix({
             </tbody>
           </table>
         </div>
+        )}
       </CardContent>
     </Card>
   );

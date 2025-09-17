@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { tradingMachineCases, TradingMachineCase } from "@/data/trading-machines";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTradingMachines } from "@/hooks/use-technologies";
+import type { TradingMachine } from "@shared/schema";
 
 export function TradingMachineComparator() {
   const [selectedCase, setSelectedCase] = useState<TradingMachineCase>(tradingMachineCases[0]);
