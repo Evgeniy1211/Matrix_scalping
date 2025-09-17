@@ -1,57 +1,61 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { useTechnologies } from '@/hooks/use-technologies';
+import type { Technology } from "@shared/schema"; // Assuming this type definition is still relevant or needs to be compatible
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useTechnologies } from "@/hooks/use-technologies";
-import type { Technology } from "@shared/schema";
-
+// Re-defining the interface based on the original component's usage and the new snippet's implied structure.
+// This might need adjustment if the actual schema is different.
 interface TechnologyDetailsProps {
   moduleFilter?: string;
   selectedTechnologyName?: string;
   onTechnologySelect?: (tech: Technology | null) => void;
 }
 
-export function TechnologyDetails({ 
-  moduleFilter, 
-  selectedTechnologyName, 
-  onTechnologySelect 
+export function TechnologyDetails({
+  moduleFilter,
+  selectedTechnologyName,
+  onTechnologySelect
 }: TechnologyDetailsProps) {
   const [selectedTech, setSelectedTech] = useState<Technology | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: technologies, isLoading, isError } = useTechnologies();
 
-  // Эффект для автоматического выбора технологии по имени или ID
+  // Effect for automatic technology selection by name or ID
   useEffect(() => {
     if (!selectedTechnologyName || !technologies) return;
-    
+
     const lower = selectedTechnologyName.toLowerCase();
-    
-    // Сначала ищем по точному совпадению ID
+
+    // First, search by exact ID match
     let tech = technologies.find(t => t.id === selectedTechnologyName);
-    
-    // Если не найдено по ID, ищем по имени
+
+    // If not found by ID, search by name
     if (!tech) {
-      tech = technologies.find(t => 
+      tech = technologies.find(t =>
         t.name.toLowerCase() === lower
       );
     }
-    
-    // Если все еще не найдено, ищем по частичному совпадению
+
+    // If still not found, search by partial match
     if (!tech) {
-      tech = technologies.find(t => 
+      tech = technologies.find(t =>
         t.name.toLowerCase().includes(lower) ||
         lower.includes(t.name.toLowerCase())
       );
     }
-    
+
+    // Update selectedTech and call onTechnologySelect if a new tech is found
     if (tech && tech.id !== selectedTech?.id) {
       setSelectedTech(tech);
       onTechnologySelect?.(tech);
     }
   }, [selectedTechnologyName, technologies, selectedTech?.id, onTechnologySelect]);
 
-  // Маппинг модулей матрицы на категории технологий
+  // Mapping matrix modules to technology categories
   const getModuleCategory = (moduleName: string): string[] => {
     const moduleMapping: Record<string, string[]> = {
       'Сбор данных': ['data'],
@@ -63,31 +67,29 @@ export function TechnologyDetails({
       'Адаптация к рынку': ['adaptation'],
       'Визуализация и мониторинг': ['visualization']
     };
-    
-    // Ищем точное совпадение
+
     const exactMatch = moduleMapping[moduleName];
     if (exactMatch) return exactMatch;
-    
-    // Поиск по частичному совпадению для более сложных имен модулей
-    const partialMatch = Object.keys(moduleMapping).find(key => 
+
+    const partialMatch = Object.keys(moduleMapping).find(key =>
       moduleName.includes(key) || key.includes(moduleName)
     );
-    
+
     if (partialMatch) return moduleMapping[partialMatch];
-    
-    // Дополнительные проверки для специфических случаев
-    if (moduleName.toLowerCase().includes('визуализация') || 
+
+    // Additional checks for specific cases
+    if (moduleName.toLowerCase().includes('визуализация') ||
         moduleName.toLowerCase().includes('мониторинг')) {
       return ['visualization'];
     }
-    if (moduleName.toLowerCase().includes('данные') || 
+    if (moduleName.toLowerCase().includes('данные') ||
         moduleName.toLowerCase().includes('сбор')) {
       return ['data'];
     }
     if (moduleName.toLowerCase().includes('обработка')) {
       return ['processing'];
     }
-    if (moduleName.toLowerCase().includes('сигнал') || 
+    if (moduleName.toLowerCase().includes('сигнал') ||
         moduleName.toLowerCase().includes('машинное') ||
         moduleName.toLowerCase().includes('обучение')) {
       return ['ml'];
@@ -95,39 +97,35 @@ export function TechnologyDetails({
     if (moduleName.toLowerCase().includes('риск')) {
       return ['risk'];
     }
-    if (moduleName.toLowerCase().includes('исполнение') || 
+    if (moduleName.toLowerCase().includes('исполнение') ||
         moduleName.toLowerCase().includes('сделк')) {
       return ['execution'];
     }
-    if (moduleName.toLowerCase().includes('адаптация') || 
+    if (moduleName.toLowerCase().includes('адаптация') ||
         moduleName.toLowerCase().includes('рынок')) {
       return ['adaptation'];
     }
-    
+
     return [];
   };
 
   let filteredTechs = technologies || [];
 
-  // Фильтрация по модулю
+  // Filtering by module
   if (moduleFilter) {
     const categories = getModuleCategory(moduleFilter);
-    console.log(`Фильтр модуля: "${moduleFilter}" → категории:`, categories);
-    console.log('Доступные технологии:', (technologies || []).map(t => `${t.name} (${t.category})`));
-    
     if (categories.length > 0) {
-      filteredTechs = filteredTechs.filter(tech => 
+      filteredTechs = filteredTechs.filter(tech =>
         categories.includes(tech.category)
       );
-      console.log('Отфильтрованные технологии:', filteredTechs.map(t => t.name));
     }
   }
 
-  // Дополнительная фильтрация по поисковому запросу
+  // Additional filtering by search query
   if (searchQuery) {
     filteredTechs = filteredTechs.filter(tech =>
       tech.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tech.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tech.fullName?.toLowerCase().includes(searchQuery.toLowerCase()) || // Assuming fullName might exist on Technology
       tech.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }
@@ -147,19 +145,15 @@ export function TechnologyDetails({
   };
 
   const handleRelatedTechnologyClick = (techId: string) => {
-    // Ищем технологию по ID
     let tech = (technologies || []).find(t => t.id === techId);
-    
-    // Если не найдено по ID, ищем по имени
     if (!tech) {
       tech = (technologies || []).find(t => t.name.toLowerCase() === techId.toLowerCase());
     }
-    
+
     if (tech) {
       setSelectedTech(tech);
       onTechnologySelect?.(tech);
     } else {
-      // Если технология не найдена, показываем предупреждение
       alert(`Технология "${techId}" не найдена в базе данных. Необходимо добавить информацию об этой технологии.`);
     }
   };
@@ -239,8 +233,8 @@ export function TechnologyDetails({
               <div
                 key={tech.id}
                 className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedTech?.id === tech.id 
-                    ? 'border-blue-500 bg-blue-50' 
+                  selectedTech?.id === tech.id
+                    ? 'border-blue-500 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => {
@@ -306,7 +300,7 @@ export function TechnologyDetails({
                           return (
                             <span key={predId}>
                               {index > 0 && ', '}
-                              <span 
+                              <span
                                 className={predTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
                                 onClick={() => predTech ? handleRelatedTechnologyClick(predId) : null}
                                 title={predTech ? `Перейти к ${predTech.name}` : `Технология "${predId}" не найдена в базе данных`}
@@ -326,7 +320,7 @@ export function TechnologyDetails({
                           return (
                             <span key={succId}>
                               {index > 0 && ', '}
-                              <span 
+                              <span
                                 className={succTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
                                 onClick={() => succTech ? handleRelatedTechnologyClick(succId) : null}
                                 title={succTech ? `Перейти к ${succTech.name}` : `Технология "${succId}" не найдена в базе данных`}
@@ -346,7 +340,7 @@ export function TechnologyDetails({
                           return (
                             <span key={varId}>
                               {index > 0 && ', '}
-                              <span 
+                              <span
                                 className={varTech ? "text-blue-600 hover:text-blue-800 cursor-pointer underline" : "text-gray-500"}
                                 onClick={() => varTech ? handleRelatedTechnologyClick(varId) : null}
                                 title={varTech ? `Перейти к ${varTech.name}` : `Технология "${varId}" не найдена в базе данных`}
