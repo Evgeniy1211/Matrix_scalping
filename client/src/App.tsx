@@ -14,6 +14,7 @@ function Router() {
     <Switch>
       <Route path="/tree" component={TreePage} />
       <Route path="/cases" component={CasesPage} />
+      <Route path="/matrix" component={MatrixPage} />
       <Route path="/" component={MatrixPage} />
       <Route component={NotFoundPage} />
     </Switch>
