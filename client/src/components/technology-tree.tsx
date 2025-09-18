@@ -29,37 +29,37 @@ export function TechnologyTree() {
     const tree = d3.tree<any>()
       .size([height - 40, width - 100]);
 
-    const root = d3.hierarchy(treeData);
-    tree(root);
+    const root = d3.hierarchy(treeData as any);
+    tree(root as any);
 
     // Add zoom behavior
     const zoom = d3.zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.5, 2])
-      .on('zoom', (event) => {
-        g.attr('transform', event.transform);
+      .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
+        g.attr('transform', (event as any).transform);
       });
 
-    svg.call(zoom);
+    svg.call(zoom as any);
 
     // Draw links
     g.selectAll('.link')
-      .data(root.links())
+      .data(root.links() as any)
       .enter().append('path')
       .attr('class', 'link')
       .attr('d', d3.linkHorizontal<any, any>()
-        .x(d => d.y + 50)
-        .y(d => d.x + 20));
+        .x((d: any) => d.y + 50)
+        .y((d: any) => d.x + 20) as any);
 
     // Draw nodes
     const node = g.selectAll('.node')
-      .data(root.descendants())
+      .data(root.descendants() as any)
       .enter().append('g')
       .attr('class', 'node')
-      .attr('transform', d => `translate(${d.y + 50},${d.x + 20})`);
+      .attr('transform', (d: any) => `translate(${d.y + 50},${d.x + 20})`);
 
     node.append('circle')
       .attr('r', 6)
-      .style('fill', d => {
+      .style('fill', (d: any) => {
         if (!d.children && !d._children) return 'hsl(38 92% 50%)'; // leaf nodes - secondary
         return d.depth === 0 ? 'hsl(221 83% 53%)' : 'hsl(142 76% 36%)'; // root: primary, internal: accent
       });
@@ -68,12 +68,12 @@ export function TechnologyTree() {
     node.append('text')
       .attr('class', 'node-label')
       .attr('dy', 3)
-      .attr('x', d => d.children || d._children ? -10 : 10)
-      .style('text-anchor', d => d.children || d._children ? 'end' : 'start')
-      .text(d => d.data.name);
+      .attr('x', (d: any) => d.children || d._children ? -10 : 10)
+      .style('text-anchor', (d: any) => d.children || d._children ? 'end' : 'start')
+      .text((d: any) => d.data.name);
 
     // Add tooltip functionality to nodes
-    node.on('mouseenter', function(event, d) {
+    node.on('mouseenter', function(event: MouseEvent, d: any) {
       showTooltip(event, d.data.description || d.data.name);
     }).on('mouseleave', hideTooltip);
 
@@ -96,7 +96,7 @@ export function TechnologyTree() {
         .style('pointer-events', 'none')
         .style('transition', 'opacity 0.2s ease');
 
-      const tooltipUpdate = tooltip.merge(tooltipEnter);
+      const tooltipUpdate = (tooltip as any).merge(tooltipEnter as any);
       
       tooltipUpdate
         .text(content)

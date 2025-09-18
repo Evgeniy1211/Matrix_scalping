@@ -4,7 +4,7 @@
 
 ## Форматы данных
 
-Основной контракт (shared/schema.ts → evolutionDataSchema):
+Основной контракт (backend/knowledge-base/schema.ts → evolutionDataSchema):
 
 ```ts
 {
@@ -56,7 +56,7 @@
 
 ## Валидация
 
-Все ответы валидируются Zod схемой `evolutionDataSchema` из `shared/schema.ts`. Несоответствие формату выдаёт ошибку React Query и fallback UI.
+Все ответы валидируются Zod схемой `evolutionDataSchema` из `backend/knowledge-base/schema.ts`. Несоответствие формату выдаёт ошибку React Query и fallback UI.
 
 ## Coverage (покрытие кейсами)
 

@@ -19,13 +19,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
+      "@shared": path.resolve(import.meta.dirname, "backend", "knowledge-base"),
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    // Output into backend/public to match serveStatic() path
+    outDir: path.resolve(import.meta.dirname, "backend", "public"),
     emptyOutDir: true,
   },
   server: {

@@ -15,14 +15,16 @@ app.use((req, res, next) => {
   res.json = function (bodyJson, ...args) {
     capturedJsonResponse = bodyJson;
     return originalResJson.apply(res, [bodyJson, ...args]);
-  };
+  } as typeof res.json;
 
   res.on("finish", () => {
     const duration = Date.now() - start;
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        try {
+          logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        } catch {}
       }
 
       if (logLine.length > 80) {
@@ -47,10 +49,13 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  // Choose mode based on NODE_ENV instead of Express env for reliability on Windows
+  const nodeEnv = process.env.NODE_ENV ?? "development";
+  const isDev = nodeEnv !== "production";
+  log(`NODE_ENV=${nodeEnv}`, "env");
+
+  // Only setup Vite in development and after other routes
+  if (isDev) {
     await setupVite(app, server);
   } else {
     serveStatic(app);

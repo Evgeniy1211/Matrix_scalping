@@ -1,4 +1,4 @@
-
+<!-- markdownlint-disable MD022 MD026 MD031 MD032 MD040 MD024 MD029 MD047 -->
 # Кейсы торговых машин: Реальные примеры реализации
 
 ## Введение
@@ -563,11 +563,11 @@ if __name__ == "__main__":
 
 ### Долгосрочные планы
 - **High-Frequency Market Maker** (HFT пример)
-- **Cross-Asset Arbitrage System** 
+- **Cross-Asset Arbitrage System**
 - **DeFi Yield Farming Bot**
 - **Options Market Making Strategy**
 - **Quantum ML Portfolio Optimizer**
 
 ---
 
-*Документ основан на данных из файла `client/src/data/trading-machines.ts` и будет регулярно пополняться новыми кейсами и детальными анализами существующих систем.*
+*Документ основан на данных из файла `backend/data/trading-machines.ts` и будет регулярно пополняться новыми кейсами и детальными анализами существующих систем.*
