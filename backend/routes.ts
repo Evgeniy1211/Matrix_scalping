@@ -64,6 +64,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, res);
   });
 
+  app.get('/api/modules/:id', async (req, res) => {
+    safeHandler(async () => {
+      const { allModules } = await import('./data/modules/index');
+      const module = allModules.find((mod) => mod.name === req.params.id);
+      if (!module) {
+        res.status(404).json({ error: 'Module not found' });
+        return;
+      }
+      res.json(module);
+    }, res);
+  });
+
+  app.get('/api/evolution', async (req, res) => {
+    safeHandler(async () => {
+      const { evolutionData } = await import('./data/evolution-data');
+      res.json(evolutionData);
+    }, res);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

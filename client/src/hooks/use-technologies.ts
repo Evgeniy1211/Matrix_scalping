@@ -28,8 +28,8 @@ async function fetchAndValidate<S extends ZodTypeAny>(
 
 export function useTechnologies() {
   return useQuery({
-    queryKey: ['/api/technologies'],
-    queryFn: () => fetchAndValidate('/api/technologies', technologyArraySchema),
+    queryKey: ['/api/modules'],
+    queryFn: () => fetchAndValidate('/api/modules', technologyArraySchema),
   });
 }
 
@@ -44,10 +44,10 @@ export function useTradingMachines() {
 export function useEvolutionData(source: 'original' | 'integrated' | 'dynamic' = 'original') {
   const endpoint =
     source === 'original'
-      ? '/api/evolution-data'
+      ? '/api/evolution'
       : source === 'integrated'
-        ? '/api/evolution-data/integrated'
-        : '/api/evolution-data/dynamic';
+        ? '/api/evolution/integrated'
+        : '/api/evolution/dynamic';
 
   return useQuery({
     queryKey: [endpoint],
