@@ -83,6 +83,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, res);
   });
 
+  // Современные эндпоинты для эволюционных данных
+  app.get('/api/evolution/integrated', async (_req, res) => {
+    safeHandler(async () => {
+      const { integrateTechnologyDatabase } = await import('./data/evolution-data');
+      const data = integrateTechnologyDatabase();
+      res.json(data);
+    }, res);
+  });
+
+  app.get('/api/evolution/dynamic', async (_req, res) => {
+    safeHandler(async () => {
+      const { createDynamicTechnologyMatrix } = await import('./data/evolution-data');
+      const data = createDynamicTechnologyMatrix();
+      res.json(data);
+    }, res);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

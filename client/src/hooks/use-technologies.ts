@@ -28,8 +28,8 @@ async function fetchAndValidate<S extends ZodTypeAny>(
 
 export function useTechnologies() {
   return useQuery({
-    queryKey: ['/api/modules'],
-    queryFn: () => fetchAndValidate('/api/modules', technologyArraySchema),
+    queryKey: ['/api/technologies'],
+    queryFn: () => fetchAndValidate('/api/technologies', technologyArraySchema),
   });
 }
 
