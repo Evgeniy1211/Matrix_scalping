@@ -13,7 +13,8 @@
     "format": "prettier --write .",
     "prepare": "husky install",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "import:process": "tsx backend/import/process-import.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
