@@ -58,16 +58,16 @@ backend/
 
 ## Smoke-тесты (чек-лист)
 
-1) Сервер стартует без ошибок (`npm run dev` или `npm start` после сборки)
-2) Эндпоинты `/api/*` отвечают 200 и возвращают валидные данные:
+1. Сервер стартует без ошибок (`npm run dev` или `npm start` после сборки)
+2. Эндпоинты `/api/*` отвечают 200 и возвращают валидные данные:
    - `/api/technologies`
    - `/api/evolution-data`
    - `/api/evolution-data/integrated`
    - `/api/evolution-data/dynamic`
    - `/api/trading-machines`
    - `/api/modules`
-3) Статический фронтенд отдается в продакшене (после `npm run build` → `npm start`)
-4) Нет 404/устаревших ссылок на старые пути (`shared/*`, `client/src/data/*` и т.п.)
+3. Статический фронтенд отдается в продакшене (после `npm run build` → `npm start`)
+4. Нет 404/устаревших ссылок на старые пути (`shared/*`, `client/src/data/*` и т.п.)
 
 ## Заметки по миграции
 

@@ -1,24 +1,24 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const revisionExplanations = [
   {
-    title: "Rev.1-2 (2000-2020)",
-    newTech: "Traditional ML, SVM, Random Forest",
-    solved: "Базовая автоматизация торговли",
-    limitations: "Низкая адаптивность, простые стратегии"
+    title: 'Rev.1-2 (2000-2020)',
+    newTech: 'Traditional ML, SVM, Random Forest',
+    solved: 'Базовая автоматизация торговли',
+    limitations: 'Низкая адаптивность, простые стратегии',
   },
   {
-    title: "Rev.3 (2020-2022)",
-    newTech: "Deep Learning, LSTM, CNN для LOB",
-    solved: "Сложные паттерны данных",
-    limitations: "Требовательность к данным, переобучение"
+    title: 'Rev.3 (2020-2022)',
+    newTech: 'Deep Learning, LSTM, CNN для LOB',
+    solved: 'Сложные паттерны данных',
+    limitations: 'Требовательность к данным, переобучение',
   },
   {
-    title: "Rev.4-5 (2022-2025)",
-    newTech: "Transformers, GNN, Multi-Agent RL",
-    solved: "Адаптация в реальном времени",
-    limitations: "Вычислительная сложность, интерпретируемость"
-  }
+    title: 'Rev.4-5 (2022-2025)',
+    newTech: 'Transformers, GNN, Multi-Agent RL',
+    solved: 'Адаптация в реальном времени',
+    limitations: 'Вычислительная сложность, интерпретируемость',
+  },
 ];
 
 export function RevisionExplanations() {

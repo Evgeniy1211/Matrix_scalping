@@ -19,7 +19,7 @@ The application follows a modern React architecture using TypeScript and functio
 The main components are organized around the core visualization features:
 
 - `EvolutionMatrix` - Interactive matrix showing technology evolution across revisions
-- `TechnologyTree` - D3.js-powered hierarchical visualization of technology relationships  
+- `TechnologyTree` - D3.js-powered hierarchical visualization of technology relationships
 - `RevisionExplanations` - Educational content explaining each revision period
 - Comprehensive UI component library from shadcn/ui for consistent styling
 
@@ -89,7 +89,7 @@ Comprehensive documentation has been created for easy content management and cus
 ### Key Documentation Features
 
 - Data Structure Explanations
-- Visual Customization Guides  
+- Visual Customization Guides
 - File Relationship Maps
 - Step-by-step Examples
 - Troubleshooting Sections
@@ -97,7 +97,7 @@ Comprehensive documentation has been created for easy content management and cus
 ### Content Management Workflow
 
 1. Matrix changes — edit `backend/data/evolution-data.ts` (evolutionData/treeData/integrators)
-2. Tree changes — edit `backend/data/evolution-data.ts` (treeData exports)  
+2. Tree changes — edit `backend/data/evolution-data.ts` (treeData exports)
 3. Technologies — edit `backend/data/technologies.ts`
 4. Trading machines — edit `backend/data/trading-machines.ts`
 5. Styling changes — modify `client/src/index.css`
