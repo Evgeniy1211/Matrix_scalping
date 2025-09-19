@@ -62,7 +62,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       successors: ['transformer'],
       variants: ['extra-trees'],
     },
-    applicableModules: ['signalGeneration', 'featureEngineering'],
+    applicableModules: ['Генерация сигналов', 'Feature Engineering'],
     advantages: [
       'Устойчивость к переобучению',
       'Работа с пропущенными данными',
@@ -99,7 +99,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       successors: ['transformer'],
       variants: ['gru'],
     },
-    applicableModules: ['signalGeneration', 'marketAdaptation'],
+    applicableModules: ['Генерация сигналов', 'Адаптация к рынку'],
     advantages: [
       'Память о долгосрочных зависимостях',
       'Работа с последовательностями переменной длины',
@@ -132,7 +132,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       predecessors: [],
       variants: ['ccxt-pro'],
     },
-    applicableModules: ['dataCollection', 'execution'],
+    applicableModules: ['Сбор данных', 'Исполнение сделок'],
     advantages: [
       'Единый интерфейс для множества бирж',
       'Поддержка WebSocket',
@@ -164,7 +164,7 @@ export const technologyDatabase: TechnologyDescription[] = [
       successors: [],
       variants: ['vision-transformer'],
     },
-    applicableModules: ['signalGeneration', 'marketAdaptation', 'featureEngineering'],
+    applicableModules: ['Генерация сигналов', 'Адаптация к рынку', 'Feature Engineering'],
     advantages: [
       'Параллелизация обучения',
       'Эффективная работа с длинными последовательностями',

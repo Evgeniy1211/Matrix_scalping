@@ -12,7 +12,8 @@
     "lint": "eslint \"index.ts\" \"backend/**/*.{ts,tsx}\" \"client/src/**/*.{ts,tsx}\"",
     "format": "prettier --write .",
     "prepare": "husky install",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "verify-data": "tsx scripts/verify-data-consistency.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
