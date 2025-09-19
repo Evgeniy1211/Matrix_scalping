@@ -39,6 +39,9 @@ export interface TechnologyDescription {
 
   // Ссылки на источники
   sources?: string[];
+
+  // Заметки
+  notes?: string[];
 }
 
 export const technologyDatabase: TechnologyDescription[] = [
@@ -73,6 +76,10 @@ export const technologyDatabase: TechnologyDescription[] = [
     ],
     useCases: ['Классификация направления движения цены', 'Скальпинг стратегии', 'Отбор признаков'],
     sources: ['Breiman (2001)', 'Chan et al. (2015-2017)'],
+    notes: [
+      "Random Forest Scalper (2015-2017): Использование для классификации направления движения цены.",
+      "Extra Trees (2006-2016): Быстрая классификация больших датасетов."
+    ],
   },
 
   {
