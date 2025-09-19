@@ -1,6 +1,5 @@
-
-import { Navigation } from "@/components/navigation";
-import { TechnologyTree } from "@/components/technology-tree";
+import { Navigation } from '@/components/navigation';
+import { TechnologyTree } from '@/components/technology-tree';
 
 export default function TreePage() {
   return (
@@ -9,9 +8,7 @@ export default function TreePage() {
       <header className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              Дерево эволюции технологий
-            </h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Дерево эволюции технологий</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Интерактивное дерево показывает связи и происхождение технологий
             </p>

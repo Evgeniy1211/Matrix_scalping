@@ -1,4 +1,5 @@
 <!-- markdownlint-disable MD022 MD026 MD031 MD032 MD040 MD024 MD029 MD047 -->
+
 # Кейсы торговых машин: Реальные примеры реализации
 
 ## Введение
@@ -8,6 +9,7 @@
 ## Кейс 1: Random Forest Scalper (2015-2017)
 
 ### Общая информация
+
 - **Название**: Random Forest Scalper
 - **Период разработки**: 2015-2017
 - **Автор/Источник**: Chan et al.
@@ -16,36 +18,43 @@
 - **Временной интервал**: 1 минута
 
 ### Описание стратегии
+
 Простая торговая машина для скальпинга на криптовалютном рынке, использующая Random Forest для предсказания направления движения цены Bitcoin. Система анализирует короткие временные интервалы (1 минута) и генерирует быстрые торговые сигналы на основе технических индикаторов.
 
 ### Технологический стек
 
 #### Языки программирования и основные инструменты
+
 - **Python** - основной язык разработки
 - **Jupyter Notebook** - для исследований и прототипирования
 
-#### Библиотеки для сбора данных  
+#### Библиотеки для сбора данных
+
 - **ccxt v1.x** - подключение к Binance API для получения OHLCV данных
 - **requests** - HTTP запросы к API
 - **time** - управление задержками между запросами
 
 #### Библиотеки для обработки данных
+
 - **pandas** - работа с временными рядами и создание DataFrame
 - **numpy** - быстрые математические операции и создание признаков
 
 #### Машинное обучение
+
 - **scikit-learn** - RandomForestClassifier и метрики качества
   - `RandomForestClassifier(n_estimators=100, random_state=42)`
   - `train_test_split` для разделения данных
   - `classification_report` для оценки производительности
 
 #### Визуализация
+
 - **matplotlib** - визуализация сигналов и графиков цены
 - **pyplot** - создание графиков временных рядов
 
 ### Архитектура системы
 
 #### Модуль сбора данных
+
 ```python
 # Инициализация биржи
 exchange = ccxt.binance()
@@ -56,11 +65,13 @@ df = pd.DataFrame(ohlcv, columns=['timestamp','open','high','low','close','volum
 ```
 
 **Технологии модуля**:
+
 - Binance API
 - CCXT библиотека
 - OHLCV данные с 1-минутными свечами
 
 #### Модуль обработки данных
+
 ```python
 # Обработка временных меток
 df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
@@ -71,14 +82,16 @@ df.fillna(method='forward', inplace=True)
 ```
 
 **Технологии модуля**:
+
 - pandas DataFrame для структурированного хранения
 - Временные ряды с proper indexing
 
 #### Модуль Feature Engineering
+
 ```python
 # Создание признаков
 df['return'] = df['close'].pct_change()
-df['volatility'] = df['return'].rolling(5).std() 
+df['volatility'] = df['return'].rolling(5).std()
 df['sma5'] = df['close'].rolling(5).mean()
 df['sma20'] = df['close'].rolling(20).mean()
 df['sma_diff'] = df['sma5'] - df['sma20']
@@ -88,13 +101,15 @@ df['target'] = (df['close'].shift(-1) > df['close']).astype(int)
 ```
 
 **Признаки (Features)**:
+
 - **return (pct_change)** - процентное изменение цены
-- **volatility (rolling std)** - скользящая волатильность за 5 периодов  
+- **volatility (rolling std)** - скользящая волатильность за 5 периодов
 - **SMA5** - простая скользящая средняя за 5 периодов
 - **SMA20** - простая скользящая средняя за 20 периодов
 - **sma_diff** - разность между короткой и длинной скользящими средними
 
 #### Модуль генерации сигналов
+
 ```python
 # Обучение модели
 X = df[['return','volatility','sma5','sma20','sma_diff']]
@@ -112,10 +127,12 @@ predictions = model.predict(X_test)
 ```
 
 **Технологии модуля**:
+
 - RandomForestClassifier с 100 деревьями
 - Binary classification (UP/DOWN движения цены)
 
 #### Модуль управления рисками
+
 ```python
 # Простые BUY/SELL сигналы без продвинутого риск-менеджмента
 signals = []
@@ -127,11 +144,13 @@ for prediction in predictions:
 ```
 
 **Характеристики**:
+
 - Простые BUY/SELL сигналы без размера позиции
 - Отсутствие stop-loss и take-profit механизмов
 - Фиксированный risk per trade
 
 #### Модуль исполнения сделок
+
 ```python
 # Дискретные торговые сигналы (в реальной реализации)
 def execute_trade(signal, amount):
@@ -144,11 +163,13 @@ def execute_trade(signal, amount):
 ```
 
 **Характеристики**:
+
 - Дискретные рыночные ордера
 - Простая логика исполнения
 - Отсутствие сложных алгоритмов исполнения
 
 #### Модуль адаптации к рынку
+
 ```python
 # Периодическое переобучение
 def retrain_model(new_data):
@@ -158,11 +179,13 @@ def retrain_model(new_data):
 ```
 
 **Технологии модуля**:
+
 - train_test_split для разделения данных
 - Периодическое переобучение модели
 - Нет автоматической адаптации
 
 #### Модуль визуализации
+
 ```python
 import matplotlib.pyplot as plt
 
@@ -174,9 +197,9 @@ plt.plot(df.index, df['close'], label='BTC Price')
 buy_signals = df[df['prediction'] == 1]
 sell_signals = df[df['prediction'] == 0]
 
-plt.scatter(buy_signals.index, buy_signals['close'], 
+plt.scatter(buy_signals.index, buy_signals['close'],
            color='green', marker='^', label='BUY')
-plt.scatter(sell_signals.index, sell_signals['close'], 
+plt.scatter(sell_signals.index, sell_signals['close'],
            color='red', marker='v', label='SELL')
 
 plt.legend()
@@ -184,6 +207,7 @@ plt.show()
 ```
 
 **Технологии модуля**:
+
 - matplotlib графики
 - Цена + точки торговых сигналов
 - Статические графики (не real-time)
@@ -206,7 +230,7 @@ class RandomForestScalper:
         self.symbol = symbol
         self.timeframe = timeframe
         self.model = RandomForestClassifier(n_estimators=100, random_state=42)
-        
+
     def fetch_data(self, limit=1000):
         """Получение исторических данных"""
         ohlcv = self.exchange.fetch_ohlcv(self.symbol, self.timeframe, limit=limit)
@@ -214,7 +238,7 @@ class RandomForestScalper:
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
         df.set_index('timestamp', inplace=True)
         return df
-        
+
     def create_features(self, df):
         """Создание признаков"""
         # Технические индикаторы
@@ -223,19 +247,19 @@ class RandomForestScalper:
         df['sma5'] = df['close'].rolling(5).mean()
         df['sma20'] = df['close'].rolling(20).mean()
         df['sma_diff'] = df['sma5'] - df['sma20']
-        
+
         # Дополнительные признаки
         df['rsi'] = self.calculate_rsi(df['close'])
         df['bb_upper'], df['bb_lower'] = self.calculate_bollinger_bands(df['close'])
         df['bb_position'] = (df['close'] - df['bb_lower']) / (df['bb_upper'] - df['bb_lower'])
-        
+
         # Целевая переменная (будущее направление движения)
         df['target'] = (df['close'].shift(-1) > df['close']).astype(int)
-        
+
         # Удаление NaN значений
         df.dropna(inplace=True)
         return df
-    
+
     def calculate_rsi(self, prices, period=14):
         """Расчет RSI"""
         delta = prices.diff()
@@ -244,7 +268,7 @@ class RandomForestScalper:
         rs = gain / loss
         rsi = 100 - (100 / (1 + rs))
         return rsi
-    
+
     def calculate_bollinger_bands(self, prices, period=20, std_dev=2):
         """Расчет полос Боллинджера"""
         sma = prices.rolling(window=period).mean()
@@ -252,118 +276,118 @@ class RandomForestScalper:
         upper_band = sma + (std * std_dev)
         lower_band = sma - (std * std_dev)
         return upper_band, lower_band
-        
+
     def train_model(self, df):
         """Обучение модели"""
-        feature_columns = ['return', 'volatility', 'sma5', 'sma20', 'sma_diff', 
+        feature_columns = ['return', 'volatility', 'sma5', 'sma20', 'sma_diff',
                           'rsi', 'bb_position']
-        
+
         X = df[feature_columns]
         y = df['target']
-        
+
         # Разделение на train/test
         X_train, X_test, y_train, y_test = train_test_split(
             X, y, test_size=0.2, shuffle=False
         )
-        
+
         # Обучение
         self.model.fit(X_train, y_train)
-        
+
         # Оценка качества
         y_pred = self.model.predict(X_test)
         accuracy = accuracy_score(y_test, y_pred)
-        
+
         print(f"Model Accuracy: {accuracy:.4f}")
         print("\nClassification Report:")
         print(classification_report(y_test, y_pred))
-        
+
         # Важность признаков
         feature_importance = pd.DataFrame({
             'feature': feature_columns,
             'importance': self.model.feature_importances_
         }).sort_values('importance', ascending=False)
-        
+
         print("\nFeature Importance:")
         print(feature_importance)
-        
+
         return X_test, y_test, y_pred
-        
+
     def generate_signals(self, df):
         """Генерация торговых сигналов"""
-        feature_columns = ['return', 'volatility', 'sma5', 'sma20', 'sma_diff', 
+        feature_columns = ['return', 'volatility', 'sma5', 'sma20', 'sma_diff',
                           'rsi', 'bb_position']
-        
+
         X = df[feature_columns]
         predictions = self.model.predict(X)
         probabilities = self.model.predict_proba(X)
-        
+
         df['prediction'] = predictions
         df['confidence'] = np.max(probabilities, axis=1)
-        
+
         # Генерация сигналов с учетом уверенности
         df['signal'] = 'HOLD'
         df.loc[(df['prediction'] == 1) & (df['confidence'] > 0.6), 'signal'] = 'BUY'
         df.loc[(df['prediction'] == 0) & (df['confidence'] > 0.6), 'signal'] = 'SELL'
-        
+
         return df
-        
+
     def backtest(self, df, initial_balance=1000):
         """Простой бэктест"""
         balance = initial_balance
         position = 0
         trades = []
-        
+
         for i in range(1, len(df)):
             current_price = df['close'].iloc[i]
             signal = df['signal'].iloc[i-1]  # Используем предыдущий сигнал
-            
+
             if signal == 'BUY' and position == 0:
                 # Покупка
                 position = balance / current_price
                 balance = 0
                 trades.append(('BUY', current_price, df.index[i]))
-                
+
             elif signal == 'SELL' and position > 0:
                 # Продажа
                 balance = position * current_price
                 position = 0
                 trades.append(('SELL', current_price, df.index[i]))
-        
+
         # Закрытие последней позиции
         if position > 0:
             final_balance = position * df['close'].iloc[-1]
         else:
             final_balance = balance
-            
+
         total_return = (final_balance - initial_balance) / initial_balance * 100
-        
+
         return {
             'initial_balance': initial_balance,
             'final_balance': final_balance,
             'total_return': total_return,
             'trades': trades
         }
-        
+
     def visualize_results(self, df, backtest_results):
         """Визуализация результатов"""
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12))
-        
+
         # График 1: Цена и сигналы
         ax1.plot(df.index, df['close'], label='BTC/USDT Price', alpha=0.7)
-        
+
         buy_signals = df[df['signal'] == 'BUY']
         sell_signals = df[df['signal'] == 'SELL']
-        
-        ax1.scatter(buy_signals.index, buy_signals['close'], 
+
+        ax1.scatter(buy_signals.index, buy_signals['close'],
                    color='green', marker='^', s=50, label='BUY Signal')
-        ax1.scatter(sell_signals.index, sell_signals['close'], 
+        ax1.scatter(sell_signals.index, sell_signals['close'],
                    color='red', marker='v', s=50, label='SELL Signal')
-        
+
         ax1.set_title('Price and Trading Signals')
         ax1.set_ylabel('Price (USDT)')
         ax1.legend()
         ax1.grid(True, alpha=0.3)
-        
+
         # График 2: Технические индикаторы
         ax2.plot(df.index, df['sma5'], label='SMA5', alpha=0.8)
         ax2.plot(df.index, df['sma20'], label='SMA20', alpha=0.8)
@@ -372,7 +396,7 @@ class RandomForestScalper:
         ax2.set_ylabel('Price (USDT)')
         ax2.legend()
         ax2.grid(True, alpha=0.3)
-        
+
         # График 3: RSI и Bollinger Bands Position
         ax3_twin = ax3.twinx()
         ax3.plot(df.index, df['rsi'], color='orange', label='RSI')
@@ -380,18 +404,18 @@ class RandomForestScalper:
         ax3.axhline(y=30, color='g', linestyle='--', alpha=0.5)
         ax3.set_ylabel('RSI')
         ax3.set_ylim(0, 100)
-        
+
         ax3_twin.plot(df.index, df['bb_position'], color='purple', label='BB Position')
         ax3_twin.set_ylabel('BB Position')
         ax3_twin.set_ylim(0, 1)
-        
+
         ax3.set_title('RSI and Bollinger Bands Position')
         ax3.set_xlabel('Time')
         ax3.grid(True, alpha=0.3)
-        
+
         plt.tight_layout()
         plt.show()
-        
+
         # Вывод результатов бэктеста
         print(f"\n=== BACKTEST RESULTS ===")
         print(f"Initial Balance: ${backtest_results['initial_balance']:.2f}")
@@ -403,27 +427,27 @@ class RandomForestScalper:
 if __name__ == "__main__":
     # Создание экземпляра скальпера
     scalper = RandomForestScalper()
-    
+
     # Получение данных
     print("Fetching data...")
     data = scalper.fetch_data(limit=2000)
-    
+
     # Создание признаков
     print("Creating features...")
     data = scalper.create_features(data)
-    
+
     # Обучение модели
     print("Training model...")
     X_test, y_test, y_pred = scalper.train_model(data)
-    
+
     # Генерация сигналов
     print("Generating signals...")
     data = scalper.generate_signals(data)
-    
+
     # Бэктест
     print("Running backtest...")
     results = scalper.backtest(data)
-    
+
     # Визуализация
     print("Creating visualizations...")
     scalper.visualize_results(data, results)
@@ -432,12 +456,14 @@ if __name__ == "__main__":
 ### Метрики производительности
 
 #### Точность предсказаний
+
 - **Accuracy**: 0.55 (55% правильных предсказаний)
 - **Precision**: 0.52 (точность позитивных предсказаний)
 - **Recall**: 0.58 (полнота обнаружения положительных случаев)
 - **F1-Score**: 0.55 (гармоническое среднее precision и recall)
 
 #### Торговые метрики
+
 - **Win Rate**: ~52% (процент прибыльных сделок)
 - **Average Trade Duration**: 2-5 минут
 - **Maximum Drawdown**: 15-20%
@@ -500,12 +526,14 @@ if __name__ == "__main__":
 ### Исторический контекст (2015-2017)
 
 #### Характеристики периода
+
 - **Криптовалютный бум**: Bitcoin рос с $200 до $20,000
 - **Доступность данных**: Публичные API криптобирж стали широко доступны
 - **Python экосистема**: Зрелость библиотек pandas, scikit-learn
 - **Retail трейдинг**: Возможность частных лиц заниматься алгоритмической торговлей
 
 #### Технологические тренды
+
 - **Ensemble методы**: Random Forest был state-of-the-art для табличных данных
 - **API first**: Биржи активно развивали программные интерфейсы
 - **Open source**: CCXT библиотека объединила доступ к десяткам бирж
@@ -514,6 +542,7 @@ if __name__ == "__main__":
 ### Развитие и модернизация
 
 #### Возможные улучшения
+
 1. **Расширение признаков**
    - Добавление order book данных
    - Включение макроэкономических факторов
@@ -535,7 +564,9 @@ if __name__ == "__main__":
    - Slippage minimization
 
 #### Современная релевантность
+
 Несмотря на свою простоту, Random Forest Scalper остается:
+
 - **Учебным примером** для изучения алгоритмической торговли
 - **Baseline моделью** для сравнения более сложных подходов
 - **Прототипом** для быстрой проверки идей
@@ -546,6 +577,7 @@ if __name__ == "__main__":
 ## Планы расширения базы кейсов
 
 ### Ближайшие добавления
+
 1. **LSTM Momentum Strategy** (2018-2020)
    - Глубокое обучение для временных рядов
    - Multi-timeframe analysis
@@ -562,6 +594,7 @@ if __name__ == "__main__":
    - Adaptive strategies
 
 ### Долгосрочные планы
+
 - **High-Frequency Market Maker** (HFT пример)
 - **Cross-Asset Arbitrage System**
 - **DeFi Yield Farming Bot**
@@ -570,4 +603,4 @@ if __name__ == "__main__":
 
 ---
 
-*Документ основан на данных из файла `backend/data/trading-machines.ts` и будет регулярно пополняться новыми кейсами и детальными анализами существующих систем.*
+_Документ основан на данных из файла `backend/data/trading-machines.ts` и будет регулярно пополняться новыми кейсами и детальными анализами существующих систем._

@@ -1,6 +1,5 @@
-
-import { Navigation } from "@/components/navigation";
-import { TradingMachineComparator } from "@/components/trading-machine-comparator";
+import { Navigation } from '@/components/navigation';
+import { TradingMachineComparator } from '@/components/trading-machine-comparator';
 
 export default function CasesPage() {
   return (
@@ -9,9 +8,7 @@ export default function CasesPage() {
       <header className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-foreground mb-2">
-              Кейсы торговых машин
-            </h1>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Кейсы торговых машин</h1>
             <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
               Реальные примеры торговых систем с детальным анализом технологий
             </p>
