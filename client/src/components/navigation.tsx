@@ -1,6 +1,6 @@
+import { Link, useLocation } from 'wouter';
 
-import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 export function Navigation() {
   const [location] = useLocation();
@@ -16,25 +16,19 @@ export function Navigation() {
         <div className="flex justify-center space-x-1 py-4">
           <Link href="/matrix">
             <Button
-              variant={isActive(["/", "/matrix"]) ? "default" : "ghost"}
+              variant={isActive(['/', '/matrix']) ? 'default' : 'ghost'}
               className="px-6 py-2"
             >
               Матрица
             </Button>
           </Link>
           <Link href="/tree">
-            <Button 
-              variant={isActive("/tree") ? "default" : "ghost"}
-              className="px-6 py-2"
-            >
+            <Button variant={isActive('/tree') ? 'default' : 'ghost'} className="px-6 py-2">
               Дерево
             </Button>
           </Link>
           <Link href="/cases">
-            <Button 
-              variant={isActive("/cases") ? "default" : "ghost"}
-              className="px-6 py-2"
-            >
+            <Button variant={isActive('/cases') ? 'default' : 'ghost'} className="px-6 py-2">
               Кейсы
             </Button>
           </Link>

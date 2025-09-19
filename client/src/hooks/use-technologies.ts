@@ -1,17 +1,18 @@
-import { useQuery } from "@tanstack/react-query";
-import { 
-  technologyArraySchema, 
-  type Technology, 
-  tradingMachineArraySchema, 
-  type TradingMachine,
+import {
   evolutionDataSchema,
-  type EvolutionData,
+  technologyArraySchema,
+  tradingMachineArraySchema,
   treeNodeSchema,
-  type TreeNode
-} from "@shared/schema";
+} from '@shared/schema';
+import { useQuery } from '@tanstack/react-query';
+import type { z, ZodTypeAny } from 'zod';
 
 // Base fetch helper with validation
-async function fetchAndValidate<T>(url: string, schema: any): Promise<T> {
+type InferFromSchema<S extends ZodTypeAny> = z.infer<S>;
+async function fetchAndValidate<S extends ZodTypeAny>(
+  url: string,
+  schema: S
+): Promise<InferFromSchema<S>> {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
@@ -27,64 +28,69 @@ async function fetchAndValidate<T>(url: string, schema: any): Promise<T> {
 
 export function useTechnologies() {
   return useQuery({
-    queryKey: ["/api/technologies"],
-    queryFn: () => fetchAndValidate<Technology[]>("/api/technologies", technologyArraySchema)
+    queryKey: ['/api/technologies'],
+    queryFn: () => fetchAndValidate('/api/technologies', technologyArraySchema),
   });
 }
 
 export function useTradingMachines() {
   return useQuery({
-    queryKey: ["/api/trading-machines"],
-    queryFn: () => fetchAndValidate<TradingMachine[]>("/api/trading-machines", tradingMachineArraySchema)
+    queryKey: ['/api/trading-machines'],
+    queryFn: () => fetchAndValidate('/api/trading-machines', tradingMachineArraySchema),
   });
 }
 
 // Generic evolution data hook with source selection
 export function useEvolutionData(source: 'original' | 'integrated' | 'dynamic' = 'original') {
-  const endpoint = source === 'original'
-    ? '/api/evolution-data'
-    : source === 'integrated'
-      ? '/api/evolution-data/integrated'
-      : '/api/evolution-data/dynamic';
+  const endpoint =
+    source === 'original'
+      ? '/api/evolution-data'
+      : source === 'integrated'
+        ? '/api/evolution-data/integrated'
+        : '/api/evolution-data/dynamic';
 
   return useQuery({
     queryKey: [endpoint],
-    queryFn: () => fetchAndValidate<EvolutionData>(endpoint, evolutionDataSchema)
+    queryFn: () => fetchAndValidate(endpoint, evolutionDataSchema),
   });
 }
 
 export function useTreeData() {
   return useQuery({
-    queryKey: ["/api/tree-data"],
-    queryFn: () => fetchAndValidate<TreeNode>("/api/tree-data", treeNodeSchema)
+    queryKey: ['/api/tree-data'],
+    queryFn: () => fetchAndValidate('/api/tree-data', treeNodeSchema),
   });
 }
 
-export function createTechnologyMaps(technologies: Technology[]) {
-  const byId = new Map<string, Technology>();
-  const byName = new Map<string, Technology>();
-  technologies.forEach(tech => {
+export function createTechnologyMaps(technologies: { id: string; name: string }[]) {
+  const byId = new Map<string, { id: string; name: string }>();
+  const byName = new Map<string, { id: string; name: string }>();
+  technologies.forEach((tech) => {
     byId.set(tech.id, tech);
     byName.set(tech.name, tech);
   });
   return { byId, byName };
 }
 
-export function searchTechnologies(technologies: Technology[], query: string): Technology[] {
+export function searchTechnologies(
+  technologies: { name: string; description: string }[],
+  query: string
+) {
   const q = query.toLowerCase();
-  return technologies.filter(tech => 
-    tech.name.toLowerCase().includes(q) ||
-    tech.description.toLowerCase().includes(q)
+  return technologies.filter(
+    (tech) => tech.name.toLowerCase().includes(q) || tech.description.toLowerCase().includes(q)
   );
 }
 
 // Coverage: какие технологии из кейсов присутствуют в каких модулях
-export function getMatrixTechnologyCoverage(tradingMachines: TradingMachine[]) {
+export function getMatrixTechnologyCoverage(
+  tradingMachines: { modules: Record<string, string[]> }[]
+) {
   const coverage: Record<string, Set<string>> = {};
-  tradingMachines.forEach(tm => {
+  tradingMachines.forEach((tm) => {
     Object.entries(tm.modules).forEach(([moduleKey, techList]) => {
       if (!coverage[moduleKey]) coverage[moduleKey] = new Set<string>();
-      (techList as string[]).forEach((t: string) => coverage[moduleKey].add(t));
+      techList.forEach((t) => coverage[moduleKey].add(t));
     });
   });
   // Преобразуем в массивы

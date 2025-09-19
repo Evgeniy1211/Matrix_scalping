@@ -1,7 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTreeData } from "@/hooks/use-technologies";
-import * as d3 from "d3";
+import { useEffect, useRef } from 'react';
+import type { TreeNode } from '@shared/schema';
+import * as d3 from 'd3';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTreeData } from '@/hooks/use-technologies';
 
 export function TechnologyTree() {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -19,70 +21,80 @@ export function TechnologyTree() {
     // Clear previous content
     d3.select(svgRef.current).selectAll('*').remove();
 
-    const svg = d3.select(svgRef.current)
-      .attr('width', width)
-      .attr('height', height);
+    const svg = d3.select(svgRef.current).attr('width', width).attr('height', height);
 
     const g = svg.append('g');
 
     // Create tree layout
-    const tree = d3.tree<any>()
-      .size([height - 40, width - 100]);
+    const treeLayout = d3.tree<TreeNode>().size([height - 40, width - 100]);
 
-    const root = d3.hierarchy(treeData as any);
-    tree(root as any);
+    const root = d3.hierarchy<TreeNode>(treeData);
+    const rootPoint = treeLayout(root);
 
     // Add zoom behavior
-    const zoom = d3.zoom<SVGSVGElement, unknown>()
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
       .scaleExtent([0.5, 2])
-      .on('zoom', (event: d3.D3ZoomEvent<SVGSVGElement, unknown>) => {
-        g.attr('transform', (event as any).transform);
+      .on('zoom', (event) => {
+        const transform = (event as d3.D3ZoomEvent<SVGSVGElement, unknown>).transform;
+        g.attr('transform', transform.toString());
       });
 
-    svg.call(zoom as any);
+    svg.call(zoom);
 
     // Draw links
-    g.selectAll('.link')
-      .data(root.links() as any)
-      .enter().append('path')
+    g.selectAll<SVGPathElement, d3.HierarchyPointLink<TreeNode>>('.link')
+      .data(rootPoint.links())
+      .enter()
+      .append('path')
       .attr('class', 'link')
-      .attr('d', d3.linkHorizontal<any, any>()
-        .x((d: any) => d.y + 50)
-        .y((d: any) => d.x + 20) as any);
+      .attr(
+        'd',
+        d3
+          .linkHorizontal<d3.HierarchyPointLink<TreeNode>, d3.HierarchyPointNode<TreeNode>>()
+          .x((d) => d.y + 50)
+          .y((d) => d.x + 20)
+      );
 
     // Draw nodes
-    const node = g.selectAll('.node')
-      .data(root.descendants() as any)
-      .enter().append('g')
+    const node = g
+      .selectAll<SVGGElement, d3.HierarchyPointNode<TreeNode>>('.node')
+      .data(rootPoint.descendants())
+      .enter()
+      .append('g')
       .attr('class', 'node')
-      .attr('transform', (d: any) => `translate(${d.y + 50},${d.x + 20})`);
+      .attr('transform', (d) => `translate(${d.y + 50},${d.x + 20})`);
 
-    node.append('circle')
+    node
+      .append('circle')
       .attr('r', 6)
-      .style('fill', (d: any) => {
-        if (!d.children && !d._children) return 'hsl(38 92% 50%)'; // leaf nodes - secondary
+      .attr('fill', (d) => {
+        if (!d.children) return 'hsl(38 92% 50%)'; // leaf nodes - secondary
         return d.depth === 0 ? 'hsl(221 83% 53%)' : 'hsl(142 76% 36%)'; // root: primary, internal: accent
       });
 
     // Add labels
-    node.append('text')
+    node
+      .append('text')
       .attr('class', 'node-label')
       .attr('dy', 3)
-      .attr('x', (d: any) => d.children || d._children ? -10 : 10)
-      .style('text-anchor', (d: any) => d.children || d._children ? 'end' : 'start')
-      .text((d: any) => d.data.name);
+      .attr('x', (d) => (d.children ? -10 : 10))
+      .style('text-anchor', (d) => (d.children ? 'end' : 'start'))
+      .text((d) => d.data.name);
 
     // Add tooltip functionality to nodes
-    node.on('mouseenter', function(event: MouseEvent, d: any) {
-      showTooltip(event, d.data.description || d.data.name);
-    }).on('mouseleave', hideTooltip);
+    node
+      .on('mouseenter', function (event: MouseEvent, d) {
+        showTooltip(event, d.data.description || d.data.name);
+      })
+      .on('mouseleave', hideTooltip);
 
     function showTooltip(event: MouseEvent, content: string) {
-      const tooltip = d3.select('body').selectAll('.tree-tooltip')
-        .data([null]);
-      
-      const tooltipEnter = tooltip.enter()
-        .append('div')
+      const tooltip = d3
+        .select('body')
+        .selectAll<HTMLDivElement, null>('.tree-tooltip')
+        .data([null])
+        .join('div')
         .attr('class', 'tree-tooltip')
         .style('position', 'absolute')
         .style('background', 'hsl(var(--foreground))')
@@ -96,18 +108,15 @@ export function TechnologyTree() {
         .style('pointer-events', 'none')
         .style('transition', 'opacity 0.2s ease');
 
-      const tooltipUpdate = (tooltip as any).merge(tooltipEnter as any);
-      
-      tooltipUpdate
+      tooltip
         .text(content)
-        .style('left', (event.pageX + 10) + 'px')
-        .style('top', (event.pageY - 10) + 'px')
+        .style('left', event.pageX + 10 + 'px')
+        .style('top', event.pageY - 10 + 'px')
         .style('opacity', '1');
     }
 
     function hideTooltip() {
-      d3.select('.tree-tooltip')
-        .style('opacity', '0');
+      d3.select('.tree-tooltip').style('opacity', '0');
     }
 
     // Cleanup function
@@ -175,11 +184,7 @@ export function TechnologyTree() {
         </CardHeader>
         <CardContent>
           <div ref={containerRef} className="w-full border border-border rounded-md">
-            <svg 
-              ref={svgRef} 
-              className="w-full h-96"
-              data-testid="technology-tree-svg"
-            />
+            <svg ref={svgRef} className="w-full h-96" data-testid="technology-tree-svg" />
           </div>
           <div className="mt-4 text-sm text-muted-foreground">
             <p>💡 Наведите курсор на узлы для дополнительной информации</p>

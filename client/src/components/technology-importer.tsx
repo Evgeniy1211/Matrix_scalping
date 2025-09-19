@@ -1,48 +1,60 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { useTechnologies } from "@/hooks/use-technologies";
-import type { Technology } from "@shared/schema";
+import { useState } from 'react';
+import type { Technology } from '@shared/schema';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 // Вспомогательная утилита: грубый парсер текста в структуру технологии
 function parseTechnologyDescription(text: string): Partial<Technology> {
   const lines = text.split(/\r?\n/);
   const res: Partial<Technology> = {
-    description: "",
+    description: '',
     advantages: [],
     disadvantages: [],
     useCases: [],
     periods: { start: new Date().getFullYear() },
   } as Partial<Technology>;
 
-  let section: "desc" | "pros" | "cons" | "use" | "period" | null = null;
+  let section: 'desc' | 'pros' | 'cons' | 'use' | 'period' | null = null;
   for (const raw of lines) {
     const line = raw.trim();
     if (!line) continue;
 
-    if (/^Преимущества/i.test(line)) { section = "pros"; continue; }
-    if (/^Недостатки/i.test(line)) { section = "cons"; continue; }
-    if (/^Применение/i.test(line)) { section = "use"; continue; }
-    if (/^Период/i.test(line)) { section = "period"; continue; }
+    if (/^Преимущества/i.test(line)) {
+      section = 'pros';
+      continue;
+    }
+    if (/^Недостатки/i.test(line)) {
+      section = 'cons';
+      continue;
+    }
+    if (/^Применение/i.test(line)) {
+      section = 'use';
+      continue;
+    }
+    if (/^Период/i.test(line)) {
+      section = 'period';
+      continue;
+    }
 
-    if (section === "pros" && line.startsWith("-")) {
-      (res.advantages as string[]).push(line.replace(/^[-•]\s*/, ""));
-    } else if (section === "cons" && line.startsWith("-")) {
-      (res.disadvantages as string[]).push(line.replace(/^[-•]\s*/, ""));
-    } else if (section === "use" && line.startsWith("-")) {
-      (res.useCases as string[]).push(line.replace(/^[-•]\s*/, ""));
-    } else if (section === "period") {
+    if (section === 'pros' && line.startsWith('-')) {
+      (res.advantages as string[]).push(line.replace(/^[\u2212\-•]\s*/, ''));
+    } else if (section === 'cons' && line.startsWith('-')) {
+      (res.disadvantages as string[]).push(line.replace(/^[\u2212\-•]\s*/, ''));
+    } else if (section === 'use' && line.startsWith('-')) {
+      (res.useCases as string[]).push(line.replace(/^[\u2212\-•]\s*/, ''));
+    } else if (section === 'period') {
       const m = line.match(/(\d{4})(?:\D+(\d{4}))?/);
       if (m) {
         const start = parseInt(m[1], 10);
         const end = m[2] ? parseInt(m[2], 10) : undefined;
-        res.periods = { ...(res.periods || {}), start, end } as any;
+        const prev = res.periods ?? { start };
+        res.periods = end !== undefined ? { ...prev, start, end } : { ...prev, start };
       }
     } else {
-      res.description = (res.description || "") + (res.description ? "\n" : "") + line;
+      res.description = (res.description || '') + (res.description ? '\n' : '') + line;
     }
   }
 
@@ -59,27 +71,27 @@ async function enrichTechnologyDatabase(names: string[]): Promise<Partial<Techno
     advantages: [],
     disadvantages: [],
     useCases: [],
-    sources: []
+    sources: [],
   }));
 }
 
 export function TechnologyImporter() {
-  const [importText, setImportText] = useState("");
-  const [technologyName, setTechnologyName] = useState("");
+  const [importText, setImportText] = useState('');
+  const [technologyName, setTechnologyName] = useState('');
   const [parsedData, setParsedData] = useState<Partial<Technology> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleParseText = () => {
     if (!importText.trim()) return;
-    
+
     const parsed = parseTechnologyDescription(importText);
-    parsed.name = technologyName || "Новая технология";
+    parsed.name = technologyName || 'Новая технология';
     setParsedData(parsed);
   };
 
   const handleFetchExternal = async () => {
     if (!technologyName.trim()) return;
-    
+
     setIsLoading(true);
     try {
       const enriched = await enrichTechnologyDatabase([technologyName]);
@@ -95,18 +107,18 @@ export function TechnologyImporter() {
 
   const handleAddToDatabase = () => {
     if (!parsedData || !technologyName) return;
-    
+
     const newTech: Technology = {
       id: technologyName.toLowerCase().replace(/\s+/g, '-'),
       name: technologyName,
-      description: parsedData.description || "",
+      description: parsedData.description || '',
       category: 'infrastructure',
       periods: parsedData.periods || { start: new Date().getFullYear() },
       applicableModules: parsedData.applicableModules || [],
       advantages: parsedData.advantages || [],
       disadvantages: parsedData.disadvantages || [],
       useCases: parsedData.useCases || [],
-      sources: parsedData.sources || []
+      sources: parsedData.sources || [],
     };
 
     console.log('Новая технология для добавления:', newTech);
@@ -157,10 +169,7 @@ export function TechnologyImporter() {
             <Button onClick={handleParseText} variant="outline">
               Парсить текст
             </Button>
-            <Button 
-              onClick={handleFetchExternal} 
-              disabled={isLoading || !technologyName}
-            >
+            <Button onClick={handleFetchExternal} disabled={isLoading || !technologyName}>
               {isLoading ? 'Загрузка...' : 'Загрузить из интернета'}
             </Button>
           </div>
@@ -176,9 +185,7 @@ export function TechnologyImporter() {
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium">Название: {parsedData.name}</h4>
-                <p className="text-sm text-gray-600 mt-1">
-                  {parsedData.description}
-                </p>
+                <p className="text-sm text-gray-600 mt-1">{parsedData.description}</p>
               </div>
 
               {parsedData.periods && (
@@ -237,7 +244,9 @@ export function TechnologyImporter() {
               </Button>
             </div>
           ) : (
-            <p className="text-gray-500">Введите данные и нажмите "Парсить текст" или "Загрузить из интернета"</p>
+            <p className="text-gray-500">
+              Введите данные и нажмите "Парсить текст" или "Загрузить из интернета"
+            </p>
           )}
         </CardContent>
       </Card>

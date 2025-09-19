@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useTechnologies } from "@/hooks/use-technologies";
-import { buildTechnologyRows, type TechnologyRow } from "@/lib/buildTechnologyRows";
-import type { Technology } from "@shared/schema";
+import React, { useMemo, useState } from 'react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTechnologies } from '@/hooks/use-technologies';
+import { buildTechnologyRows } from '@/lib/buildTechnologyRows';
 
 interface DynamicEvolutionMatrixProps {
   onModuleClick?: (module: string) => void;
@@ -15,33 +15,33 @@ interface DynamicEvolutionMatrixProps {
 export function DynamicEvolutionMatrix({
   onModuleClick,
   onTechnologyClick,
-  selectedModule
+  selectedModule,
 }: DynamicEvolutionMatrixProps) {
-  const [selectedRevision, setSelectedRevision] = useState("");
+  const [selectedRevision, setSelectedRevision] = useState('');
   const { data: technologies, isLoading, isError } = useTechnologies();
 
   // Всегда вызываем хуки в одном порядке
   const technologyRows = useMemo(() => {
-    return technologies ? buildTechnologyRows(technologies, selectedModule || "") : [];
+    return technologies ? buildTechnologyRows(technologies, selectedModule || '') : [];
   }, [technologies, selectedModule]);
 
   const modules = [
-    "Сбор данных",
-    "Обработка данных",
-    "Feature Engineering",
-    "Генерация сигналов",
-    "Риск-менеджмент",
-    "Исполнение сделок",
-    "Адаптация к рынку",
-    "Визуализация и мониторинг"
+    'Сбор данных',
+    'Обработка данных',
+    'Feature Engineering',
+    'Генерация сигналов',
+    'Риск-менеджмент',
+    'Исполнение сделок',
+    'Адаптация к рынку',
+    'Визуализация и мониторинг',
   ];
 
   const revisions = [
-    { key: "rev1", label: "Rev 1 (2015)" },
-    { key: "rev2", label: "Rev 2 (2020)" },
-    { key: "rev3", label: "Rev 3 (2022)" },
-    { key: "rev4", label: "Rev 4 (2023)" },
-    { key: "rev5", label: "Rev 5 (2024)" }
+    { key: 'rev1', label: 'Rev 1 (2015)' },
+    { key: 'rev2', label: 'Rev 2 (2020)' },
+    { key: 'rev3', label: 'Rev 3 (2022)' },
+    { key: 'rev4', label: 'Rev 4 (2023)' },
+    { key: 'rev5', label: 'Rev 5 (2024)' },
   ];
 
   if (isLoading) {
@@ -67,9 +67,7 @@ export function DynamicEvolutionMatrix({
             <CardTitle>Динамическая матрица эволюции</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-red-500">
-              Ошибка загрузки данных
-            </div>
+            <div className="text-center py-8 text-red-500">Ошибка загрузки данных</div>
           </CardContent>
         </Card>
       </div>
@@ -86,16 +84,16 @@ export function DynamicEvolutionMatrix({
           <div className="flex flex-wrap gap-2 mt-4">
             <Button
               key="all"
-              variant={selectedRevision === "" ? "default" : "outline"}
+              variant={selectedRevision === '' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedRevision("")}
+              onClick={() => setSelectedRevision('')}
             >
               Все ревизии
             </Button>
             {revisions.map((rev) => (
               <Button
                 key={rev.key}
-                variant={selectedRevision === rev.key ? "default" : "outline"}
+                variant={selectedRevision === rev.key ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedRevision(rev.key)}
               >
@@ -114,11 +112,14 @@ export function DynamicEvolutionMatrix({
                   </th>
                   {selectedRevision ? (
                     <th className="border border-gray-300 p-3 text-center min-w-[150px]">
-                      {revisions.find(r => r.key === selectedRevision)?.label}
+                      {revisions.find((r) => r.key === selectedRevision)?.label}
                     </th>
                   ) : (
                     revisions.map((r) => (
-                      <th key={r.key} className="border border-gray-300 p-3 text-center min-w-[150px]">
+                      <th
+                        key={r.key}
+                        className="border border-gray-300 p-3 text-center min-w-[150px]"
+                      >
                         {r.label}
                       </th>
                     ))
@@ -146,7 +147,7 @@ export function DynamicEvolutionMatrix({
                         <td className="border border-gray-300 p-3">
                           <div className="flex flex-wrap gap-2">
                             {technologyRows
-                              .filter(tech => tech.applicableModules.includes(module))
+                              .filter((tech) => tech.applicableModules.includes(module))
                               .map((tech, techIndex) => (
                                 <Badge
                                   key={techIndex}
@@ -164,7 +165,11 @@ export function DynamicEvolutionMatrix({
                           <td key={rev.key} className="border border-gray-300 p-3 align-top">
                             <div className="flex flex-wrap gap-2">
                               {technologyRows
-                                .filter(tech => tech.applicableModules.includes(module) && tech.revisions[rev.key as keyof typeof tech.revisions])
+                                .filter(
+                                  (tech) =>
+                                    tech.applicableModules.includes(module) &&
+                                    tech.revisions[rev.key as keyof typeof tech.revisions]
+                                )
                                 .map((tech, techIndex) => (
                                   <Badge
                                     key={techIndex}
@@ -187,7 +192,9 @@ export function DynamicEvolutionMatrix({
           </div>
 
           <div className="mt-6 text-sm text-gray-600">
-            <p>💡 <strong>Как пользоваться:</strong></p>
+            <p>
+              💡 <strong>Как пользоваться:</strong>
+            </p>
             <ul className="list-disc list-inside mt-2 space-y-1">
               <li>Нажмите на модуль торговой системы для фильтрации технологий</li>
               <li>Кликните на технологию для просмотра подробной информации</li>

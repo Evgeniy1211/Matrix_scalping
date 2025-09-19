@@ -25,25 +25,31 @@ export interface TechnologyNode {
 import { allModules } from './modules';
 
 export const evolutionData: { modules: ModuleData[] } = {
-  modules: allModules
+  modules: allModules,
 };
 
 // Проверяем, что у нас точно 8 модулей
 console.log('=== ПРОВЕРКА БАЗОВЫХ ДАННЫХ ===');
 console.log('evolutionData содержит модулей:', evolutionData.modules.length);
-console.log('Список модулей:', evolutionData.modules.map(m => m.name));
+console.log(
+  'Список модулей:',
+  evolutionData.modules.map((m) => m.name)
+);
 
 if (evolutionData.modules.length !== 8) {
   console.error('ОШИБКА: Ожидается 8 модулей, найдено:', evolutionData.modules.length);
   console.error('Отсутствующие модули или дубликаты!');
-  console.error('Модули в базе:', evolutionData.modules.map(m => m.name));
+  console.error(
+    'Модули в базе:',
+    evolutionData.modules.map((m) => m.name)
+  );
 } else {
   console.log('✅ В базе данных правильное количество модулей (8)');
 }
 
 // Импорт для интеграции с кейсами и технологиями
+import { getRevisionForTechnology, technologyDatabase } from './technologies';
 import { tradingMachineCases } from './trading-machines';
-import { technologyDatabase, getTechnologiesByModule, getRevisionForTechnology, type TechnologyDescription } from './technologies';
 
 // Функция для интеграции технологий из кейсов в основную матрицу
 // Функция для создания динамической матрицы где каждая технология = отдельная строка
@@ -51,27 +57,30 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
   const dynamicModules: ModuleData[] = [];
 
   const moduleMapping: Record<string, string> = {
-    'data': 'Сбор данных',
-    'processing': 'Обработка данных', 
-    'ml': 'Генерация сигналов',
-    'risk': 'Риск-менеджмент',
-    'execution': 'Исполнение сделок',
-    'adaptation': 'Адаптация к рынку',
-    'visualization': 'Визуализация и мониторинг'
+    data: 'Сбор данных',
+    processing: 'Обработка данных',
+    ml: 'Генерация сигналов',
+    risk: 'Риск-менеджмент',
+    execution: 'Исполнение сделок',
+    adaptation: 'Адаптация к рынку',
+    visualization: 'Визуализация и мониторинг',
   };
 
   // Собираем все технологии из базы и кейсов
-  const allTechnologies = new Map<string, {
-    name: string;
-    category: string;
-    startRevision: keyof ModuleData['revisions'];
-    description: string;
-    evolution: string[];
-    parentTechnology?: string;
-  }>();
+  const allTechnologies = new Map<
+    string,
+    {
+      name: string;
+      category: string;
+      startRevision: keyof ModuleData['revisions'];
+      description: string;
+      evolution: string[];
+      parentTechnology?: string;
+    }
+  >();
 
   // Добавляем технологии из централизованной базы
-  technologyDatabase.forEach(tech => {
+  technologyDatabase.forEach((tech) => {
     const startRevision = getRevisionForTechnology(tech.id);
     allTechnologies.set(tech.name, {
       name: tech.name,
@@ -79,23 +88,23 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
       startRevision,
       description: tech.description,
       evolution: tech.evolution?.successors || [],
-      parentTechnology: tech.evolution?.predecessors?.[0]
+      parentTechnology: tech.evolution?.predecessors?.[0],
     });
   });
 
   // Добавляем технологии из кейсов
-  tradingMachineCases.forEach(case_ => {
+  tradingMachineCases.forEach((case_) => {
     const caseRevision = getRevisionFromPeriod(case_.period);
     Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
       const category = moduleKey;
-      technologies.forEach(techName => {
+      technologies.forEach((techName) => {
         if (!allTechnologies.has(techName)) {
           allTechnologies.set(techName, {
             name: techName,
             category,
             startRevision: caseRevision,
             description: `Технология из кейса "${case_.name}"`,
-            evolution: []
+            evolution: [],
           });
         }
       });
@@ -103,9 +112,9 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
   });
 
   // Создаем модули для каждой технологии
-  allTechnologies.forEach(tech => {
+  allTechnologies.forEach((tech) => {
     const matrixModuleName = moduleMapping[tech.category] || tech.category;
-    const techModuleName = tech.parentTechnology 
+    const techModuleName = tech.parentTechnology
       ? `  └─ ${tech.name}` // Делаем отступ для технологий-потомков
       : tech.name;
 
@@ -114,18 +123,24 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
       rev2: { tech: '', period: 'empty' as const, desc: '' },
       rev3: { tech: '', period: 'empty' as const, desc: '' },
       rev4: { tech: '', period: 'empty' as const, desc: '' },
-      rev5: { tech: '', period: 'empty' as const, desc: '' }
+      rev5: { tech: '', period: 'empty' as const, desc: '' },
     };
 
     // Заполняем ревизию, когда технология появилась
     revisions[tech.startRevision] = {
       tech: tech.name,
       period: 'current',
-      desc: tech.description
+      desc: tech.description,
     };
 
     // Заполняем последующие ревизии, если технология развивалась
-    const revisionOrder: (keyof ModuleData['revisions'])[] = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'];
+    const revisionOrder: (keyof ModuleData['revisions'])[] = [
+      'rev1',
+      'rev2',
+      'rev3',
+      'rev4',
+      'rev5',
+    ];
     const startIndex = revisionOrder.indexOf(tech.startRevision);
 
     for (let i = startIndex + 1; i < revisionOrder.length; i++) {
@@ -136,7 +151,7 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
         revisions[currentRev] = {
           tech: `${tech.name} → ${tech.evolution.join(', ')}`,
           period: 'current',
-          desc: `Эволюция в: ${tech.evolution.join(', ')}`
+          desc: `Эволюция в: ${tech.evolution.join(', ')}`,
         };
         break; // Показываем эволюцию только в одной следующей ревизии
       } else {
@@ -144,14 +159,14 @@ export function createDynamicTechnologyMatrix(): { modules: ModuleData[] } {
         revisions[currentRev] = {
           tech: tech.name,
           period: 'current',
-          desc: `Продолжение использования технологии ${tech.name}`
+          desc: `Продолжение использования технологии ${tech.name}`,
         };
       }
     }
 
     dynamicModules.push({
       name: `${matrixModuleName}: ${techModuleName}`,
-      revisions
+      revisions,
     });
   });
 
@@ -179,25 +194,28 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
 
   console.log('=== ИНТЕГРАЦИЯ ТЕХНОЛОГИЙ ===');
   console.log('Исходные модули в evolutionData:', evolutionData.modules.length);
-  console.log('Названия:', evolutionData.modules.map(m => m.name));
+  console.log(
+    'Названия:',
+    evolutionData.modules.map((m) => m.name)
+  );
   console.log('Модули после копирования:', integratedData.modules.length);
 
   // ГАРАНТИРУЕМ что у нас есть все 8 модулей
   const requiredModules = [
     'Сбор данных',
     'Обработка данных',
-    'Feature Engineering', 
+    'Feature Engineering',
     'Генерация сигналов',
     'Риск-менеджмент',
     'Исполнение сделок',
     'Адаптация к рынку',
-    'Визуализация и мониторинг'
+    'Визуализация и мониторинг',
   ];
 
-  const existingModuleNames = integratedData.modules.map(m => m.name);
-  
+  const existingModuleNames = integratedData.modules.map((m) => m.name);
+
   // Добавляем недостающие модули
-  requiredModules.forEach(moduleName => {
+  requiredModules.forEach((moduleName) => {
     if (!existingModuleNames.includes(moduleName)) {
       console.log(`Добавляем недостающий модуль: ${moduleName}`);
       integratedData.modules.push({
@@ -207,29 +225,29 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
           rev2: { tech: '', period: 'empty' as const, desc: '' },
           rev3: { tech: '', period: 'empty' as const, desc: '' },
           rev4: { tech: '', period: 'empty' as const, desc: '' },
-          rev5: { tech: '', period: 'empty' as const, desc: '' }
-        }
+          rev5: { tech: '', period: 'empty' as const, desc: '' },
+        },
       });
     }
   });
 
   const moduleMapping: Record<string, string> = {
-    'data': 'Сбор данных',
-    'processing': 'Обработка данных', 
-    'ml': 'Генерация сигналов',
-    'risk': 'Риск-менеджмент',
-    'execution': 'Исполнение сделок',
-    'adaptation': 'Адаптация к рынку',
-    'visualization': 'Визуализация и мониторинг',
-    'infrastructure': 'Инфраструктура'
+    data: 'Сбор данных',
+    processing: 'Обработка данных',
+    ml: 'Генерация сигналов',
+    risk: 'Риск-менеджмент',
+    execution: 'Исполнение сделок',
+    adaptation: 'Адаптация к рынку',
+    visualization: 'Визуализация и мониторинг',
+    infrastructure: 'Инфраструктура',
   };
 
   // Интегрируем технологии из базы
-  technologyDatabase.forEach(tech => {
+  technologyDatabase.forEach((tech) => {
     const targetRevision = getRevisionForTechnology(tech.id);
     const matrixModuleName = moduleMapping[tech.category] || 'Инфраструктура';
 
-    const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+    const matrixModule = integratedData.modules.find((m) => m.name === matrixModuleName);
     if (!matrixModule) return;
 
     const existingTech = matrixModule.revisions[targetRevision].tech;
@@ -247,40 +265,41 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   });
 
   // Также интегрируем технологии из кейсов
-  tradingMachineCases.forEach(case_ => {
+  tradingMachineCases.forEach((case_) => {
     const targetRevision = getRevisionFromPeriod(case_.period);
 
     Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
       const caseModuleMapping: Record<string, string> = {
-        'dataCollection': 'Сбор данных',
-        'dataProcessing': 'Обработка данных', 
-        'featureEngineering': 'Feature Engineering',
-        'signalGeneration': 'Генерация сигналов',
-        'riskManagement': 'Риск-менеджмент',
-        'execution': 'Исполнение сделок',
-        'marketAdaptation': 'Адаптация к рынку',
-        'visualization': 'Визуализация и мониторинг',
+        dataCollection: 'Сбор данных',
+        dataProcessing: 'Обработка данных',
+        featureEngineering: 'Feature Engineering',
+        signalGeneration: 'Генерация сигналов',
+        riskManagement: 'Риск-менеджмент',
+        execution: 'Исполнение сделок',
+        marketAdaptation: 'Адаптация к рынку',
+        visualization: 'Визуализация и мониторинг',
         // Добавляем недостающие модули из кейсов
-        'data': 'Сбор данных',
-        'processing': 'Обработка данных',
-        'ml': 'Генерация сигналов',
-        'risk': 'Риск-менеджмент'
+        data: 'Сбор данных',
+        processing: 'Обработка данных',
+        ml: 'Генерация сигналов',
+        risk: 'Риск-менеджмент',
       };
 
       const matrixModuleName = caseModuleMapping[moduleKey];
       if (!matrixModuleName) return;
 
-      const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+      const matrixModule = integratedData.modules.find((m) => m.name === matrixModuleName);
       if (!matrixModule) return;
 
       const existingTech = matrixModule.revisions[targetRevision].tech;
-      const newTechs = technologies.filter(tech => 
-        !existingTech.toLowerCase().includes(tech.toLowerCase())
+      const newTechs = technologies.filter(
+        (tech) => !existingTech.toLowerCase().includes(tech.toLowerCase())
       );
 
       if (newTechs.length > 0) {
         const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
-        matrixModule.revisions[targetRevision].tech = existingTech + separator + newTechs.join(', ');
+        matrixModule.revisions[targetRevision].tech =
+          existingTech + separator + newTechs.join(', ');
 
         if (!matrixModule.revisions[targetRevision].desc.includes(case_.name)) {
           matrixModule.revisions[targetRevision].desc += ` (из кейса "${case_.name}")`;
@@ -292,7 +311,10 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
   // Финальная проверка перед возвратом
   console.log('=== РЕЗУЛЬТАТ integrateTechnologyDatabase ===');
   console.log('Финальное количество модулей:', integratedData.modules.length);
-  console.log('Финальный список модулей:', integratedData.modules.map(m => m.name));
+  console.log(
+    'Финальный список модулей:',
+    integratedData.modules.map((m) => m.name)
+  );
 
   // ВСЕГДА возвращаем результат, даже если количество модулей не 8
   // Это позволит увидеть фактическое состояние данных
@@ -308,11 +330,11 @@ export function integrateTechnologyDatabase(): { modules: ModuleData[] } {
 function getRevisionFromPeriod(period: string): keyof ModuleData['revisions'] {
   const startYear = parseInt(period.split('-')[0]);
 
-  if (startYear <= 2015) return 'rev1';        // 2000-2015
-  if (startYear <= 2020) return 'rev2';        // 2015-2020
-  if (startYear <= 2022) return 'rev3';        // 2020-2022
-  if (startYear <= 2023) return 'rev4';        // 2022-2023
-  return 'rev5';                               // 2023-2025
+  if (startYear <= 2015) return 'rev1'; // 2000-2015
+  if (startYear <= 2020) return 'rev2'; // 2015-2020
+  if (startYear <= 2022) return 'rev3'; // 2020-2022
+  if (startYear <= 2023) return 'rev4'; // 2022-2023
+  return 'rev5'; // 2023-2025
 }
 
 export function integrateExampleTechnologies(): { modules: ModuleData[] } {
@@ -320,29 +342,29 @@ export function integrateExampleTechnologies(): { modules: ModuleData[] } {
 
   // Маппинг модулей кейсов на модули матрицы
   const moduleMapping: Record<string, string> = {
-    'dataCollection': 'Сбор данных',
-    'dataProcessing': 'Обработка данных', 
-    'featureEngineering': 'Feature Engineering',
-    'signalGeneration': 'Генерация сигналов',
-    'riskManagement': 'Риск-менеджмент',
-    'execution': 'Исполнение сделок',
-    'marketAdaptation': 'Адаптация к рынку',
-    'visualization': 'Визуализация и мониторинг'
+    dataCollection: 'Сбор данных',
+    dataProcessing: 'Обработка данных',
+    featureEngineering: 'Feature Engineering',
+    signalGeneration: 'Генерация сигналов',
+    riskManagement: 'Риск-менеджмент',
+    execution: 'Исполнение сделок',
+    marketAdaptation: 'Адаптация к рынку',
+    visualization: 'Визуализация и мониторинг',
   };
 
   // Функция для определения ревизии по периоду кейса
   const getRevisionFromPeriod = (period: string): keyof ModuleData['revisions'] => {
     const startYear = parseInt(period.split('-')[0]);
 
-    if (startYear <= 2015) return 'rev1';        // 2000-2015
-    if (startYear <= 2020) return 'rev2';        // 2015-2020
-    if (startYear <= 2022) return 'rev3';        // 2020-2022
-    if (startYear <= 2023) return 'rev4';        // 2022-2023
-    return 'rev5';                               // 2023-2025
+    if (startYear <= 2015) return 'rev1'; // 2000-2015
+    if (startYear <= 2020) return 'rev2'; // 2015-2020
+    if (startYear <= 2022) return 'rev3'; // 2020-2022
+    if (startYear <= 2023) return 'rev4'; // 2022-2023
+    return 'rev5'; // 2023-2025
   };
 
   // Собираем технологии из всех кейсов
-  tradingMachineCases.forEach(case_ => {
+  tradingMachineCases.forEach((case_) => {
     const targetRevision = getRevisionFromPeriod(case_.period);
 
     Object.entries(case_.modules).forEach(([moduleKey, technologies]) => {
@@ -350,19 +372,20 @@ export function integrateExampleTechnologies(): { modules: ModuleData[] } {
       if (!matrixModuleName) return;
 
       // Находим соответствующий модуль в матрице
-      const matrixModule = integratedData.modules.find(m => m.name === matrixModuleName);
+      const matrixModule = integratedData.modules.find((m) => m.name === matrixModuleName);
       if (!matrixModule) return;
 
       // Получаем существующие технологии в целевой ревизии
       const existingTech = matrixModule.revisions[targetRevision].tech;
-      const newTechs = technologies.filter(tech => 
-        !existingTech.toLowerCase().includes(tech.toLowerCase())
+      const newTechs = technologies.filter(
+        (tech) => !existingTech.toLowerCase().includes(tech.toLowerCase())
       );
 
       if (newTechs.length > 0) {
         // Добавляем технологии в соответствующую ревизию
         const separator = existingTech && existingTech.trim() !== '' ? ', ' : '';
-        matrixModule.revisions[targetRevision].tech = existingTech + separator + newTechs.join(', ');
+        matrixModule.revisions[targetRevision].tech =
+          existingTech + separator + newTechs.join(', ');
 
         // Обновляем описание с указанием источника
         const caseInfo = ` (из кейса "${case_.name}")`;
@@ -377,87 +400,88 @@ export function integrateExampleTechnologies(): { modules: ModuleData[] } {
 }
 
 export const treeData: TechnologyNode = {
-  name: "ML",
-  description: "Машинное обучение - основа современных торговых систем",
+  name: 'ML',
+  description: 'Машинное обучение - основа современных торговых систем',
   children: [
     {
-      name: "Traditional ML",
-      description: "Классические алгоритмы машинного обучения",
+      name: 'Traditional ML',
+      description: 'Классические алгоритмы машинного обучения',
       children: [
-        { name: "SVM", description: "Метод опорных векторов для классификации" },
-        { name: "Random Forest", description: "Ансамбль решающих деревьев" }
-      ]
+        { name: 'SVM', description: 'Метод опорных векторов для классификации' },
+        { name: 'Random Forest', description: 'Ансамбль решающих деревьев' },
+      ],
     },
     {
-      name: "Deep Learning",
-      description: "Глубокие нейронные сети",
+      name: 'Deep Learning',
+      description: 'Глубокие нейронные сети',
       children: [
         {
-          name: "CNN",
-          description: "Сверточные нейронные сети для анализа LOB",
+          name: 'CNN',
+          description: 'Сверточные нейронные сети для анализа LOB',
           children: [
-            { name: "LOB-CNN", description: "Специализированные CNN для анализа стакана" }
-          ]
+            { name: 'LOB-CNN', description: 'Специализированные CNN для анализа стакана' },
+          ],
         },
         {
-          name: "RNN/LSTM",
-          description: "Рекуррентные сети для временных рядов",
-          children: [
-            { name: "Attention LSTM", description: "LSTM с механизмом внимания" }
-          ]
+          name: 'RNN/LSTM',
+          description: 'Рекуррентные сети для временных рядов',
+          children: [{ name: 'Attention LSTM', description: 'LSTM с механизмом внимания' }],
         },
         {
-          name: "Transformers",
-          description: "Архитектура трансформеров",
+          name: 'Transformers',
+          description: 'Архитектура трансформеров',
           children: [
-            { name: "LOB-Transformer", description: "Трансформеры для анализа стакана ордеров" },
-            { name: "Time-series Transformer", description: "Специализированные трансформеры для временных рядов" }
-          ]
-        }
-      ]
+            { name: 'LOB-Transformer', description: 'Трансформеры для анализа стакана ордеров' },
+            {
+              name: 'Time-series Transformer',
+              description: 'Специализированные трансформеры для временных рядов',
+            },
+          ],
+        },
+      ],
     },
     {
-      name: "Reinforcement Learning",
-      description: "Обучение с подкреплением",
+      name: 'Reinforcement Learning',
+      description: 'Обучение с подкреплением',
       children: [
         {
-          name: "Single-Agent RL",
-          description: "Одноагентное обучение с подкреплением",
+          name: 'Single-Agent RL',
+          description: 'Одноагентное обучение с подкреплением',
           children: [
-            { name: "DQN", description: "Deep Q-Networks для торговых решений" },
-            { name: "PPO", description: "Proximal Policy Optimization" }
-          ]
+            { name: 'DQN', description: 'Deep Q-Networks для торговых решений' },
+            { name: 'PPO', description: 'Proximal Policy Optimization' },
+          ],
         },
         {
-          name: "Multi-Agent RL",
-          description: "Многоагентное обучение с подкреплением",
+          name: 'Multi-Agent RL',
+          description: 'Многоагентное обучение с подкреплением',
           children: [
-            { name: "Competitive RL", description: "Соревновательное обучение агентов" },
-            { name: "Cooperative RL", description: "Кооперативные стратегии" }
-          ]
+            { name: 'Competitive RL', description: 'Соревновательное обучение агентов' },
+            { name: 'Cooperative RL', description: 'Кооперативные стратегии' },
+          ],
         },
         {
-          name: "Meta-RL",
-          description: "Мета-обучение с подкреплением для быстрой адаптации"
-        }
-      ]
+          name: 'Meta-RL',
+          description: 'Мета-обучение с подкреплением для быстрой адаптации',
+        },
+      ],
     },
     {
-      name: "Graph Neural Networks",
-      description: "Графовые нейронные сети",
+      name: 'Graph Neural Networks',
+      description: 'Графовые нейронные сети',
       children: [
-        { name: "GNN LOB", description: "GNN для моделирования структуры стакана" },
-        { name: "Market Graph", description: "Графы рыночных взаимосвязей" }
-      ]
+        { name: 'GNN LOB', description: 'GNN для моделирования структуры стакана' },
+        { name: 'Market Graph', description: 'Графы рыночных взаимосвязей' },
+      ],
     },
     {
-      name: "Hybrid Systems",
-      description: "Гибридные системы",
+      name: 'Hybrid Systems',
+      description: 'Гибридные системы',
       children: [
-        { name: "Rules + AI", description: "Комбинация правил и ИИ" },
-        { name: "Genetic + RL", description: "Генетические алгоритмы с RL" },
-        { name: "Ensemble Models", description: "Ансамбли различных моделей" }
-      ]
-    }
-  ]
+        { name: 'Rules + AI', description: 'Комбинация правил и ИИ' },
+        { name: 'Genetic + RL', description: 'Генетические алгоритмы с RL' },
+        { name: 'Ensemble Models', description: 'Ансамбли различных моделей' },
+      ],
+    },
+  ],
 };

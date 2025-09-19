@@ -1,4 +1,4 @@
-import type { Technology } from "@shared/schema";
+import type { Technology } from '@shared/schema';
 
 // Унифицированный интерфейс TechnologyRow для всех случаев использования
 export interface TechnologyRow {
@@ -18,34 +18,26 @@ export interface TechnologyRow {
   successors: string[];
 }
 
-interface RevisionPeriods {
-  [key: string]: {
-    label: string;
-    period: string;
-    years: [number, number];
-  };
-}
-
 // Маппинг категорий на модули
 export const getCategoryModule = (category: string): string => {
   const mapping: Record<string, string> = {
-    'data': 'Сбор данных',
-    'processing': 'Обработка данных',
-    'ml': 'Генерация сигналов',
-    'visualization': 'Визуализация и мониторинг',
-    'risk': 'Риск-менеджмент',
-    'execution': 'Исполнение сделок',
-    'adaptation': 'Адаптация к рынку',
-    'infrastructure': 'Инфраструктура'
+    data: 'Сбор данных',
+    processing: 'Обработка данных',
+    ml: 'Генерация сигналов',
+    visualization: 'Визуализация и мониторинг',
+    risk: 'Риск-менеджмент',
+    execution: 'Исполнение сделок',
+    adaptation: 'Адаптация к рынку',
+    infrastructure: 'Инфраструктура',
   };
   return mapping[category] || 'Другое';
 };
 
 // Определяем в какой ревизии появилась технология
-export const getTechnologyRevision = (tech: Technology, revisionPeriods: RevisionPeriods): string => {
+export const getTechnologyRevision = (tech: Technology): string => {
   const startYear = tech.periods.start;
   const peakYear = tech.periods.peak || startYear;
-  
+
   if (peakYear <= 2015) return 'rev1';
   if (peakYear <= 2020) return 'rev2';
   if (peakYear <= 2022) return 'rev3';
@@ -53,12 +45,12 @@ export const getTechnologyRevision = (tech: Technology, revisionPeriods: Revisio
   return 'rev5';
 };
 
-const defaultRevisionPeriods: RevisionPeriods = {
-  rev1: { label: "Rev 1 (2015)", period: "2000-2015", years: [2000, 2015] },
-  rev2: { label: "Rev 2 (2020)", period: "2016-2020", years: [2016, 2020] },
-  rev3: { label: "Rev 3 (2022)", period: "2021-2022", years: [2021, 2022] },
-  rev4: { label: "Rev 4 (2023)", period: "2023-2023", years: [2023, 2023] },
-  rev5: { label: "Rev 5 (2024)", period: "2024-2025", years: [2024, 2025] }
+const defaultRevisionPeriods = {
+  rev1: { label: 'Rev 1 (2015)', period: '2000-2015', years: [2000, 2015] as [number, number] },
+  rev2: { label: 'Rev 2 (2020)', period: '2016-2020', years: [2016, 2020] as [number, number] },
+  rev3: { label: 'Rev 3 (2022)', period: '2021-2022', years: [2021, 2022] as [number, number] },
+  rev4: { label: 'Rev 4 (2023)', period: '2023-2023', years: [2023, 2023] as [number, number] },
+  rev5: { label: 'Rev 5 (2024)', period: '2024-2025', years: [2024, 2025] as [number, number] },
 };
 
 // Основная функция buildTechnologyRows - поддерживает разные случаи использования
@@ -71,11 +63,11 @@ export function buildTechnologyRows(
   // Простой случай - только список технологий с фильтрацией по модулю
   if (moduleFilter) {
     return technologies
-      .filter(tech => {
+      .filter((tech) => {
         const techModule = getCategoryModule(tech.category);
         return techModule === moduleFilter || tech.applicableModules.includes(moduleFilter);
       })
-      .map(tech => ({
+      .map((tech) => ({
         id: tech.id,
         name: tech.name,
         category: tech.category,
@@ -86,29 +78,29 @@ export function buildTechnologyRows(
           rev2: '',
           rev3: '',
           rev4: '',
-          rev5: ''
+          rev5: '',
         },
         predecessors: tech.evolution?.predecessors || [],
-        successors: tech.evolution?.successors || []
+        successors: tech.evolution?.successors || [],
       }));
   }
 
   // Сложный случай - полная обработка с ревизиями
   const rows: TechnologyRow[] = [];
   const processedTechs = new Set<string>();
-  
+
   // Создаем индексы для быстрого поиска
   const techById = new Map<string, Technology>();
   const techByName = new Map<string, Technology>();
-  
-  technologies.forEach(tech => {
+
+  technologies.forEach((tech) => {
     techById.set(tech.id, tech);
     techByName.set(tech.name, tech);
   });
 
   // Группируем технологии по модулям
   const techsByModule: Record<string, Technology[]> = {};
-  technologies.forEach(tech => {
+  technologies.forEach((tech) => {
     const module = getCategoryModule(tech.category);
     if (!techsByModule[module]) {
       techsByModule[module] = [];
@@ -121,9 +113,9 @@ export function buildTechnologyRows(
     // Сортируем технологии по времени появления
     const sortedTechs = techs.sort((a, b) => a.periods.start - b.periods.start);
 
-    sortedTechs.forEach(tech => {
+    sortedTechs.forEach((tech) => {
       if (processedTechs.has(tech.id)) return;
-      
+
       const row: TechnologyRow = {
         id: tech.id,
         name: tech.name,
@@ -135,18 +127,25 @@ export function buildTechnologyRows(
           rev2: '',
           rev3: '',
           rev4: '',
-          rev5: ''
+          rev5: '',
         },
         predecessors: tech.evolution?.predecessors || [],
-        successors: tech.evolution?.successors || []
+        successors: tech.evolution?.successors || [],
       };
 
       // Определяем где показать технологию
-      const startRevision = getTechnologyRevision(tech, defaultRevisionPeriods);
+      const startRevision = getTechnologyRevision(tech);
       const endYear = tech.periods.end || new Date().getFullYear();
 
       // Заполняем ревизии
-      Object.entries(defaultRevisionPeriods).forEach(([revKey, revData]) => {
+      (
+        Object.entries(defaultRevisionPeriods) as Array<
+          [
+            keyof typeof defaultRevisionPeriods,
+            (typeof defaultRevisionPeriods)[keyof typeof defaultRevisionPeriods],
+          ]
+        >
+      ).forEach(([revKey, revData]) => {
         const [revStart, revEnd] = revData.years;
         const key = revKey as keyof typeof row.revisions;
 
@@ -170,7 +169,7 @@ export function buildTechnologyRows(
 
       // Добавляем строки для эволюционировавших технологий
       if (tech.evolution?.successors) {
-        tech.evolution.successors.forEach(successorId => {
+        tech.evolution.successors.forEach((successorId) => {
           const successor = techById.get(successorId) || techByName.get(successorId);
           if (successor && !processedTechs.has(successor.id)) {
             const successorRow: TechnologyRow = {
@@ -184,14 +183,15 @@ export function buildTechnologyRows(
                 rev2: '',
                 rev3: '',
                 rev4: '',
-                rev5: ''
+                rev5: '',
               },
               predecessors: successor.evolution?.predecessors || [tech.id],
-              successors: successor.evolution?.successors || []
+              successors: successor.evolution?.successors || [],
             };
 
-            const successorRevision = getTechnologyRevision(successor, defaultRevisionPeriods);
-            successorRow.revisions[successorRevision as keyof typeof successorRow.revisions] = successor.name;
+            const successorRevision = getTechnologyRevision(successor);
+            successorRow.revisions[successorRevision as keyof typeof successorRow.revisions] =
+              successor.name;
 
             rows.push(successorRow);
             processedTechs.add(successor.id);

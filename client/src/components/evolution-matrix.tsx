@@ -1,8 +1,13 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useEvolutionData, useTechnologies, useTradingMachines, getMatrixTechnologyCoverage } from "@/hooks/use-technologies";
-import type { EvolutionData } from "@shared/schema";
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  getMatrixTechnologyCoverage,
+  useEvolutionData,
+  useTechnologies,
+  useTradingMachines,
+} from '@/hooks/use-technologies';
 
 type FilterType = 'all' | 'rev5' | 'hideUnchanged';
 type DataSourceType = 'original' | 'integrated' | 'dynamic';
@@ -15,17 +20,30 @@ interface EvolutionMatrixProps {
 export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionMatrixProps) {
   const [filter, setFilter] = useState<FilterType>('all');
   const [dataSource, setDataSource] = useState<DataSourceType>('original');
-  const [tooltip, setTooltip] = useState<{ content: string; x: number; y: number; visible: boolean }>({
+  const [tooltip, setTooltip] = useState<{
+    content: string;
+    x: number;
+    y: number;
+    visible: boolean;
+  }>({
     content: '',
     x: 0,
     y: 0,
-    visible: false
+    visible: false,
   });
 
   // React Query hooks
-  const { data: evolutionData, isLoading: evolutionLoading, isError: evolutionError } = useEvolutionData(dataSource);
-  const { data: technologies, isLoading: techLoading, isError: techError } = useTechnologies();
-  const { data: tradingMachines, isLoading: machinesLoading, isError: machinesError } = useTradingMachines();
+  const {
+    data: evolutionData,
+    isLoading: evolutionLoading,
+    isError: evolutionError,
+  } = useEvolutionData(dataSource);
+  const { isLoading: techLoading, isError: techError } = useTechnologies();
+  const {
+    data: tradingMachines,
+    isLoading: machinesLoading,
+    isError: machinesError,
+  } = useTradingMachines();
 
   // Loading state
   if (evolutionLoading || techLoading || machinesLoading) {
@@ -74,77 +92,75 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
       content,
       x: event.pageX + 10,
       y: event.pageY - 10,
-      visible: true
+      visible: true,
     });
   };
 
   const hideTooltip = () => {
-    setTooltip(prev => ({ ...prev, visible: false }));
+    setTooltip((prev) => ({ ...prev, visible: false }));
   };
 
   const getVisibleRevisions = () => {
-    if (filter === 'rev5') return ['rev5'];
-    return ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'];
+    if (filter === 'rev5') return ['rev5'] as const;
+    return ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
   };
 
   const getVisibleModules = () => {
-    // Используем только данные от React Query - пока что все источники используют одни данные
-    // TODO: В будущем можно добавить разные источники данных через API
     const currentData = evolutionData;
 
     console.log('getVisibleModules - выбран источник:', dataSource);
     console.log('getVisibleModules - количество модулей:', currentData.modules.length);
-    console.log('getVisibleModules - названия:', currentData.modules.map(m => m.name));
+    console.log(
+      'getVisibleModules - названия:',
+      currentData.modules.map((m) => m.name)
+    );
 
-    // Проверяем, что данные корректные
     if (!currentData || !currentData.modules || !Array.isArray(currentData.modules)) {
       console.error('Ошибка: currentData.modules не является массивом!', currentData);
-      return []; // возвращаем пустой массив если данных нет
+      return [] as typeof evolutionData.modules;
     }
 
-    // Логика фильтрации "Скрыть неизменившиеся модули"
     if (filter === 'hideUnchanged') {
-      const filteredModules = currentData.modules.filter(module => {
+      const filteredModules = currentData.modules.filter((module) => {
         const revisions = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
-        
-        // Проверяем есть ли изменения между ревизиями
+
         for (let i = 1; i < revisions.length; i++) {
           const current = module.revisions[revisions[i]];
           const previous = module.revisions[revisions[i - 1]];
-          
-          // Если технология изменилась или появилась
+
           if (current.tech !== previous.tech && current.tech.trim() !== '') {
             return true;
           }
         }
-        
-        // Также показываем модули, где есть хотя бы одна технология
-        return Object.values(module.revisions).some(rev => rev.tech.trim() !== '');
+
+        return Object.values(module.revisions).some((rev) => rev.tech.trim() !== '');
       });
-      
+
       console.log('Фильтр "hideUnchanged" применен. Показано модулей:', filteredModules.length);
-      console.log('Отфильтрованные модули:', filteredModules.map(m => m.name));
-      
-      return filteredModules;
+      console.log(
+        'Отфильтрованные модули:',
+        filteredModules.map((m) => m.name)
+      );
+
+      return filteredModules as typeof evolutionData.modules;
     }
-    
-    // Возвращаем все модули без фильтрации
+
     console.log('Возвращаем все модули без фильтрации:', currentData.modules.length);
     return currentData.modules;
   };
 
   const getCellClass = (data: { tech: string; period?: string }) => {
-    const baseClasses = "evolution-cell p-3 text-center text-xs font-medium border-r border-border";
+    const baseClasses = 'evolution-cell p-3 text-center text-xs font-medium border-r border-border';
     if (data.tech === '') return `${baseClasses} empty-cell`;
     return `${baseClasses} ${data.period}-tech`;
   };
 
   const revisionLabels = {
-    rev1: { label: "Rev.1", period: "(2000–2015)" },
-    rev2: { label: "Rev.2", period: "(2015–2020)" },
-    rev3: { label: "Rev.3", period: "(2020–2022)" },
-    rev4: { label: "Rev.4", period: "(2022–2023)" },
-    rev5: { label: "Rev.5", period: "(2023–2025)" }
+    rev1: { label: 'Rev.1', period: '(2000–2015)' },
+    rev2: { label: 'Rev.2', period: '(2015–2020)' },
+    rev3: { label: 'Rev.3', period: '(2020–2022)' },
+    rev4: { label: 'Rev.4', period: '(2022–2023)' },
+    rev5: { label: 'Rev.5', period: '(2023–2025)' },
   };
 
   const visibleRevisions = getVisibleRevisions();
@@ -156,8 +172,11 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   console.log('Текущий источник данных:', dataSource);
   console.log('Видимые ревизии:', visibleRevisions);
   console.log('Количество видимых модулей:', visibleModules.length);
-  console.log('Названия видимых модулей:', visibleModules.map(m => m.name));
-  
+  console.log(
+    'Названия видимых модулей:',
+    visibleModules.map((m) => m.name)
+  );
+
   if (visibleModules.length !== 8) {
     console.error('ПРОБЛЕМА: Ожидается 8 модулей, получено:', visibleModules.length);
     console.error('Проверьте функцию getVisibleModules()');
@@ -165,23 +184,13 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
 
   // Получаем покрытие технологий из кейсов
   const technologyCoverage = tradingMachines ? getMatrixTechnologyCoverage(tradingMachines) : {};
-  const coverageModuleNameMap: Record<string,string> = {
-    'dataCollection': 'Сбор данных',
-    'dataProcessing': 'Обработка данных',
-    'featureEngineering': 'Feature Engineering',
-    'signalGeneration': 'Генерация сигналов',
-    'riskManagement': 'Риск-менеджмент',
-    'execution': 'Исполнение сделок',
-    'marketAdaptation': 'Адаптация к рынку',
-    'visualization': 'Визуализация и мониторинг'
-  };
 
   return (
     <div className="lg:col-span-7">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">Матрица эволюции</CardTitle>
-          
+
           {/* Фильтры по ревизиям */}
           <div className="flex flex-wrap gap-3 mb-3">
             <Button
@@ -247,8 +256,11 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
                   <th className="sticky left-0 bg-muted text-muted-foreground p-3 text-left font-semibold min-w-[200px]">
                     Модуль
                   </th>
-                  {visibleRevisions.map(rev => (
-                    <th key={rev} className="p-3 text-center font-semibold text-muted-foreground min-w-[120px]">
+                  {visibleRevisions.map((rev) => (
+                    <th
+                      key={rev}
+                      className="p-3 text-center font-semibold text-muted-foreground min-w-[120px]"
+                    >
                       {revisionLabels[rev as keyof typeof revisionLabels].label}
                       <br />
                       <span className="text-xs">
@@ -262,20 +274,24 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
                 {visibleModules.map((module, moduleIndex) => (
                   <tr key={moduleIndex} className="border-b border-border">
                     <td className="sticky left-0 bg-muted text-foreground p-3 font-medium border-r border-border">
-                      <div 
+                      <div
                         className="flex items-center gap-2 cursor-pointer hover:bg-muted/80 rounded p-1 transition-colors"
                         onClick={() => onModuleClick?.(module.name)}
                         title="Кликните для фильтрации технологий по этому модулю"
                       >
                         {module.name}
-                        {technologyCoverage[module.name] && technologyCoverage[module.name].length > 0 && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full" title={`Представлено в кейсах: ${technologyCoverage[module.name].length} технологий`}>
-                            {technologyCoverage[module.name].length}
-                          </span>
-                        )}
+                        {Array.isArray(technologyCoverage[module.name]) &&
+                          technologyCoverage[module.name].length > 0 && (
+                            <span
+                              className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
+                              title={`Представлено в кейсах: ${technologyCoverage[module.name].length} технологий`}
+                            >
+                              {technologyCoverage[module.name].length}
+                            </span>
+                          )}
                       </div>
                     </td>
-                    {visibleRevisions.map(rev => {
+                    {visibleRevisions.map((rev) => {
                       const data = module.revisions[rev as keyof typeof module.revisions];
                       return (
                         <td
@@ -285,13 +301,16 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
                           onMouseLeave={hideTooltip}
                           onClick={() => {
                             if (data.tech && data.tech.trim() !== '') {
-                              // Если в ячейке несколько технологий, берем первую
                               const firstTech = data.tech.split(',')[0].trim().split('→')[0].trim();
                               onTechnologyClick?.(firstTech);
                             }
                           }}
                           data-testid={`cell-${moduleIndex}-${rev}`}
-                          title={data.tech ? `Кликните для просмотра деталей технологии: ${data.tech}` : ''}
+                          title={
+                            data.tech
+                              ? `Кликните для просмотра деталей технологии: ${data.tech}`
+                              : ''
+                          }
                         >
                           {data.tech}
                         </td>
