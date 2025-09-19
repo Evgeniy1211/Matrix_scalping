@@ -64,6 +64,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, res);
   });
 
+  app.get('/api/modules/:id', async (req, res) => {
+    safeHandler(async () => {
+      const { getModuleByName } = await import('./data/modules/index');
+      const moduleId = req.params.id;
+      const module = getModuleByName(moduleId);
+      
+      if (!module) {
+        res.status(404).json({ error: `Module not found: ${moduleId}` });
+        return;
+      }
+      
+      res.json(module);
+    }, res);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
