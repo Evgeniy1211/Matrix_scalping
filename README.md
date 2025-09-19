@@ -1,5 +1,10 @@
 # Matrix_scalping
 
+[![CI](https://github.com/Evgeniy1211/Matrix_scalping/actions/workflows/ci.yml/badge.svg)](https://github.com/Evgeniy1211/Matrix_scalping/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![npm Version](https://img.shields.io/badge/npm-%3E%3D9-brightgreen)](https://www.npmjs.com/)
+
 Визуализация эволюции технологий алгоритмической торговли (2000–2025).
 
 ## 🚀 Стек
@@ -7,6 +12,13 @@
 - Frontend: React 18, TypeScript, D3.js, TailwindCSS, shadcn/ui
 - Backend: Express.js
 - Build: Vite
+
+## 📋 Системные требования
+
+- **Node.js**: ≥ 18.0.0 (проверить: `node --version`)
+- **npm**: ≥ 9.0.0 (проверить: `npm --version`)
+- **ОС**: Windows, macOS, Linux
+- **Браузер**: Chrome/Firefox/Safari/Edge (современные версии)
 
 ## ⚙️ Установка и запуск
 
@@ -40,6 +52,8 @@ npm run dev
 - **Backend**: Express.js (минимальный)
 - **Build**: Vite
 - **UI Components**: shadcn/ui
+
+📖 **Подробная документация архитектуры**: [`docs/architecture.md`](docs/architecture.md)
 
 #### Основные компоненты
 
@@ -218,6 +232,7 @@ npm run build
 ### 🏗️ Общий обзор
 
 - **📋 Архитектура проекта**: [`project-overview.md`](project-overview.md) - структура и компоненты
+- **🏗️ Системная архитектура**: [`docs/architecture.md`](docs/architecture.md) - полная архитектурная документация
 
 ## 📝 Как добавлять новые данные
 
