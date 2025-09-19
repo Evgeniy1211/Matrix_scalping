@@ -11,7 +11,8 @@
     "db:push": "drizzle-kit push",
     "lint": "eslint \"index.ts\" \"backend/**/*.{ts,tsx}\" \"client/src/**/*.{ts,tsx}\"",
     "format": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
