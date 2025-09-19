@@ -2,7 +2,7 @@ import type { Express, Response } from 'express';
 import { createServer, type Server } from 'http';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // helper
+  // helper for safe error handling and validation
   function safeHandler(fn: () => Promise<void>, res: Response) {
     fn().catch((error) => {
       console.error('API error:', error);
@@ -46,6 +46,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/technologies', async (req, res) => {
     safeHandler(async () => {
       const { technologyDatabase } = await import('./data/technologies');
+      // Validate data consistency from unified source
+      if (!Array.isArray(technologyDatabase)) {
+        throw new Error('Technologies data is not properly formatted');
+      }
       res.json(technologyDatabase);
     }, res);
   });
@@ -53,6 +57,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/trading-machines', async (req, res) => {
     safeHandler(async () => {
       const { tradingMachineCases } = await import('./data/trading-machines');
+      // Validate data consistency from unified source  
+      if (!Array.isArray(tradingMachineCases)) {
+        throw new Error('Trading machines data is not properly formatted');
+      }
       res.json(tradingMachineCases);
     }, res);
   });
@@ -60,6 +68,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/modules', async (req, res) => {
     safeHandler(async () => {
       const { allModules } = await import('./data/modules/index');
+      // Validate modules from unified source
+      if (!Array.isArray(allModules) || allModules.length !== 8) {
+        throw new Error('Modules data is not properly formatted - expected 8 modules');
+      }
       res.json(allModules);
     }, res);
   });
