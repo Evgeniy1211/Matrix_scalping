@@ -2,6 +2,11 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import { registerRoutes } from '../backend/routes';
+import {
+  evolutionDataSchema,
+  technologyArraySchema,
+  tradingMachineArraySchema,
+} from '../backend/knowledge-base/schema';
 
 let app: express.Express;
 let server: any;
@@ -35,30 +40,30 @@ describe('API routes', () => {
   it('GET /api/evolution returns base evolution data', async () => {
     const res = await request(app).get('/api/evolution');
     expect(res.status).toBe(200);
-    expect(isModuleArray(res.body)).toBe(true);
+    expect(() => evolutionDataSchema.parse(res.body)).not.toThrow();
   });
 
   it('GET /api/evolution/integrated returns integrated data', async () => {
     const res = await request(app).get('/api/evolution/integrated');
     expect(res.status).toBe(200);
-    expect(isModuleArray(res.body)).toBe(true);
+    expect(() => evolutionDataSchema.parse(res.body)).not.toThrow();
   });
 
   it('GET /api/evolution/dynamic returns dynamic matrix', async () => {
     const res = await request(app).get('/api/evolution/dynamic');
     expect(res.status).toBe(200);
-    expect(isModuleArray(res.body)).toBe(true);
+    expect(() => evolutionDataSchema.parse(res.body)).not.toThrow();
   });
 
   it('GET /api/technologies returns technology list', async () => {
     const res = await request(app).get('/api/technologies');
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(() => technologyArraySchema.parse(res.body)).not.toThrow();
   });
 
   it('GET /api/trading-machines returns cases', async () => {
     const res = await request(app).get('/api/trading-machines');
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(() => tradingMachineArraySchema.parse(res.body)).not.toThrow();
   });
 });
