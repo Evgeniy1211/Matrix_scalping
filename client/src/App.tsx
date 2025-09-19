@@ -6,6 +6,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 
 import { queryClient } from './lib/queryClient';
 import CasesPage from './pages/cases-page';
+import EvolutionMatrixPage from './pages/evolution-matrix';
 import MatrixPage from './pages/matrix-page';
 import NotFoundPage from './pages/not-found';
 import TreePage from './pages/tree-page';
@@ -16,7 +17,7 @@ function Router() {
       <Route path="/tree" component={TreePage} />
       <Route path="/cases" component={CasesPage} />
       <Route path="/matrix" component={MatrixPage} />
-      <Route path="/" component={MatrixPage} />
+      <Route path="/" component={EvolutionMatrixPage} />
       <Route component={NotFoundPage} />
     </Switch>
   );
