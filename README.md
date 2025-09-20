@@ -256,23 +256,27 @@ npm run build
 
 ## 📝 Как добавлять новые данные
 
-Теперь все источники данных находятся в `backend/data/`.
+**ВАЖНО**: Все источники данных находятся в `backend/data/` - это единый источник правды.
 
 ### Новая технология
 
 1. Добавить в `backend/data/technologies.ts`
-2. Обновить соответствующий документ в `backend/knowledge-base/`
+2. Описание автоматически попадет в API `/api/technologies`
 3. Типы/валидация доступны через `@shared/schema`
 
 ### Новый кейс торговой машины
 
 1. Добавить в `backend/data/trading-machines.ts`
-2. Создать/обновить описание в `backend/knowledge-base/trading-cases.md`
+2. Описание автоматически попадет в API `/api/trading-machines`
+3. Создать/обновить описание в `backend/knowledge-base/trading-cases.md`
 
 ### Новый модуль системы
 
 1. Добавить/отредактировать в `backend/data/evolution-data.ts` и/или `backend/data/modules/*`
 2. Описать в `backend/knowledge-base/trading-modules.md`
+3. API автоматически обновится через `/api/modules` и `/api/evolution-data/*`
+
+**Принцип**: `backend/data/` → API → Frontend. Никаких дублей, только один источник правды.
 
 ## 🎯 Планы развития
 
