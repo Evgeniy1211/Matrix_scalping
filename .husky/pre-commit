@@ -8,4 +8,4 @@ npx --no-install eslint "index.ts" "backend/**/*.{ts,tsx}" "client/src/**/*.{ts,
 git add -A
 
 # Then run lint-staged for staged file-specific tasks
-npx --no -- lint-staged
+npx --no-install lint-staged

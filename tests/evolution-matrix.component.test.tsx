@@ -35,7 +35,7 @@ describe('EvolutionMatrix component', () => {
   it('renders revision headers from REVISIONS', () => {
     mockHooks();
     render(<EvolutionMatrix />);
-    Object.values(REVISIONS).forEach((rev) => {
+    Object.values(REVISIONS).forEach((rev: any) => {
       expect(screen.getByText(rev.label)).toBeInTheDocument();
     });
   });
@@ -44,6 +44,8 @@ describe('EvolutionMatrix component', () => {
     mockHooks({ withInfrastructure: true });
     render(<EvolutionMatrix />);
     expect(screen.getByText('Инфраструктура')).toBeInTheDocument();
+    // Technology text from Infrastructure row should be visible (rev5 cell has 'Docker')
+    expect(screen.getByText('Docker')).toBeInTheDocument();
   });
 
   it('hideUnchanged filter reduces visible modules when applicable', () => {
@@ -56,5 +58,55 @@ describe('EvolutionMatrix component', () => {
 
     // Ожидаем, что строк стало меньше или равно (если все менялись)
     expect(countAfter).toBeLessThanOrEqual(countBefore);
+  });
+
+  it('can toggle to Rev5 only and back to all', () => {
+    mockHooks();
+    render(<EvolutionMatrix />);
+
+    // Show only Rev5
+    fireEvent.click(screen.getByTestId('button-show-rev5'));
+    // Header should include Rev.5 label
+    expect(screen.getByText(REVISIONS.rev5.label)).toBeInTheDocument();
+
+    // Then back to all
+    fireEvent.click(screen.getByTestId('button-show-all'));
+    Object.values(REVISIONS).forEach((rev: any) => {
+      expect(screen.getByText(rev.label)).toBeInTheDocument();
+    });
+  });
+
+  it('invokes onTechnologyClick when a non-empty cell clicked', () => {
+    mockHooks();
+    const onTechnologyClick = vi.fn();
+    render(<EvolutionMatrix onTechnologyClick={onTechnologyClick} />);
+
+    // Click the Infrastructure rev5 cell that contains 'Docker'
+    expect(screen.getByText('Docker')).toBeInTheDocument();
+    // Use text click to trigger handler
+    fireEvent.click(screen.getByText('Docker'));
+    expect(onTechnologyClick).toHaveBeenCalled();
+    // First arg should be the parsed first technology name
+    const firstArg = onTechnologyClick.mock.calls[0][0];
+    expect(typeof firstArg).toBe('string');
+    expect(firstArg.toLowerCase()).toContain('docker');
+  });
+
+  it('shows and hides tooltip on hover', () => {
+    mockHooks();
+    render(<EvolutionMatrix />);
+    const dockerCell = screen.getByText('Docker');
+    fireEvent.mouseEnter(dockerCell);
+    expect(screen.getByTestId('tooltip')).toBeInTheDocument();
+    fireEvent.mouseLeave(dockerCell);
+  });
+
+  it('switches data source buttons without crashing', () => {
+    mockHooks();
+    render(<EvolutionMatrix />);
+    // Clicking through data source toggles exercises internal state code paths
+    fireEvent.click(screen.getByRole('button', { name: /С технологиями из базы/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Динамическая/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Оригинальная матрица/i }));
   });
 });

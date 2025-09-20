@@ -25,9 +25,9 @@
 
 Теперь доступны 3 варианта матрицы:
 
-- original: GET `/api/evolution-data` – базовые 8 модулей (статическая матрица)
-- integrated: GET `/api/evolution-data/integrated` – original + технологии из базы + интеграция кейсов
-- dynamic: GET `/api/evolution-data/dynamic` – каждая технология отдельной строкой (построено из базы + кейсов)
+- original: GET `/api/evolution` – базовые 8 модулей (статическая матрица)
+- integrated: GET `/api/evolution/integrated` – original + технологии из базы + интеграция кейсов
+- dynamic: GET `/api/evolution/dynamic` – каждая технология отдельной строкой (построено из базы + кейсов)
 
 На фронтенде переключение реализовано через состояние `dataSource` в `EvolutionMatrix` и вызов `useEvolutionData(source)`.
 

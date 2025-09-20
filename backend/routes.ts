@@ -10,26 +10,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // ORIGINAL evolution data
+  // DEPRECATED: ORIGINAL evolution data
   app.get('/api/evolution-data', async (req, res) => {
     safeHandler(async () => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[DEPRECATED] Use /api/evolution instead of /api/evolution-data');
+      }
       const { evolutionData } = await import('./data/evolution-data');
       res.json(evolutionData);
     }, res);
   });
 
-  // INTEGRATED evolution data (original + technologies + cases)
+  // DEPRECATED: INTEGRATED evolution data (original + technologies + cases)
   app.get('/api/evolution-data/integrated', async (req, res) => {
     safeHandler(async () => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[DEPRECATED] Use /api/evolution/integrated instead of /api/evolution-data/integrated');
+      }
       const { integrateTechnologyDatabase } = await import('./data/evolution-data');
       const data = integrateTechnologyDatabase();
       res.json(data);
     }, res);
   });
 
-  // DYNAMIC evolution data (each technology as a row)
+  // DEPRECATED: DYNAMIC evolution data (each technology as a row)
   app.get('/api/evolution-data/dynamic', async (req, res) => {
     safeHandler(async () => {
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('[DEPRECATED] Use /api/evolution/dynamic instead of /api/evolution-data/dynamic');
+      }
       const { createDynamicTechnologyMatrix } = await import('./data/evolution-data');
       const data = createDynamicTechnologyMatrix();
       res.json(data);

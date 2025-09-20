@@ -52,9 +52,9 @@ backend/data/* (источники) → backend/routes.ts (API) → client (Reac
 
 Фронтенд не импортирует эти файлы напрямую — только обращается к API:
 
-- GET `/api/evolution-data`
-- GET `/api/evolution-data/integrated`
-- GET `/api/evolution-data/dynamic`
+- GET `/api/evolution`
+- GET `/api/evolution/integrated`
+- GET `/api/evolution/dynamic`
 - GET `/api/tree-data`
 - GET `/api/technologies`
 - GET `/api/trading-machines`

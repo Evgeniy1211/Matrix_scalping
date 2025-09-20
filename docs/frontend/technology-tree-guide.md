@@ -4,7 +4,7 @@
 Описывает работу и обновление D3 дерева технологических направлений.
 
 ## Источник данных
-Берётся из `backend/data/evolution-data.ts` экспорт `treeData`.
+Берётся из `backend/data/evolution-data.ts` экспорт `treeData` и отдаётся через `/api/tree-data`.
 
 Структура узла:
 ```

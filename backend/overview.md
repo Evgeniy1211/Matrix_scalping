@@ -33,9 +33,9 @@ backend/
 
 Базовый префикс: `/api`
 
-- GET `/api/evolution-data` — исходная матрица и дерево
-- GET `/api/evolution-data/integrated` — интегрированные данные (матрица + технологии + кейсы)
-- GET `/api/evolution-data/dynamic` — «динамическая матрица» (каждая технология — отдельная строка)
+- GET `/api/evolution` — исходная матрица и дерево
+- GET `/api/evolution/integrated` — интегрированные данные (матрица + технологии + кейсы)
+- GET `/api/evolution/dynamic` — «динамическая матрица» (каждая технология — отдельная строка)
 - GET `/api/tree-data` — данные для дерева технологий
 - GET `/api/technologies` — база технологий из `backend/data/technologies.ts`
 - GET `/api/trading-machines` — кейсы торговых машин
@@ -61,9 +61,9 @@ backend/
 1) Сервер стартует без ошибок (`npm run dev` или `npm start` после сборки)
 2) Эндпоинты `/api/*` отвечают 200 и возвращают валидные данные:
    - `/api/technologies`
-   - `/api/evolution-data`
-   - `/api/evolution-data/integrated`
-   - `/api/evolution-data/dynamic`
+   - `/api/evolution`
+   - `/api/evolution/integrated`
+   - `/api/evolution/dynamic`
    - `/api/trading-machines`
    - `/api/modules`
 3) Статический фронтенд отдается в продакшене (после `npm run build` → `npm start`)

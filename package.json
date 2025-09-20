@@ -137,5 +137,17 @@
   },
   "alias": {
     "@shared": "./backend/schemas"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "**/*.{json,md}": [
+      "prettier --write"
+    ],
+    "client/src/**/*.{css,scss}": [
+      "prettier --write"
+    ]
   }
 }
