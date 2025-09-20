@@ -10,6 +10,7 @@
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "lint": "eslint \"index.ts\" \"backend/**/*.{ts,tsx}\" \"client/src/**/*.{ts,tsx}\"",
+    "lint-data": "node scripts/validate-data.js",
     "format": "prettier --write .",
     "prepare": "husky install",
     "preview": "vite preview",

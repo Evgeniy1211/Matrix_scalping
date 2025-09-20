@@ -470,6 +470,113 @@ export const technologyDatabase: TechnologyDescription[] = [
     useCases: ['Быстрая классификация', 'Большие датасеты', 'Ансамблевые методы'],
     sources: ['Geurts et al. (2006)'],
   },
+
+  // Additional technologies from knowledge-base documentation
+  {
+    id: 'pandas',
+    name: 'Pandas',
+    fullName: 'Python Data Analysis Library',
+    description: 'Python библиотека для анализа и манипуляции данными, основа для работы с временными рядами',
+    category: 'processing',
+    periods: {
+      start: 2008,
+      peak: 2020,
+    },
+    evolution: {
+      predecessors: [],
+      successors: [],
+    },
+    applicableModules: ['dataProcessing', 'featureEngineering'],
+    advantages: [
+      'Мощные инструменты для работы с DataFrame',
+      'Отличная поддержка временных рядов',
+      'Интеграция с NumPy и matplotlib',
+      'Удобная индексация и группировка данных',
+    ],
+    disadvantages: [
+      'Потребление памяти при больших данных',
+      'Медленная работа с циклами',
+      'Сложность для новичков',
+    ],
+    useCases: [
+      'Обработка временных рядов',
+      'Создание DataFrame из рыночных данных',
+      'Feature engineering',
+      'Подготовка данных для ML',
+    ],
+    sources: ['Pandas Documentation', 'Random Forest Scalper'],
+  },
+
+  {
+    id: 'numpy',
+    name: 'NumPy',
+    fullName: 'Numerical Python',
+    description: 'Библиотека для численных вычислений в Python, основа для научных вычислений',
+    category: 'processing',
+    periods: {
+      start: 2006,
+      peak: 2018,
+    },
+    evolution: {
+      predecessors: [],
+      successors: [],
+    },
+    applicableModules: ['dataProcessing', 'featureEngineering'],
+    advantages: [
+      'Высокая производительность векторных операций',
+      'Эффективная работа с памятью',
+      'Основа для большинства научных библиотек Python',
+      'Многомерные массивы',
+    ],
+    disadvantages: [
+      'Низкоуровневый интерфейс',
+      'Требует понимания векторных операций',
+      'Ограниченная функциональность без дополнительных библиотек',
+    ],
+    useCases: [
+      'Быстрые математические операции',
+      'Создание признаков',
+      'Обработка массивов данных',
+      'Основа для pandas и scikit-learn',
+    ],
+    sources: ['NumPy Documentation', 'Random Forest Scalper'],
+  },
+
+  {
+    id: 'scikit-learn',
+    name: 'Scikit-learn',
+    fullName: 'Machine Learning in Python',
+    description: 'Библиотека машинного обучения для Python с широким набором алгоритмов',
+    category: 'ml',
+    periods: {
+      start: 2007,
+      peak: 2020,
+    },
+    evolution: {
+      predecessors: [],
+      successors: [],
+    },
+    applicableModules: ['signalGeneration', 'featureEngineering', 'dataProcessing'],
+    advantages: [
+      'Простой и консистентный API',
+      'Широкий выбор алгоритмов',
+      'Отличная документация',
+      'Интеграция с NumPy и pandas',
+      'Готовые метрики и инструменты валидации',
+    ],
+    disadvantages: [
+      'Ограниченная поддержка глубокого обучения',
+      'Не оптимизирован для больших данных',
+      'Нет встроенной поддержки GPU',
+    ],
+    useCases: [
+      'RandomForestClassifier и другие алгоритмы ML',
+      'Метрики качества модели',
+      'Разделение данных train/test',
+      'Кросс-валидация',
+    ],
+    sources: ['Scikit-learn Documentation', 'Random Forest Scalper'],
+  },
 ];
 
 // Функция для получения технологий по периоду
