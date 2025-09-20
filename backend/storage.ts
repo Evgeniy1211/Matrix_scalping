@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 
-import { type InsertUser, type User } from './knowledge-base/schema';
+import { type InsertUser, type User } from './schemas/schema';
 
 // modify the interface with any CRUD methods
 // you might need

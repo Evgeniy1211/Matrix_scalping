@@ -6,7 +6,7 @@ import {
   evolutionDataSchema,
   technologyArraySchema,
   tradingMachineArraySchema,
-} from '../backend/knowledge-base/schema';
+} from '@shared/schema';
 
 let app: express.Express;
 let server: any;

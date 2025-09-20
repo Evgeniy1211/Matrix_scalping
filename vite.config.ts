@@ -14,7 +14,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, 'client', 'src'),
-      '@shared': path.resolve(import.meta.dirname, 'backend', 'knowledge-base'),
+      '@shared': path.resolve(import.meta.dirname, 'backend', 'schemas'),
       '@assets': path.resolve(import.meta.dirname, 'attached_assets'),
     },
   },

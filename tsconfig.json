@@ -17,7 +17,7 @@
     "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./client/src/*"],
-      "@shared/*": ["./backend/knowledge-base/*"]
+      "@shared/*": ["./backend/schemas/*"]
     }
   }
 }
