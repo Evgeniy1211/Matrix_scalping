@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { REVISIONS, UI_MODULES } from '@shared/constants';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,24 +26,8 @@ export function DynamicEvolutionMatrix({
     return technologies ? buildTechnologyRows(technologies, selectedModule || '') : [];
   }, [technologies, selectedModule]);
 
-  const modules = [
-    'Сбор данных',
-    'Обработка данных',
-    'Feature Engineering',
-    'Генерация сигналов',
-    'Риск-менеджмент',
-    'Исполнение сделок',
-    'Адаптация к рынку',
-    'Визуализация и мониторинг',
-  ];
-
-  const revisions = [
-    { key: 'rev1', label: 'Rev 1 (2015)' },
-    { key: 'rev2', label: 'Rev 2 (2020)' },
-    { key: 'rev3', label: 'Rev 3 (2022)' },
-    { key: 'rev4', label: 'Rev 4 (2023)' },
-    { key: 'rev5', label: 'Rev 5 (2024)' },
-  ];
+  const modules = UI_MODULES;
+  const revisions = Object.values(REVISIONS);
 
   if (isLoading) {
     return (

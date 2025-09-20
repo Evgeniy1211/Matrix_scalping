@@ -108,12 +108,14 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   const getVisibleModules = () => {
     const currentData = evolutionData;
 
-    console.log('getVisibleModules - выбран источник:', dataSource);
-    console.log('getVisibleModules - количество модулей:', currentData.modules.length);
-    console.log(
-      'getVisibleModules - названия:',
-      currentData.modules.map((m) => m.name)
-    );
+      if (import.meta.env.DEV) {
+        console.log('getVisibleModules - выбран источник:', dataSource);
+        console.log('getVisibleModules - количество модулей:', currentData.modules.length);
+        console.log(
+          'getVisibleModules - названия:',
+          currentData.modules.map((m) => m.name)
+        );
+      }
 
     if (!currentData || !currentData.modules || !Array.isArray(currentData.modules)) {
       console.error('Ошибка: currentData.modules не является массивом!', currentData);
@@ -136,16 +138,18 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
         return Object.values(module.revisions).some((rev) => rev.tech.trim() !== '');
       });
 
-      console.log('Фильтр "hideUnchanged" применен. Показано модулей:', filteredModules.length);
-      console.log(
-        'Отфильтрованные модули:',
-        filteredModules.map((m) => m.name)
-      );
+        if (import.meta.env.DEV) {
+          console.log('Фильтр "hideUnchanged" применен. Показано модулей:', filteredModules.length);
+          console.log(
+            'Отфильтрованные модули:',
+            filteredModules.map((m) => m.name)
+          );
+        }
 
       return filteredModules as typeof evolutionData.modules;
     }
 
-    console.log('Возвращаем все модули без фильтрации:', currentData.modules.length);
+      if (import.meta.env.DEV) console.log('Возвращаем все модулы без фильтрации:', currentData.modules.length);
     return currentData.modules;
   };
 
@@ -167,19 +171,20 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   const visibleModules = getVisibleModules();
 
   // Отладочный вывод
-  console.log('=== ОТЛАДКА EvolutionMatrix RENDER ===');
-  console.log('Текущий фильтр:', filter);
-  console.log('Текущий источник данных:', dataSource);
-  console.log('Видимые ревизии:', visibleRevisions);
-  console.log('Количество видимых модулей:', visibleModules.length);
-  console.log(
-    'Названия видимых модулей:',
-    visibleModules.map((m) => m.name)
-  );
+  if (import.meta.env.DEV) {
+    console.log('=== ОТЛАДКА EvolutionMatrix RENDER ===');
+    console.log('Текущий фильтр:', filter);
+    console.log('Текущий источник данных:', dataSource);
+    console.log('Видимые ревизии:', visibleRevisions);
+    console.log('Количество видимых модулей:', visibleModules.length);
+    console.log(
+      'Названия видимых модулей:',
+      visibleModules.map((m) => m.name)
+    );
+  }
 
-  if (visibleModules.length !== 8) {
-    console.error('ПРОБЛЕМА: Ожидается 8 модулей, получено:', visibleModules.length);
-    console.error('Проверьте функцию getVisibleModules()');
+  if (import.meta.env.DEV && visibleModules.length < 8) {
+    console.warn('ПРЕДУПРЕЖДЕНИЕ: Ожидалось минимум 8 модулей, получено:', visibleModules.length);
   }
 
   // Получаем покрытие технологий из кейсов

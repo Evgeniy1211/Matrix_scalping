@@ -1,3 +1,9 @@
+import {
+  moduleForCategory,
+  REVISION_ORDER,
+  type RevisionKey,
+  REVISIONS,
+} from '@shared/constants';
 import type { Technology } from '@shared/schema';
 
 // Унифицированный интерфейс TechnologyRow для всех случаев использования
@@ -19,39 +25,21 @@ export interface TechnologyRow {
 }
 
 // Маппинг категорий на модули
-export const getCategoryModule = (category: string): string => {
-  const mapping: Record<string, string> = {
-    data: 'Сбор данных',
-    processing: 'Обработка данных',
-    ml: 'Генерация сигналов',
-    visualization: 'Визуализация и мониторинг',
-    risk: 'Риск-менеджмент',
-    execution: 'Исполнение сделок',
-    adaptation: 'Адаптация к рынку',
-    infrastructure: 'Инфраструктура',
-  };
-  return mapping[category] || 'Другое';
-};
+export const getCategoryModule = (category: string): string => moduleForCategory(category as any);
 
 // Определяем в какой ревизии появилась технология
-export const getTechnologyRevision = (tech: Technology): string => {
+export const getTechnologyRevision = (tech: Technology): RevisionKey => {
   const startYear = tech.periods.start;
   const peakYear = tech.periods.peak || startYear;
-
-  if (peakYear <= 2015) return 'rev1';
-  if (peakYear <= 2020) return 'rev2';
-  if (peakYear <= 2022) return 'rev3';
-  if (peakYear <= 2023) return 'rev4';
+  // Используем REVISIONS из shared, опираясь на верхние границы периодов
+  if (peakYear <= REVISIONS.rev1.years[1]) return 'rev1';
+  if (peakYear <= REVISIONS.rev2.years[1]) return 'rev2';
+  if (peakYear <= REVISIONS.rev3.years[1]) return 'rev3';
+  if (peakYear <= REVISIONS.rev4.years[1]) return 'rev4';
   return 'rev5';
 };
 
-const defaultRevisionPeriods = {
-  rev1: { label: 'Rev 1 (2015)', period: '2000-2015', years: [2000, 2015] as [number, number] },
-  rev2: { label: 'Rev 2 (2020)', period: '2016-2020', years: [2016, 2020] as [number, number] },
-  rev3: { label: 'Rev 3 (2022)', period: '2021-2022', years: [2021, 2022] as [number, number] },
-  rev4: { label: 'Rev 4 (2023)', period: '2023-2023', years: [2023, 2023] as [number, number] },
-  rev5: { label: 'Rev 5 (2024)', period: '2024-2025', years: [2024, 2025] as [number, number] },
-};
+// Ревизии берём из @shared/constants (REVISIONS/REVISION_ORDER)
 
 // Основная функция buildTechnologyRows - поддерживает разные случаи использования
 export function buildTechnologyRows(
@@ -138,15 +126,8 @@ export function buildTechnologyRows(
       const endYear = tech.periods.end || new Date().getFullYear();
 
       // Заполняем ревизии
-      (
-        Object.entries(defaultRevisionPeriods) as Array<
-          [
-            keyof typeof defaultRevisionPeriods,
-            (typeof defaultRevisionPeriods)[keyof typeof defaultRevisionPeriods],
-          ]
-        >
-      ).forEach(([revKey, revData]) => {
-        const [revStart, revEnd] = revData.years;
+      REVISION_ORDER.forEach((revKey) => {
+        const [revStart, revEnd] = REVISIONS[revKey].years;
         const key = revKey as keyof typeof row.revisions;
 
         // Проверяем пересечение периодов

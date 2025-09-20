@@ -1,11 +1,18 @@
+import React from 'react';
 import {
+  type EvolutionData,
   evolutionDataSchema,
+  type Technology,
   technologyArraySchema,
+  type TradingMachine,
   tradingMachineArraySchema,
+  type TreeNode,
   treeNodeSchema,
 } from '@shared/schema';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import type { z, ZodTypeAny } from 'zod';
+
+import { toast } from '@/hooks/use-toast';
 
 // Base fetch helper with validation
 type InferFromSchema<S extends ZodTypeAny> = z.infer<S>;
@@ -26,40 +33,69 @@ async function fetchAndValidate<S extends ZodTypeAny>(
   }
 }
 
-export function useTechnologies() {
-  return useQuery({
+export function useTechnologies(): UseQueryResult<Technology[], Error> {
+  const q = useQuery<Technology[]>({
     queryKey: ['/api/technologies'],
     queryFn: () => fetchAndValidate('/api/technologies', technologyArraySchema),
   });
+  React.useEffect(() => {
+    if (q.isError) {
+      const msg = q.error?.message || 'Не удалось загрузить список технологий';
+      toast({ title: 'Ошибка загрузки технологий', description: msg, variant: 'destructive' });
+    }
+  }, [q.isError]);
+  return q;
 }
 
-export function useTradingMachines() {
-  return useQuery({
+export function useTradingMachines(): UseQueryResult<TradingMachine[], Error> {
+  const q = useQuery<TradingMachine[]>({
     queryKey: ['/api/trading-machines'],
     queryFn: () => fetchAndValidate('/api/trading-machines', tradingMachineArraySchema),
   });
+  React.useEffect(() => {
+    if (q.isError) {
+      const msg = q.error?.message || 'Не удалось загрузить торговые машины';
+      toast({ title: 'Ошибка загрузки кейсов', description: msg, variant: 'destructive' });
+    }
+  }, [q.isError]);
+  return q;
 }
 
 // Generic evolution data hook with source selection
-export function useEvolutionData(source: 'original' | 'integrated' | 'dynamic' = 'original') {
+export function useEvolutionData(
+  source: 'original' | 'integrated' | 'dynamic' = 'original'
+): UseQueryResult<EvolutionData, Error> {
   const endpoint =
     source === 'original'
       ? '/api/evolution'
       : source === 'integrated'
         ? '/api/evolution/integrated'
         : '/api/evolution/dynamic';
-
-  return useQuery({
+  const q = useQuery<EvolutionData>({
     queryKey: [endpoint],
     queryFn: () => fetchAndValidate(endpoint, evolutionDataSchema),
   });
+  React.useEffect(() => {
+    if (q.isError) {
+      const msg = q.error?.message || `Не удалось загрузить данные матрицы (${source})`;
+      toast({ title: 'Ошибка загрузки матрицы', description: msg, variant: 'destructive' });
+    }
+  }, [q.isError, source]);
+  return q;
 }
 
-export function useTreeData() {
-  return useQuery({
+export function useTreeData(): UseQueryResult<TreeNode, Error> {
+  const q = useQuery<TreeNode>({
     queryKey: ['/api/tree-data'],
     queryFn: () => fetchAndValidate('/api/tree-data', treeNodeSchema),
   });
+  React.useEffect(() => {
+    if (q.isError) {
+      const msg = q.error?.message || 'Не удалось загрузить дерево технологий';
+      toast({ title: 'Ошибка загрузки дерева', description: msg, variant: 'destructive' });
+    }
+  }, [q.isError]);
+  return q;
 }
 
 export function createTechnologyMaps(technologies: { id: string; name: string }[]) {

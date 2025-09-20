@@ -99,7 +99,7 @@ export function TechnologyImporter() {
         setParsedData(enriched[0]);
       }
     } catch (error) {
-      console.error('Ошибка загрузки:', error);
+      if (import.meta.env.DEV) console.error('Ошибка загрузки:', error);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +121,7 @@ export function TechnologyImporter() {
       sources: parsedData.sources || [],
     };
 
-    console.log('Новая технология для добавления:', newTech);
+    if (import.meta.env.DEV) console.log('Новая технология для добавления:', newTech);
     // Здесь можно интегрировать с основной базой данных
     alert('Технология успешно обработана! Проверьте консоль для деталей.');
   };

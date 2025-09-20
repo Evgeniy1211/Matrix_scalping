@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { categoriesForModule } from '@shared/constants';
 import type { Technology } from '@shared/schema';
 
 import { Badge } from '@/components/ui/badge';
@@ -50,72 +51,14 @@ export function TechnologyDetails({
     }
   }, [selectedTechnologyName, technologies, selectedTech?.id, onTechnologySelect]);
 
-  // Mapping matrix modules to technology categories
-  const getModuleCategory = (moduleName: string): string[] => {
-    const moduleMapping: Record<string, string[]> = {
-      'Сбор данных': ['data'],
-      'Обработка данных': ['processing'],
-      'Feature Engineering': ['processing', 'ml'],
-      'Генерация сигналов': ['ml'],
-      'Риск-менеджмент': ['risk'],
-      'Исполнение сделок': ['execution'],
-      'Адаптация к рынку': ['adaptation'],
-      'Визуализация и мониторинг': ['visualization'],
-    };
-
-    const exactMatch = moduleMapping[moduleName];
-    if (exactMatch) return exactMatch;
-
-    const partialMatch = Object.keys(moduleMapping).find(
-      (key) => moduleName.includes(key) || key.includes(moduleName)
-    );
-
-    if (partialMatch) return moduleMapping[partialMatch];
-
-    // Additional checks for specific cases
-    if (
-      moduleName.toLowerCase().includes('визуализация') ||
-      moduleName.toLowerCase().includes('мониторинг')
-    ) {
-      return ['visualization'];
-    }
-    if (moduleName.toLowerCase().includes('данные') || moduleName.toLowerCase().includes('сбор')) {
-      return ['data'];
-    }
-    if (moduleName.toLowerCase().includes('обработка')) {
-      return ['processing'];
-    }
-    if (
-      moduleName.toLowerCase().includes('сигнал') ||
-      moduleName.toLowerCase().includes('машинное') ||
-      moduleName.toLowerCase().includes('обучение')
-    ) {
-      return ['ml'];
-    }
-    if (moduleName.toLowerCase().includes('риск')) {
-      return ['risk'];
-    }
-    if (
-      moduleName.toLowerCase().includes('исполнение') ||
-      moduleName.toLowerCase().includes('сделк')
-    ) {
-      return ['execution'];
-    }
-    if (
-      moduleName.toLowerCase().includes('адаптация') ||
-      moduleName.toLowerCase().includes('рынок')
-    ) {
-      return ['adaptation'];
-    }
-
-    return [];
-  };
+  // Используем общий источник правды для маппинга модуль -> категории
+  const getModuleCategory = (moduleName: string): string[] => categoriesForModule(moduleName);
 
   let filteredTechs = technologies || [];
 
   // Filtering by module
   if (moduleFilter) {
-    const categories = getModuleCategory(moduleFilter);
+  const categories = getModuleCategory(moduleFilter);
     if (categories.length > 0) {
       filteredTechs = filteredTechs.filter((tech) => categories.includes(tech.category));
     }
