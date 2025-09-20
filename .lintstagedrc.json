@@ -1,8 +1,5 @@
 {
-  "index.ts": ["eslint --fix", "prettier --write"],
-  "backend/**/*.{ts,tsx}": ["eslint --fix"],
-  "client/src/**/*.{ts,tsx}": ["eslint --fix"],
+  "**/*.{ts,tsx}": ["eslint --fix", "prettier --write"],
   "client/src/**/*.{css,scss}": ["prettier --write"],
-  "docs/**/*.{md}": ["prettier --write"],
-  "*.{md,json}": ["prettier --write"]
+  "**/*.{json,md}": ["prettier --write"]
 }

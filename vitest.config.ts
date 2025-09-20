@@ -10,6 +10,11 @@ export default defineConfig({
     globals: true,
     pool: 'threads',
     setupFiles: ['tests/setup.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      reportsDirectory: './coverage',
+    },
   },
   resolve: {
     alias: {

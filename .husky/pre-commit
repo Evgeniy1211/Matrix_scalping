@@ -4,5 +4,8 @@
 # Run eslint --fix first to keep code style consistent
 npx --no-install eslint "index.ts" "backend/**/*.{ts,tsx}" "client/src/**/*.{ts,tsx}" --fix || exit 1
 
+# Ensure fixes are staged
+git add -A
+
 # Then run lint-staged for staged file-specific tasks
 npx --no -- lint-staged
