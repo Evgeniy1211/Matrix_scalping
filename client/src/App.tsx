@@ -1,4 +1,5 @@
 import { QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Route, Switch } from 'wouter';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -30,6 +31,11 @@ function App() {
         <ErrorBoundary>
           <Toaster />
           <Router />
+          {import.meta.env.DEV && (
+            <div className="fixed bottom-2 right-2 z-[200]">
+              <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-right" />
+            </div>
+          )}
         </ErrorBoundary>
       </TooltipProvider>
     </QueryClientProvider>

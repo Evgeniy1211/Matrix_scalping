@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { REVISION_ORDER, REVISIONS, UI_MODULES } from '@shared/constants';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -101,8 +102,8 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
   };
 
   const getVisibleRevisions = () => {
-    if (filter === 'rev5') return ['rev5'] as const;
-    return ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
+    // Используем общий порядок ревизий из shared
+    return filter === 'rev5' ? (['rev5'] as const) : (REVISION_ORDER as readonly typeof REVISION_ORDER[number][]);
   };
 
   const getVisibleModules = () => {
@@ -124,7 +125,7 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
 
     if (filter === 'hideUnchanged') {
       const filteredModules = currentData.modules.filter((module) => {
-        const revisions = ['rev1', 'rev2', 'rev3', 'rev4', 'rev5'] as const;
+        const revisions = REVISION_ORDER;
 
         for (let i = 1; i < revisions.length; i++) {
           const current = module.revisions[revisions[i]];
@@ -135,7 +136,9 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
           }
         }
 
-        return Object.values(module.revisions).some((rev) => rev.tech.trim() !== '');
+        return (Object.values(module.revisions) as { tech: string }[]).some((rev) =>
+          rev.tech.trim() !== ''
+        );
       });
 
         if (import.meta.env.DEV) {
@@ -150,7 +153,15 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     }
 
       if (import.meta.env.DEV) console.log('Возвращаем все модулы без фильтрации:', currentData.modules.length);
-    return currentData.modules;
+    // Сортируем модули по порядку UI_MODULES для консистентного отображения
+    const ordered = [...currentData.modules].sort((a, b) => {
+      const ia = UI_MODULES.indexOf(a.name);
+      const ib = UI_MODULES.indexOf(b.name);
+      const av = ia === -1 ? Number.MAX_SAFE_INTEGER : ia;
+      const bv = ib === -1 ? Number.MAX_SAFE_INTEGER : ib;
+      return av - bv;
+    });
+    return ordered;
   };
 
   const getCellClass = (data: { tech: string; period?: string }) => {
@@ -159,13 +170,8 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
     return `${baseClasses} ${data.period}-tech`;
   };
 
-  const revisionLabels = {
-    rev1: { label: 'Rev.1', period: '(2000–2015)' },
-    rev2: { label: 'Rev.2', period: '(2015–2020)' },
-    rev3: { label: 'Rev.3', period: '(2020–2022)' },
-    rev4: { label: 'Rev.4', period: '(2022–2023)' },
-    rev5: { label: 'Rev.5', period: '(2023–2025)' },
-  };
+  // Метаданные ревизий берём из shared REVISIONS
+  const revisionLabels = REVISIONS;
 
   const visibleRevisions = getVisibleRevisions();
   const visibleModules = getVisibleModules();
@@ -266,11 +272,9 @@ export function EvolutionMatrix({ onModuleClick, onTechnologyClick }: EvolutionM
                       key={rev}
                       className="p-3 text-center font-semibold text-muted-foreground min-w-[120px]"
                     >
-                      {revisionLabels[rev as keyof typeof revisionLabels].label}
+                      {revisionLabels[rev].label}
                       <br />
-                      <span className="text-xs">
-                        {revisionLabels[rev as keyof typeof revisionLabels].period}
-                      </span>
+                      <span className="text-xs">{revisionLabels[rev].period}</span>
                     </th>
                   ))}
                 </tr>

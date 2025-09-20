@@ -3,6 +3,7 @@ import {
   REVISION_ORDER,
   type RevisionKey,
   REVISIONS,
+  type TechnologyCategory,
 } from '@shared/constants';
 import type { Technology } from '@shared/schema';
 
@@ -25,7 +26,8 @@ export interface TechnologyRow {
 }
 
 // Маппинг категорий на модули
-export const getCategoryModule = (category: string): string => moduleForCategory(category as any);
+export const getCategoryModule = (category: TechnologyCategory): string =>
+  moduleForCategory(category);
 
 // Определяем в какой ревизии появилась технология
 export const getTechnologyRevision = (tech: Technology): RevisionKey => {
@@ -72,7 +74,6 @@ export function buildTechnologyRows(
         successors: tech.evolution?.successors || [],
       }));
   }
-
   // Сложный случай - полная обработка с ревизиями
   const rows: TechnologyRow[] = [];
   const processedTechs = new Set<string>();
