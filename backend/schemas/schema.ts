@@ -50,6 +50,10 @@ export const evolutionDataSchema = z.object({
 export type EvolutionModule = z.infer<typeof evolutionModuleSchema>;
 export type EvolutionData = z.infer<typeof evolutionDataSchema>;
 
+// Convenience schemas for standalone modules array responses (e.g., GET /api/modules)
+export const moduleArraySchema = z.array(evolutionModuleSchema);
+export type Module = z.infer<typeof evolutionModuleSchema>;
+
 // ===================== Tree (Technology Tree) =====================
 export type TreeNode = {
 	name: string;

@@ -19,7 +19,7 @@ Matrix_scalping is an interactive web application for visualizing the evolution 
 ### Data Flow
 1. **Backend**: Centralized data modules in `backend/data/` provide the source of truth.
    - API endpoints are defined in `backend/routes.ts`.
-   - Data validation and typing use shared Zod schemas (`backend/knowledge-base/schema.ts`).
+  - Data validation and typing use shared Zod schemas (`backend/schemas/schema.ts`) via alias `@shared/schema`.
 2. **Frontend**: Fetches data exclusively via API using React Query hooks.
    - Example hooks: `useTechnologies`, `useEvolutionData`, `useTradingMachines`.
 3. **Integration**: Shared schemas ensure consistent validation between frontend and backend.
@@ -77,7 +77,7 @@ Matrix_scalping is an interactive web application for visualizing the evolution 
   - `useEvolutionData` → `/api/evolution`
 
 ### Shared Validation
-- Zod schemas (`backend/knowledge-base/schema.ts`) are shared between frontend and backend.
+- Zod schemas (`backend/schemas/schema.ts`) are shared between frontend and backend via alias `@shared/schema`.
 - Use `@shared/schema` alias for imports.
 
 ### Data Modules

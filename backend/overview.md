@@ -10,7 +10,7 @@ Backend — это минимальный сервер Express, который:
 - отдает статический фронтенд в продакшене
 - поднимает Vite dev-middleware в разработке
 - предоставляет REST API к единому источнику данных в `backend/data/*`
-- использует общую схему типов/валидации в `backend/knowledge-base/schema.ts` (доступна также через алиас `@shared/schema`)
+- использует общую схему типов/валидации в `backend/schemas/schema.ts` (доступна через алиас `@shared/schema`)
 
 ## Структура
 
@@ -45,7 +45,7 @@ backend/
 
 ## Схема данных
 
-- Файл: `backend/knowledge-base/schema.ts`
+- Файл: `backend/schemas/schema.ts`
 - Используется и на фронтенде (через алиас `@shared/schema`), и на бэкенде
 - Совместима с Drizzle ORM (см. `drizzle.config.ts` → `schema`)
 

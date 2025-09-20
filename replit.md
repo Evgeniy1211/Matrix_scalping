@@ -29,7 +29,7 @@ The project uses Tailwind CSS with a custom design system featuring CSS variable
 
 ### State Management and Data Flow
 
-State management relies on React's built-in hooks (useState, useEffect) for local component state. The application uses TanStack Query for server state fetching via REST API. Data contracts are defined in `backend/knowledge-base/schema.ts` and shared with the frontend through the alias `@shared/schema`.
+State management relies on React's built-in hooks (useState, useEffect) for local component state. The application uses TanStack Query for server state fetching via REST API. Data contracts are defined in `backend/schemas/schema.ts` and shared with the frontend through the alias `@shared/schema`.
 
 ### Backend Architecture
 
