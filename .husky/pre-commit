@@ -1,1 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Run eslint --fix first to keep code style consistent
+npx --no-install eslint "index.ts" "backend/**/*.{ts,tsx}" "client/src/**/*.{ts,tsx}" --fix || exit 1
+
+# Then run lint-staged for staged file-specific tasks
 npx --no -- lint-staged

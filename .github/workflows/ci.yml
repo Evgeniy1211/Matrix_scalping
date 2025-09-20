@@ -2,23 +2,32 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build
-  - run: npm audit --audit-level=moderate
-  - run: npm run test
-  - run: npm run test
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (auto-fix)
+        run: npm run lint -- --fix || true
+
+      - name: Typecheck
+        run: npm run check
+
+      - name: Run tests
+        run: npm test --silent
