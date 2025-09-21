@@ -470,6 +470,21 @@ if __name__ == "__main__":
    - Фиксированный размер позиций
    - Не учитывает корреляции между активами
 
+### Production-конфигурация (импорт)
+
+Ниже — сжатое резюме production-настроек из импорт-файла «Скальпер на Random Forest», сохранённое для консистентности базы знаний:
+
+- Архитектура пайплайна: Binance API → Предобработка → Feature Engineering → Разметка (Target) → Train/Test Split → Обучение модели → Оценка + Backtesting → Live‑трейдинг.
+- Сбор данных: ccxt (REST), live — через WebSocket (ccxt.pro); минутные свечи OHLCV (timestamp, open, high, low, close, volume).
+- Предобработка: индекс timestamp, типы float64, очистка NaN, фильтр экстремальных скачков (> 20% / 1 свеча).
+- Признаки: return (pct_change), volatility (rolling std=5), SMA5/SMA20/sma_diff, RSI(14), OBV, Bollinger Bands(20, 2σ); при наличии стакана — спред bid/ask и дисбаланс ордербука.
+- Разметка Target: 1 если close[t+1] > close[t], иначе 0 (shift(-1)); расширение — multiclass BUY/SELL/HOLD.
+- Обучение: RandomForestClassifier; пример параметров из импорта — n_estimators=500, max_depth=10, criterion='gini', random_state=42; разбиение 80/20 без перемешивания. (Примечание: partial_fit для RF в sklearn недоступен — для онлайн‑дообучения нужна замена модели на поддерживающую partial_fit.)
+- Оценка/Backtest: Precision/Recall/F1, Confusion Matrix, ROC‑AUC; торговые правила — BUY при signal=1, SELL при signal=0; Risk‑менеджмент — Take‑profit 0.2%, Stop‑loss 0.1%; учёт комиссии Binance 0.1%; PnL = Σ(Profit − Commission).
+- Live‑трейдинг: 1) получить новую свечу → 2) обработать/сгенерировать признаки → 3) прогнать через модель → сигнал (BUY/SELL/HOLD) → 4) отправить ордер create_market_order; TP/SL — автоматически; логирование сделок в CSV/БД: timestamp, symbol, action, price, size, PnL.
+- Технические детали: Python 3.9+, библиотеки — ccxt/ccxt.pro, pandas, numpy, scikit‑learn, matplotlib, finta/ta; ресурсы — CPU, 2–4 GB RAM; объём — ~100 MB/год минутных свечей.
+- Плюсы: простота, скорость, лёгкая визуализация, подходит для скальпинга. Минусы: частый retrain, чувствительность к качеству признаков и новостям, комиссии/проскальзывание.
+
 ### Исторический контекст (2015-2017)
 
 #### Характеристики периода
@@ -518,6 +533,150 @@ if __name__ == "__main__":
 - **Baseline моделью** для сравнения более сложных подходов
 - **Прототипом** для быстрой проверки идей
 - **Foundation** для построения более сложных систем
+
+---
+
+---
+
+## Кейс 2: Скальпинг с Reinforcement Learning (PPO-агент, 2020+)
+
+### Общая информация
+
+- Название: RL Scalper (PPO Agent)
+- Период разработки: 2020+
+- Источник: arXiv, курсы по RL-трейдингу, open‑source демо
+- Рынок: Криптовалюты (BTC/USDT)
+- Стратегия: Скальпинг с обучающимся агентом (BUY/SELL/HOLD)
+- Временной интервал: 1 минута
+
+### Описание стратегии
+
+Современная торговая машина, где агент учится сам максимизировать прибыль, используя PPO (Proximal Policy Optimization). Работает в backtest и live, учитывает комиссии и риски, не требует ручной разметки данных.
+
+### Технологический стек
+
+#### Языки и инструменты
+
+- Python 3.9+
+- Jupyter/Colab — для прототипирования
+
+#### Библиотеки
+
+- ccxt, ccxt.pro — сбор данных (REST/WebSocket)
+- pandas, numpy — обработка рядов
+- matplotlib — визуализация
+- gym‑anytrading — RL‑среда трейдинга
+- stable‑baselines3 — RL‑алгоритмы (PPO)
+
+### Архитектура
+
+1. Сбор данных (Binance API через ccxt/ccxt.pro)
+2. Предобработка (индиксы, типы, очистка, нормализация)
+3. RL‑среда (Gym): окно наблюдений, действия BUY/SELL/HOLD, награда = изменение капитала − комиссии − штраф за риск
+4. Обучение PPO‑агента (MlpPolicy)
+5. Оценка и Backtest (total reward, PnL, MDD, Sharpe)
+6. Live Trading Engine (WebSocket → агент → ордер → лог)
+
+### Ключевые модули
+
+#### Сбор данных
+
+```python
+exchange = ccxt.binance()
+ohlcv = exchange.fetch_ohlcv('BTC/USDT', '1m', limit=1000)
+df = pd.DataFrame(ohlcv, columns=['timestamp','open','high','low','close','volume'])
+df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+df.set_index('timestamp', inplace=True)
+```
+
+#### Предобработка
+
+```python
+df = df.astype('float64').dropna()
+df['close_norm'] = df['close'] / df['close'].iloc[0]
+```
+
+#### RL‑среда (Gym)
+
+```python
+from gym_anytrading.envs import StocksEnv
+
+class CustomEnv(StocksEnv):
+    _process_data = StocksEnv._process_data
+    _calculate_reward = StocksEnv._calculate_reward
+    _take_action = StocksEnv._take_action
+
+env = CustomEnv(df=df, window_size=30, frame_bound=(30, len(df)))
+```
+
+#### PPO‑агент
+
+```python
+from stable_baselines3 import PPO
+model = PPO('MlpPolicy', env, verbose=1)
+model.learn(total_timesteps=10000)
+```
+
+#### Backtest
+
+```python
+obs = env.reset()
+while True:
+    action, _ = model.predict(obs)
+    obs, reward, done, info = env.step(action)
+    if done:
+        print('Total reward:', info)
+        break
+```
+
+#### Визуализация
+
+```python
+import matplotlib.pyplot as plt
+plt.figure(figsize=(15,6))
+env.render_all()
+plt.show()
+```
+
+#### Live Trading Engine (эскиз)
+
+```python
+# ccxt.pro WebSocket → обновить окно наблюдений
+# action = model.predict(obs)
+# if action in {BUY, SELL}: exchange.create_market_order(...)
+# логировать: timestamp, action, price, size, PnL
+```
+
+### Технические детали
+
+- Python 3.9+
+- Библиотеки: ccxt, ccxt.pro, pandas, numpy, matplotlib, gym‑anytrading, stable‑baselines3
+- Железо: CPU достаточно; RAM 4+ GB
+- Обучение: ~10–30 минут на CPU (100k шагов)
+
+### Плюсы
+
+- Без ручной разметки данных
+- Агент учится напрямую на прибыли
+- Современный алгоритм (PPO)
+- Гибкая настройка награды и наблюдений
+
+### Минусы
+
+- Долго обучается
+- Риск переобучения (нужны разные периоды)
+- Требует тщательного тюнинга гиперпараметров
+
+### Улучшения
+
+- Добавить индикаторы (RSI, EMA) в наблюдения
+- Учитывать комиссии и просадку в награде
+- Ансамбль агентов (PPO/DQN)
+- Transfer learning (BTC → ETH)
+
+### Итог
+
+Production‑кейс 2020+, эволюционный шаг после Random Forest: агент сам оптимизирует прибыль, подходит для ревизии 2 в матрице.
 
 ---
 
