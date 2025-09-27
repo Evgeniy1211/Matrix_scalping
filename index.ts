@@ -1,4 +1,6 @@
-import express, { NextFunction, type Request, Response } from 'express';
+import 'dotenv/config';
+
+import express, { type NextFunction, type Request, type Response } from 'express';
 
 import { registerRoutes } from './backend/routes';
 import { log, serveStatic, setupVite } from './backend/vite';

@@ -53,3 +53,31 @@ npm start
 - Порт занят: освободите 5000 или задайте `PORT=5001`
 - Ошибки типов: запустите `npm run check`
 - Пустой экран в dev: проверьте логи сервера и консоль браузера
+
+## Переменные окружения (.env)
+
+Проект читает переменные окружения из файла `.env` (загружается автоматически через `dotenv/config` в `index.ts` и `drizzle.config.ts`). Шаблон — `.env.example` в корне репозитория.
+
+Скопируйте шаблон и настройте значения:
+
+```powershell
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+```bash
+# Linux/macOS
+cp .env.example .env
+```
+
+Ключевые переменные:
+
+- PORT — порт HTTP-сервера Express (по умолчанию 5000)
+- NODE_ENV — среда выполнения (development/production), в скриптах npm задаётся автоматически
+- DATABASE_URL — строка подключения Postgres (обязательно для `drizzle-kit`), см. примеры в `.env.example`
+- REPL_ID — опционально, включает Replit Cartographer плагин в Vite при наличии
+
+Примечания:
+
+- Файлы `.env`, `.env.local` игнорируются Git
+- На Windows скрипты уже выставляют `NODE_ENV`, менять вручную не требуется
