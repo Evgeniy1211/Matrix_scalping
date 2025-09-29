@@ -108,12 +108,16 @@ export function TradingMachineComparator() {
               <Button
                 key={machine.id}
                 variant={selectedCase?.id === machine.id ? 'default' : 'outline'}
-                className="w-full justify-start text-left h-auto p-3"
+                className="w-full justify-start text-left h-auto p-3 whitespace-normal break-words max-w-full"
                 onClick={() => setSelectedCase(machine)}
               >
-                <div>
-                  <div className="font-medium">{machine.name}</div>
-                  <div className="text-xs text-muted-foreground">{machine.description}</div>
+                <div className="flex flex-col items-start min-w-0 w-full">
+                  <div className="font-medium w-full break-words whitespace-normal">
+                    {machine.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground w-full break-words whitespace-normal">
+                    {machine.description}
+                  </div>
                 </div>
               </Button>
             ))}
@@ -182,8 +186,10 @@ export function TradingMachineComparator() {
                       <ul className="space-y-1">
                         {selectedCase.advantages?.map((advantage, index) => (
                           <li key={index} className="text-sm flex items-start gap-2">
-                            <span className="text-green-500 mt-1">✓</span>
-                            {advantage}
+                            <span className="text-green-500 mt-1 shrink-0">✓</span>
+                            <span className="flex-1 min-w-0 break-words whitespace-normal">
+                              {advantage}
+                            </span>
                           </li>
                         ))}
                       </ul>
@@ -193,8 +199,10 @@ export function TradingMachineComparator() {
                       <ul className="space-y-1">
                         {selectedCase.disadvantages?.map((disadvantage, index) => (
                           <li key={index} className="text-sm flex items-start gap-2">
-                            <span className="text-red-500 mt-1">✗</span>
-                            {disadvantage}
+                            <span className="text-red-500 mt-1 shrink-0">✗</span>
+                            <span className="flex-1 min-w-0 break-words whitespace-normal">
+                              {disadvantage}
+                            </span>
                           </li>
                         ))}
                       </ul>
