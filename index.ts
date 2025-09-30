@@ -60,8 +60,9 @@ app.use((req, res, next) => {
       message = err;
     }
 
+    // Respond with a sanitized error and log the original to stderr
     res.status(status).json({ message });
-    throw err;
+    console.error('[Express Error]', err);
   });
 
   // Choose mode based on NODE_ENV instead of Express env for reliability on Windows

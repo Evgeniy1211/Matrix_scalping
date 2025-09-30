@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "name": "Random Forest Scalper",
+    "period": "2015-2017",
+    "author": "John Doe",
+    "description": "A scalping system using Random Forest for signal generation.",
+    "strategy": "Scalping",
+    "timeframe": "1-minute",
+    "marketType": "Forex",
+    "technologies": [
+      { "name": "Random Forest", "purpose": "Signal generation", "category": "ml" },
+      { "name": "pandas", "purpose": "Data processing", "category": "data" }
+    ],
+    "modules": {
+      "dataCollection": ["Forex API"],
+      "dataProcessing": ["pandas"],
+      "featureEngineering": ["Technical Indicators"],
+      "signalGeneration": ["Random Forest"],
+      "riskManagement": ["Stop Loss", "Take Profit"],
+      "execution": ["MetaTrader"],
+      "marketAdaptation": ["Dynamic Lot Sizing"],
+      "visualization": ["Matplotlib"]
+    },
+    "performance": {
+      "accuracy": 0.85,
+      "precision": 0.8,
+      "recall": 0.75,
+      "f1Score": 0.77,
+      "sharpeRatio": 1.5,
+      "maxDrawdown": 0.1
+    },
+    "codeExample": "# Example code for Random Forest Scalper\nimport pandas as pd\nfrom sklearn.ensemble import RandomForestClassifier",
+    "advantages": ["High accuracy", "Robust to overfitting"],
+    "disadvantages": ["Requires a lot of data", "Computationally expensive"]
+  }
+]

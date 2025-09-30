@@ -34,8 +34,17 @@ export async function setupVite(app: Express, server: Server) {
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
+        // Downgrade known noisy PostCSS warning that Vite reports as an error in some setups
+        if (
+          typeof msg === 'string' &&
+          msg.includes('A PostCSS plugin did not pass the `from` option')
+        ) {
+          viteLogger.warn(msg, options);
+          return;
+        }
+        // Log other errors but DO NOT exit the dev process so the server remains available
         viteLogger.error(msg, options);
-        process.exit(1);
+        // Intentionally not calling process.exit(1) here to keep dev server alive
       },
     },
     server: serverOptions,

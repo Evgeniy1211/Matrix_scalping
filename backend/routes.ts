@@ -1,5 +1,15 @@
 import type { Express, Response } from 'express';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { createServer, type Server } from 'http';
+import path from 'path';
+
+import {
+  type TradingMachine,
+  tradingMachineArraySchema,
+  tradingMachineSchema,
+} from './schemas/schema';
+
+type TradingMachineCase = TradingMachine;
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // helper
@@ -25,7 +35,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/evolution-data/integrated', async (req, res) => {
     safeHandler(async () => {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('[DEPRECATED] Use /api/evolution/integrated instead of /api/evolution-data/integrated');
+        console.warn(
+          '[DEPRECATED] Use /api/evolution/integrated instead of /api/evolution-data/integrated'
+        );
       }
       const { integrateTechnologyDatabase } = await import('./data/evolution-data');
       const data = integrateTechnologyDatabase();
@@ -37,7 +49,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/evolution-data/dynamic', async (req, res) => {
     safeHandler(async () => {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('[DEPRECATED] Use /api/evolution/dynamic instead of /api/evolution-data/dynamic');
+        console.warn(
+          '[DEPRECATED] Use /api/evolution/dynamic instead of /api/evolution-data/dynamic'
+        );
       }
       const { createDynamicTechnologyMatrix } = await import('./data/evolution-data');
       const data = createDynamicTechnologyMatrix();
@@ -59,11 +73,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }, res);
   });
 
-  app.get('/api/trading-machines', async (req, res) => {
-    safeHandler(async () => {
-      const { tradingMachineCases } = await import('./data/trading-machines');
-      res.json(tradingMachineCases);
-    }, res);
+  app.get('/api/trading-machines', (req, res) => {
+    try {
+      const filePath = path.resolve(
+        process.cwd(),
+        'backend',
+        'data',
+        'json',
+        'trading-machines.json'
+      );
+      if (!existsSync(filePath)) {
+        // initialize empty store if missing
+        writeFileSync(filePath, '[]', 'utf-8');
+      }
+      const data = JSON.parse(readFileSync(filePath, 'utf-8'));
+      // Validate shape against shared schema
+      const parsed = tradingMachineArraySchema.parse(data);
+      res.json(parsed);
+    } catch (err) {
+      console.error('Failed to read trading machines JSON:', err);
+      res.status(500).json({ error: 'Failed to load trading machines' });
+    }
   });
 
   app.get('/api/modules', async (req, res) => {
@@ -107,6 +137,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = createDynamicTechnologyMatrix();
       res.json(data);
     }, res);
+  });
+
+  const importTradingMachine = (rawText: string): TradingMachineCase => {
+    // Naive parser placeholder — replace with LLM later
+    const nowId = Date.now().toString();
+    const fallbackName = `Imported Case ${nowId}`;
+    // Build a minimal valid case according to @shared/schema
+    const minimal = {
+      id: nowId,
+      name: fallbackName,
+      period: 'unknown',
+      author: undefined,
+      description: rawText.slice(0, 2000),
+      strategy: 'unspecified',
+      timeframe: 'unspecified',
+      marketType: 'unspecified',
+      technologies: [],
+      modules: {
+        dataCollection: [],
+        dataProcessing: [],
+        featureEngineering: [],
+        signalGeneration: [],
+        riskManagement: [],
+        execution: [],
+        marketAdaptation: [],
+        visualization: [],
+      },
+      advantages: [],
+      disadvantages: [],
+    } as TradingMachineCase;
+
+    // Validate single object against schema (will throw if invalid)
+    const validated = tradingMachineSchema.parse(minimal);
+
+    const filePath = path.resolve(
+      process.cwd(),
+      'backend',
+      'data',
+      'json',
+      'trading-machines.json'
+    );
+    const current: unknown = existsSync(filePath)
+      ? JSON.parse(readFileSync(filePath, 'utf-8'))
+      : [];
+    const list = tradingMachineArraySchema.parse(current);
+    list.push(validated);
+    writeFileSync(filePath, JSON.stringify(list, null, 2), 'utf-8');
+
+    return validated as unknown as TradingMachineCase;
+  };
+
+  app.post('/api/import/trading-machine', (req, res) => {
+    const { rawText } = req.body;
+    if (!rawText) {
+      return res.status(400).json({ error: 'rawText is required' });
+    }
+
+    const newCase = importTradingMachine(rawText);
+    res.status(201).json(newCase);
   });
 
   const httpServer = createServer(app);
